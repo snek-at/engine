@@ -8,7 +8,7 @@ django-storages[boto3]==1.7.2
 django-referrer-policy==1.0
 django-csp==3.5
 scout-apm==2.7.0
-django-basic-auth-ip-whitelist==0.3.1
+django-basic-auth-ip-whitelist==0.3.4
 django-cache-url==3.0.0
 elasticsearch==7.1.0
 uWSGI==2.0.18
