@@ -56,7 +56,7 @@ class UpdateProfile(graphene.Mutation):
         profile_page.postal_code = postal_code
         profile_page.email = email
         profile_page.country = country
-        profile_page.newsletter = newslette
+        profile_page.newsletter = newsletter
         profile_page.education_data = education_data
         profile_page.sources = sources
         profile_page.verified = verified
@@ -70,7 +70,7 @@ class UpdateProfile(graphene.Mutation):
 
         profile_page.save_revision().publish()
 
-        return CacheUser(user=user)
+        return UpdateProfile(user=user)
 
 class Mutation(graphene.ObjectType):
-    cache_user = CacheUser.Field()
+    update_profile = UpdateProfile.Field()
