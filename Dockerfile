@@ -1,79 +1,99 @@
-# We use Debian images because they are considered more stable than the alpine
-# ones becase they use a different C compiler. Debian images also come with
-# all useful packages required for image manipulation out of the box. They
-# however weight a lot, approx. up to 1.5GiB per built image.
-FROM python:3.6.6-stretch
+FROM python:3.7-alpine
 
-WORKDIR /app
+LABEL description="This container serves as an entry point for our future Django projects."
 
-# Set default environment variables. They are used at build time and runtime.
-# If you specify your own environment variables on Heroku or Dokku, they will
-# override the ones set here. The ones below serve as sane defaults only.
-#  * PYTHONUNBUFFERED - This is useful so Python does not hold any messages
-#    from being output.
-#    https://docs.python.org/3.8/using/cmdline.html#envvar-PYTHONUNBUFFERED
-#    https://docs.python.org/3.8/using/cmdline.html#cmdoption-u
-#  * PYTHONPATH - enables use of django-admin command.
-#  * DJANGO_SETTINGS_MODULE - default settings used in the container.
-#  * PORT - default port used. Please match with EXPOSE so it works on Dokku.
-#    Heroku will ignore EXPOSE and only set PORT variable. PORT variable is
-#    read/used by Gunicorn.
-#  * WEB_CONCURRENCY - number of workers used by Gunicorn. The variable is
-#    read by Gunicorn.
-#  * GUNICORN_CMD_ARGS - additional arguments to be passed to Gunicorn. This
-#    variable is read by Gunicorn
-ENV PYTHONUNBUFFERED=1 \
-    PYTHONPATH=/app \
-    DJANGO_SETTINGS_MODULE=esite.settings.production \
-    PORT=8000 \
-    WEB_CONCURRENCY=3 \
-    GUNICORN_CMD_ARGS="--max-requests 1200 --access-logfile -"
+# Developed for Werbeagentur Christian Aichner by Florian Kleber
+# for terms of use have a look at the LICENSE file.
+MAINTAINER Florian Kleber <kleberbaum@erebos.xyz>
 
-# Port exposed by this container. Should default to the port used by your WSGI
-# server (Gunicorn). This is read by Dokku only. Heroku will ignore this.
+# Add custom environment variables needed by Django or your settings file here:
+ENV DJANGO_DEBUG=on \
+    DJANGO_SETTINGS_MODULE=esite.settings.production
+
+# The uWSGI configuration (customize as needed):
+ENV UWSGI_VIRTUALENV=/venv \
+    UWSGI_UID=1000 \
+    UWSGI_GID=2000 \
+    UWSGI_WSGI_FILE=esite/wsgi_production.py \
+    UWSGI_HTTP=:8000 \
+    UWSGI_MASTER=1 \
+    UWSGI_WORKERS=2 \
+    UWSGI_THREADS=1
+
+WORKDIR /code/
+
+# Add pre-installation requirements:
+ADD requirements/ /requirements/
+
+# Update, install and cleaning:
+RUN echo "## Installing base ##" && \
+    echo "@main http://dl-cdn.alpinelinux.org/alpine/edge/main/" >> /etc/apk/repositories && \
+    echo "@testing http://dl-cdn.alpinelinux.org/alpine/edge/testing/" >> /etc/apk/repositories && \
+    echo "@community http://dl-cdn.alpinelinux.org/alpine/edge/community/" >> /etc/apk/repositories && \
+    apk upgrade --update-cache --available && \
+    \
+    apk add --no-cache --virtual .build-deps \
+    gcc \
+    g++ \
+    make \
+    libc-dev \
+    musl-dev \
+    libffi-dev \
+    linux-headers \
+    pcre-dev \
+    postgresql-dev \
+    libjpeg-turbo-dev \
+    zlib-dev \
+    expat-dev \
+    ;\
+    apk add --force \
+    git@main \
+    bash@main \
+    libjpeg-turbo@main \
+    pcre@main \
+    ffmpeg@main \
+    postgresql-client@main \
+    tini@community \
+    \
+    && python -m venv /venv \
+    && /venv/bin/pip install -U pip \
+    && LIBRARY_PATH=/lib:/usr/lib /bin/sh -c "/venv/bin/pip install -r /requirements/production.txt" \
+    && runDeps="$( \
+    scanelf --needed --nobanner --recursive /venv \
+    | awk '{ gsub(/,/, "\nso:", $2); print "so:" $2 }' \
+    | sort -u \
+    | xargs -r apk info --installed \
+    | sort -u \
+    )" \
+    && apk add --virtual .python-rundeps $runDeps \
+    && apk del .build-deps \
+    && rm -rf /tmp/* /var/tmp/* /var/cache/apk/* /var/cache/distfiles/*
+
 EXPOSE 8000
 
-# Install operating system dependencies.
-RUN apt-get update -y && \
-    apt-get install -y apt-transport-https rsync && \
-    curl -sL https://deb.nodesource.com/setup_12.x | bash - &&\
-    apt-get install -y nodejs &&\
-    rm -rf /var/lib/apt/lists/*
+VOLUME /code/media
 
-# Intsall WSGI server - Gunicorn - that will serve the application.
-RUN pip install "gunicorn== 19.9.0"
+ADD . /code/
 
-# WORKDIR esite/static_src
+# Place init, make it executable and
+# make sure venv files can be used by uWSGI process:
+RUN mv /code/docker-entrypoint.sh / ;\
+    chmod +x /docker-entrypoint.sh ;\
+    find /venv/ -type f -iname "*.py" -exec chmod -v +x {} ;\
+    \
+    # Call collectstatic with dummy environment variables:
+    DATABASE_URL=postgres://none REDIS_URL=none /venv/bin/python manage.py collectstatic --noinput
 
-# Install front-end dependencies.
-# COPY ./esite/static_src/package.json ./esite/static_src/package-lock.json ./
-# RUN npm ci
+# I personally like to start my containers with tini
+# which start uWSGI, using a wrapper script to allow us to easily add
+# more commands to container startup:
+ENTRYPOINT ["/sbin/tini", "--", "/docker-entrypoint.sh"]
 
-# Install your app's Python requirements.
-COPY requirements /
-RUN pip install -r /requirements/production.txt
+CMD ["/venv/bin/uwsgi", "--http-auto-chunked", \
+    "--http-keepalive", \
+    "--static-map", \
+    "/media/=/code/media/"\
+    ]
 
-# Compile static files
-# COPY ./esite/static_src/ ./
-# RUN npm run build:prod
-
-WORKDIR /app
-
-# Copy application code.
-COPY . .
-
-# Collect static. This command will move static files from application
-# directories and "static_compiled" folder to the main static directory that
-# will be served by the WSGI server.
-RUN SECRET_KEY=none django-admin collectstatic --noinput --clear
-
-# Don't use the root user as it's an anti-pattern and Heroku does not run
-# containers as root either.
-# https://devcenter.heroku.com/articles/container-registry-and-runtime#dockerfile-commands-and-runtime
-RUN useradd esite
-RUN chown -R esite .
-USER esite
-
-# Run the WSGI server. It reads GUNICORN_CMD_ARGS, PORT and WEB_CONCURRENCY
-# environment variable hence we don't specify a lot options below.
-CMD gunicorn esite.wsgi:application
+# SPDX-License-Identifier: (EUPL-1.2)
+# Copyright © 2019-2020 Simon Prast
