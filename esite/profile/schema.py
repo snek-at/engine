@@ -30,7 +30,6 @@ class UpdateProfile(graphene.Mutation):
 
     class Arguments:
         token = graphene.String(required=False)
-        platform_data = graphene.String(required=True)
         telephone = graphene.String(required=False)
         address = graphene.String(required=False)
         city = graphene.String(required=False)
@@ -60,6 +59,7 @@ class UpdateProfile(graphene.Mutation):
         email,
         country,
         newsletter,
+        platform_data,
         education_data,
         sources,
         verified,
