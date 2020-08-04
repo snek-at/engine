@@ -12,6 +12,7 @@ def SnippetsQuery():
         class SnippetObjectType(graphene.Union):
             class Meta:
                 """Can change over time."""
+
                 types = registry.snippets.types
 
         class Mixin:

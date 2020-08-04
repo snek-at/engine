@@ -12,6 +12,7 @@ def SettingsQuery():
         class SettingsObjectType(graphene.Union):
             class Meta:
                 """Can change over time."""
+
                 types = registry.settings.types
 
         class Mixin:

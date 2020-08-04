@@ -8,6 +8,7 @@ from .models import Customer
 
 # Create your customer related graphql schemes here.
 
+
 class UserType(DjangoObjectType):
     class Meta:
         model = Customer
@@ -22,14 +23,11 @@ class CreateUser(graphene.Mutation):
         email = graphene.String(required=True)
 
     def mutate(self, info, username, password, email):
-        user = get_user_model()(
-            username=username,
-            email=email,
-        )
-        #if info.context.user.is_anonymous:
+        user = get_user_model()(username=username, email=email,)
+        # if info.context.user.is_anonymous:
         #    raise GraphQLError('You must be logged to create a user')
 
-        #if not info.context.user.is_superuser:
+        # if not info.context.user.is_superuser:
         #    raise GraphQLError('You must be superuser to create a user')
 
         user.set_password(password)
@@ -54,5 +52,5 @@ class Query(graphene.ObjectType):
     def resolve_me(self, info):
         user = info.context.user
         if user.is_anonymous:
-            raise Exception('Not logged!')
+            raise Exception("Not logged!")
         return user

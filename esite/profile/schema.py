@@ -3,7 +3,12 @@ from django.contrib.auth import get_user_model
 import graphene
 from graphene_django import DjangoObjectType
 from graphql import GraphQLError
-from graphql_jwt.decorators import login_required, permission_required, staff_member_required, superuser_required
+from graphql_jwt.decorators import (
+    login_required,
+    permission_required,
+    staff_member_required,
+    superuser_required,
+)
 
 from wagtail.core.models import Page
 
@@ -14,7 +19,7 @@ from esite.registration.schema import UserType
 
 # Create your registration related graphql schemes here.
 
-#class UserType(DjangoObjectType):
+# class UserType(DjangoObjectType):
 #    class Meta:
 #        model = User
 #        exclude_fields = ['password']
@@ -44,12 +49,31 @@ class UpdateProfile(graphene.Mutation):
         company = graphene.String(required=False)
 
     @login_required
-    def mutate(self, info, token, telephone, address, city, postal_code, email, country, newsletter, education_data, sources, verified, available_for_hire, first_name, last_name, website, company):
+    def mutate(
+        self,
+        info,
+        token,
+        telephone,
+        address,
+        city,
+        postal_code,
+        email,
+        country,
+        newsletter,
+        education_data,
+        sources,
+        verified,
+        available_for_hire,
+        first_name,
+        last_name,
+        website,
+        company,
+    ):
         user = info.context.user
 
         profile_page = Page.objects.get(slug=f"{user.username}").specific
 
-        #profile_page.birthdate = birthdate
+        # profile_page.birthdate = birthdate
         profile_page.telephone = telephone
         profile_page.address = address
         profile_page.city = city
@@ -71,6 +95,7 @@ class UpdateProfile(graphene.Mutation):
         profile_page.save_revision().publish()
 
         return UpdateProfile(user=user)
+
 
 class Mutation(graphene.ObjectType):
     update_profile = UpdateProfile.Field()

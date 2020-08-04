@@ -16,6 +16,7 @@ def SearchQuery():
         class Search(graphene.Union):
             class Meta:
                 """Can change over time."""
+
                 types = tuple(registry.class_models.values())
 
         class Mixin:

@@ -8,24 +8,19 @@ def create_initialuser(apps, schema_editor):
     User = get_user_model()
 
     # Create anonymous user
-    anonuser = User.objects.create(
-        username="cisco",
-        is_customer=False,
-    )
+    anonuser = User.objects.create(username="cisco", is_customer=False,)
 
     anonuser.set_password("ciscocisco")
 
     anonuser.save()
 
     # Create admin user
-    adminuser = User.objects.create(
-        username="admin",
-        is_superuser=True,
-    )
+    adminuser = User.objects.create(username="admin", is_superuser=True,)
 
     adminuser.set_password("ciscocisco")
 
     adminuser.save()
+
 
 def remove_initialuser(apps, schema_editor):
     # Get models
@@ -41,7 +36,7 @@ def remove_initialuser(apps, schema_editor):
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('user', '0001_initial'),
+        ("user", "0001_initial"),
     ]
 
     operations = [

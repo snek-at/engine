@@ -57,6 +57,7 @@ class ImageRenditionObjectType(DjangoObjectType, BaseImageObjectType):
 
     class Meta:
         """Can change over time."""
+
         model = WagtailImageRendition
 
     @login_required
@@ -86,6 +87,7 @@ class ImageObjectType(DjangoObjectType, BaseImageObjectType):
 
     class Meta:
         """Can change over time."""
+
         model = WagtailImage
         exclude_fields = ("tags",)
 

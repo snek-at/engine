@@ -9,6 +9,7 @@ from graphql_jwt.decorators import login_required
 class MediaObjectType(DjangoObjectType):
     class Meta:
         """Can change over time."""
+
         model = Media
         exclude_fields = ("tags",)
 

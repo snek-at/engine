@@ -4,6 +4,7 @@ from wagtail.contrib.modeladmin.options import ModelAdmin, modeladmin_register
 
 from .models import GiftCode
 
+
 class GiftAdmin(ModelAdmin):
     model = GiftCode
     menu_label = "Gift"
@@ -13,7 +14,8 @@ class GiftAdmin(ModelAdmin):
     exclude_from_explorer = False
 
     # Listed in the registration overview
-    list_display = ('is_active', 'hkey', 'bid', 'tid')
-    search_fields = ('is_active', 'hkey', 'bid', 'tid')
+    list_display = ("is_active", "hkey", "bid", "tid")
+    search_fields = ("is_active", "hkey", "bid", "tid")
+
 
 modeladmin_register(GiftAdmin)

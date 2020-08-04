@@ -8,20 +8,19 @@ class Migration(migrations.Migration):
     initial = True
 
     dependencies = [
-        ('user', '0001_initial'),
+        ("user", "0001_initial"),
     ]
 
     operations = [
         migrations.CreateModel(
-            name='Customer',
-            fields=[
-            ],
+            name="Customer",
+            fields=[],
             options={
-                'ordering': ('date_joined',),
-                'proxy': True,
-                'indexes': [],
-                'constraints': [],
+                "ordering": ("date_joined",),
+                "proxy": True,
+                "indexes": [],
+                "constraints": [],
             },
-            bases=('user.user',),
+            bases=("user.user",),
         ),
     ]

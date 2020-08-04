@@ -8,17 +8,47 @@ class Migration(migrations.Migration):
 
     initial = True
 
-    dependencies = [
-    ]
+    dependencies = []
 
     operations = [
         migrations.CreateModel(
-            name='GiftCode',
+            name="GiftCode",
             fields=[
-                ('hkey', models.CharField(max_length=14, primary_key=True, serialize=False)),
-                ('bid', models.CharField(blank=True, max_length=32, null=True, validators=[django.core.validators.RegexValidator(code='nomatch', message='It has to be a md5 hash', regex='^[a-f0-9]{32}$')])),
-                ('tid', models.CharField(blank=True, max_length=32, null=True, validators=[django.core.validators.RegexValidator(code='nomatch', message='It has to be a md5 hash', regex='^[a-f0-9]{32}$')])),
-                ('is_active', models.BooleanField(default=True)),
+                (
+                    "hkey",
+                    models.CharField(max_length=14, primary_key=True, serialize=False),
+                ),
+                (
+                    "bid",
+                    models.CharField(
+                        blank=True,
+                        max_length=32,
+                        null=True,
+                        validators=[
+                            django.core.validators.RegexValidator(
+                                code="nomatch",
+                                message="It has to be a md5 hash",
+                                regex="^[a-f0-9]{32}$",
+                            )
+                        ],
+                    ),
+                ),
+                (
+                    "tid",
+                    models.CharField(
+                        blank=True,
+                        max_length=32,
+                        null=True,
+                        validators=[
+                            django.core.validators.RegexValidator(
+                                code="nomatch",
+                                message="It has to be a md5 hash",
+                                regex="^[a-f0-9]{32}$",
+                            )
+                        ],
+                    ),
+                ),
+                ("is_active", models.BooleanField(default=True)),
             ],
         ),
     ]

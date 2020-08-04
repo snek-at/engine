@@ -20,36 +20,36 @@ class GenericStreamFieldType(Scalar):
 
 @convert_django_field.register(StreamField)
 def convert_stream_field(field, registry=None):
-    return GenericStreamFieldType(
-        description=field.help_text, required=not field.null
-    )
+    return GenericStreamFieldType(description=field.help_text, required=not field.null)
+
 
 # We're creating a fallback / default ObjectType at this point
 class DefaultStreamBlock(graphene.ObjectType):
     block_type = graphene.String()
     value = GenericScalar()
 
+
 # This is our factory function
-# Pass in kwargs with the block's name as the 
+# Pass in kwargs with the block's name as the
 # keyword and the graphene type as its value
 def create_stream_field_type(field_name, **kwargs):
     block_type_handlers = kwargs.copy()
 
     class Meta:
-        types = (DefaultStreamBlock, ) + tuple(
-            block_type_handlers.values())
-    
+        types = (DefaultStreamBlock,) + tuple(block_type_handlers.values())
+
     # This is where we generate the UnionType from the kwargs
     # Different graphene types can't have the same name, so we're
     # generating this class dynamically
     StreamFieldType = type(
         f"{string.capwords(field_name, sep='_').replace('_', '')}Type",
         (graphene.Union,),
-        dict(Meta=Meta))
+        dict(Meta=Meta),
+    )
 
     def convert_block(block):
-        block_type = block.get('type')
-        value = block.get('value')
+        block_type = block.get("type")
+        value = block.get("value")
         if block_type in block_type_handlers:
             handler = block_type_handlers.get(block_type)
             if isinstance(value, dict):
@@ -66,13 +66,13 @@ def create_stream_field_type(field_name, **kwargs):
 
     return (graphene.List(StreamFieldType), resolve_field)
 
+
 class WagtailImageNode(DjangoObjectType):
     class Meta:
         model = Image
-        exclude_fields = ['tags']
+        exclude_fields = ["tags"]
+
 
 @convert_django_field.register(Image)
 def convert_img(field, registry=None):
-    return WagtailImageNode(
-        description=field.help_text, required=not field.null
-    )
+    return WagtailImageNode(description=field.help_text, required=not field.null)

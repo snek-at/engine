@@ -30,11 +30,8 @@ class CustomerAdminB(ModelAdminGroup):
     menu_order = 110
     add_to_settings_menu = False
     exclude_from_explorer = False
-    items = (
-        UserAdmin,
-        CustomerAdmin,
-        RegistrationAdmin
-    )
+    items = (UserAdmin, CustomerAdmin, RegistrationAdmin)
+
 
 modeladmin_register(CustomerAdminB)
 

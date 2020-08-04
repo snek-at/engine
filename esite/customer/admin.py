@@ -2,6 +2,7 @@ from wagtail.contrib.modeladmin.options import ModelAdmin, modeladmin_register
 
 from .models import Customer
 
+
 class CustomerAdmin(ModelAdmin):
     model = Customer
     menu_label = "Customer"
@@ -11,7 +12,8 @@ class CustomerAdmin(ModelAdmin):
     exclude_from_explorer = False
 
     # Listed in the customer overview
-    list_display = ('date_joined', 'username', 'email')
-    search_fields = ('date_joined', 'username', 'email')
+    list_display = ("date_joined", "username", "email")
+    search_fields = ("date_joined", "username", "email")
 
-#modeladmin_register(CustomerAdmin)
+
+# modeladmin_register(CustomerAdmin)

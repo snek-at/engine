@@ -15,8 +15,10 @@ class DocumentObjectType(DjangoObjectType):
     Base document type used if one isn't generated for the current model.
     All other node types extend this.
     """
+
     class Meta:
         """Can change over time."""
+
         model = WagtailDocument
         exclude_fields = ("tags",)
 

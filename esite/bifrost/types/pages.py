@@ -128,6 +128,7 @@ class Page(DjangoObjectType):
 
     class Meta:
         """Can change over time."""
+
         model = WagtailPage
         interfaces = (PageInterface,)
 

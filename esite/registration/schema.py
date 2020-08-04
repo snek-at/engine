@@ -3,17 +3,23 @@ from django.contrib.auth import get_user_model
 import graphene
 from graphene_django import DjangoObjectType
 from graphql import GraphQLError
-from graphql_jwt.decorators import login_required, permission_required, staff_member_required, superuser_required
+from graphql_jwt.decorators import (
+    login_required,
+    permission_required,
+    staff_member_required,
+    superuser_required,
+)
 
 from esite.user.models import User
 from esite.customer.models import Customer
 
 # Create your registration related graphql schemes here.
 
+
 class UserType(DjangoObjectType):
     class Meta:
         model = User
-        exclude_fields = ['password']
+        exclude_fields = ["password"]
 
 
 class CreateUser(graphene.Mutation):
@@ -25,16 +31,13 @@ class CreateUser(graphene.Mutation):
         email = graphene.String(required=True)
 
     def mutate(self, info, username, password, email):
-        user = get_user_model()(
-            username=username,
-            email=email,
-        )
+        user = get_user_model()(username=username, email=email,)
 
         if info.context.user.is_anonymous:
-            raise GraphQLError('You must be logged to create a user')
+            raise GraphQLError("You must be logged to create a user")
 
         if not info.context.user.is_superuser:
-            raise GraphQLError('You must be superuser to create a user')
+            raise GraphQLError("You must be superuser to create a user")
 
         user.set_password(password)
         user.save()
@@ -55,21 +58,21 @@ class Query(graphene.ObjectType):
     @superuser_required
     def resolve_users(self, info, **_kwargs):
         # session authentication
-        #user = info.context.user
+        # user = info.context.user
         # session authentication
-        #if user.is_anonymous:
+        # if user.is_anonymous:
         #    raise GraphQLError('You must be logged to list a user')
-        #if not user.is_superuser:
+        # if not user.is_superuser:
         #    raise Exception('You must be superuser to list a user')
         return User.objects.all()
 
     @superuser_required
     def resolve_customers(self, info, **_kwargs):
         # session authentication
-        #user = info.context.user
-        #if user.is_anonymous:
+        # user = info.context.user
+        # if user.is_anonymous:
         #    raise GraphQLError('You must be logged to list customer')
-        #if not user.is_superuser:
+        # if not user.is_superuser:
         #    raise Exception(f'You must be superuser to list customer {user.is_superuser}')
         return Customer.objects.all()
 
@@ -77,7 +80,7 @@ class Query(graphene.ObjectType):
     def resolve_me(self, info, **_kwargs):
         user = info.context.user
         # session authentication
-        #user = info.context.user
-        #if user.is_anonymous:
+        # user = info.context.user
+        # if user.is_anonymous:
         #    raise Exception('You must be logged')
         return user
