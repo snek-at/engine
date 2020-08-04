@@ -46,16 +46,16 @@ RUN pip install "gunicorn== 19.9.0"
 WORKDIR esite/static_src
 
 # Install front-end dependencies.
-COPY ./esite/static_src/package.json ./esite/static_src/package-lock.json ./
-RUN npm ci
+# COPY ./esite/static_src/package.json ./esite/static_src/package-lock.json ./
+# RUN npm ci
 
 # Install your app's Python requirements.
 COPY requirements.txt /
 RUN pip install -r /requirements.txt
 
 # Compile static files
-COPY ./esite/static_src/ ./
-RUN npm run build:prod
+# COPY ./esite/static_src/ ./
+# RUN npm run build:prod
 
 WORKDIR /app
 
