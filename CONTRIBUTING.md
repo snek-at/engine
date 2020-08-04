@@ -23,7 +23,7 @@
 -   All commits must be written in present tense
 -   All commits may be multiline commits
 -   The commit headline must have a maximum of 71 chars
--   The commit message must have a maxmum of 71 chars per line
+-   The commit message must have a maximum of 71 chars per line
 -   If possible, include link to online topic as reference (Ref: )
 -   Detailed explanation why the commit was done
 -   Include reference to issue if one exists
