@@ -43,15 +43,15 @@ RUN apt-get update -y && \
 # Intsall WSGI server - Gunicorn - that will serve the application.
 RUN pip install "gunicorn== 19.9.0"
 
-WORKDIR esite/static_src
+# WORKDIR esite/static_src
 
 # Install front-end dependencies.
 # COPY ./esite/static_src/package.json ./esite/static_src/package-lock.json ./
 # RUN npm ci
 
 # Install your app's Python requirements.
-COPY requirements/production.txt /
-RUN pip install -r /production.txt
+COPY requirements /
+RUN pip install -r /requirements/production.txt
 
 # Compile static files
 # COPY ./esite/static_src/ ./
