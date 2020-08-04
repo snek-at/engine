@@ -50,8 +50,8 @@ WORKDIR esite/static_src
 # RUN npm ci
 
 # Install your app's Python requirements.
-COPY requirements.txt /
-RUN pip install -r /requirements.txt
+COPY requirements/production.txt /
+RUN pip install -r /production.txt
 
 # Compile static files
 # COPY ./esite/static_src/ ./
