@@ -16,7 +16,6 @@ from esite.bifrost.models import (
     GraphQLPage,
 )
 
-
 class LinkFields(models.Model):
     """
     Adds fields for internal and external links with some methods to simplify the rendering:
@@ -226,6 +225,40 @@ class BasePage(SocialFields, ListingFields, Page):
     promote_panels = (
         Page.promote_panels + SocialFields.promote_panels + ListingFields.promote_panels
     )
+
+
+# Apply default cache headers on this page model's serve method.
+# @method_decorator(get_default_cache_control_decorator(), name="serve")
+# class BaseFormPage(SocialFields, ListingFields, AbstractForm):
+#     show_in_menus_default = True
+
+#     class Meta:
+#         abstract = True
+
+#     # This is used by the feed generator (RSS)
+#     def get_absolute_url(self):
+#         return self.full_url
+
+#     promote_panels = (
+#         Page.promote_panels + SocialFields.promote_panels + ListingFields.promote_panels
+#     )
+
+
+# # Apply default cache headers on this page model's serve method.
+# @method_decorator(get_default_cache_control_decorator(), name="serve")
+# class BaseEmailFormPage(SocialFields, ListingFields, AbstractEmailForm):
+#     show_in_menus_default = True
+
+#     class Meta:
+#         abstract = True
+
+#     # This is used by the feed generator (RSS)
+#     def get_absolute_url(self):
+#         return self.full_url
+
+#     promote_panels = (
+#         Page.promote_panels + SocialFields.promote_panels + ListingFields.promote_panels
+#     )
 
 
 # > Snippets

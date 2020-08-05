@@ -30,10 +30,12 @@ from esite.bifrost.models import (
     GraphQLStreamfield,
 )
 
+from esite.utils.models import BasePage
+
 # Create your homepage related models here.
 
 # > Homepage
-class HomePage(Page):
+class HomePage(BasePage):
     city = models.CharField(null=True, blank=False, max_length=255)
     zip_code = models.CharField(null=True, blank=False, max_length=255)
     address = models.CharField(null=True, blank=False, max_length=255)
@@ -145,10 +147,10 @@ class HomePage(Page):
 
     edit_handler = TabbedInterface(
         [
-            ObjectList(Page.content_panels + main_content_panels, heading="Main"),
+            ObjectList(Page.content_panels + main_content_panels, heading="Content"),
             ObjectList(imprint_panels, heading="Imprint"),
             ObjectList(
-                Page.promote_panels + token_panel + Page.settings_panels,
+                BasePage.promote_panels + token_panel + Page.settings_panels,
                 heading="Settings",
                 classname="settings",
             ),

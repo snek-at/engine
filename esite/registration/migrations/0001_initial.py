@@ -14,7 +14,7 @@ class Migration(migrations.Migration):
 
     dependencies = [
         migrations.swappable_dependency(settings.AUTH_USER_MODEL),
-        ("home", "0001_initial"),
+        ("utils", "0001_initial"),
         ("wagtailcore", "0045_assign_unlock_grouppagepermission"),
         ("user", "0001_initial"),
     ]

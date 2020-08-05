@@ -43,11 +43,13 @@ from esite.bifrost.models import (
     GraphQLSnippet,
 )
 
-# from grapple.models import (
-#    GraphQLField,
-#    GraphQLString,
-#    GraphQLStreamfield,
-# )
+from esite.bifrost.models import (
+    GraphQLField,
+    GraphQLString,
+    GraphQLStreamfield,
+)
+
+from esite.utils.models import BasePage
 
 # Create your homepage related models here.
 
@@ -129,7 +131,9 @@ class Platform(blocks.StructBlock):
 
 
 # > Profilepage
-class ProfilePage(Page):
+class ProfilePage(BasePage):
+    subpage_types = ["registration.RegistrationFormPage"]
+
     sources = models.TextField(null=True, blank=False)
     platform_data = models.TextField(null=True, blank=True)
     verified = models.BooleanField(blank=True, default=False)
@@ -223,9 +227,9 @@ class ProfilePage(Page):
 
     edit_handler = TabbedInterface(
         [
-            ObjectList(Page.content_panels + main_content_panels, heading="Overview"),
+            ObjectList(BasePage.content_panels + main_content_panels, heading="Content"),
             ObjectList(
-                data_panels + Page.promote_panels + Page.settings_panels,
+                data_panels + BasePage.promote_panels + BasePage.settings_panels,
                 heading="Settings",
                 classname="settings",
             ),

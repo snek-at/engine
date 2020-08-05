@@ -23,6 +23,8 @@ from wagtail.admin.edit_handlers import (
     FieldPanel,
 )
 
+from esite.utils.models import BasePage
+
 # Extend AbstractUser Model from django.contrib.auth.models
 class User(AbstractUser):
     username = models.CharField(
@@ -69,6 +71,26 @@ class User(AbstractUser):
     def __str__(self):
         return self.username
 
+
+# Extend AbstractUser Model from django.contrib.auth.models
+class UserPage(BasePage):
+    # Only allow creating HomePages at the root level
+    parent_page_types = ["wagtailcore.Page"]
+    # subpage_types = ['news.NewsIndex', 'standardpages.StandardPage', 'articles.ArticleIndex',
+    #                 'people.PersonIndex', 'events.EventIndex']
+
+    main_content_panels = []
+
+    edit_handler = TabbedInterface(
+        [
+            ObjectList(BasePage.content_panels + main_content_panels, heading="Content"),
+            ObjectList(
+                BasePage.promote_panels + BasePage.settings_panels,
+                heading="Settings",
+                classname="settings",
+            ),
+        ]
+    )
 
 # SPDX-License-Identifier: (EUPL-1.2)
 # Copyright © 2019-2020 Simon Prast

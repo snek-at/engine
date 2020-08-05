@@ -24,11 +24,6 @@ from wagtail.admin.edit_handlers import (
     FieldPanel,
 )
 from wagtail.contrib.forms.models import (
-    AbstractEmailForm,
-    AbstractFormField,
-    AbstractFormSubmission,
-)
-from wagtail.contrib.forms.models import (
     AbstractForm,
     AbstractFormField,
     AbstractEmailForm,
@@ -52,6 +47,8 @@ from esite.bifrost.models import (
     GraphQLForeignKey,
 )
 from esite.bifrost.helpers import register_streamfield_block
+
+from esite.utils.models import BasePage
 
 # Create your registration related models here.
 
@@ -255,7 +252,7 @@ class RegistrationFormPage(AbstractEmailForm):
         GraphQLStreamfield("supported_gitlabs"),
     ]
 
-    content_panels = AbstractEmailForm.content_panels + [
+    main_content_panels = AbstractEmailForm.content_panels + [
         MultiFieldPanel(
             [
                 FieldPanel("registration_head", classname="full title"),
@@ -285,6 +282,17 @@ class RegistrationFormPage(AbstractEmailForm):
             [InlinePanel("form_fields", label="Form fields")], heading="data",
         ),
     ]
+
+    edit_handler = TabbedInterface(
+        [
+            ObjectList(AbstractEmailForm.content_panels + main_content_panels, heading="Content"),
+            ObjectList(
+                AbstractEmailForm.promote_panels + AbstractEmailForm.settings_panels,
+                heading="Settings",
+                classname="settings",
+            ),
+        ]
+    )
 
     def get_submission_class(self):
         return RegistrationFormSubmission
