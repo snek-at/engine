@@ -48,6 +48,19 @@ from esite.bifrost.models import (
 )
 from esite.bifrost.helpers import register_streamfield_block
 
+from esite.bifrost.models import (
+    GraphQLForeignKey,
+    GraphQLField,
+    GraphQLStreamfield,
+    GraphQLImage,
+    GraphQLString,
+    GraphQLCollection,
+    GraphQLEmbed,
+    GraphQLSnippet,
+    GraphQLBoolean,
+    GraphQLSnippet,
+)
+
 from esite.utils.models import BasePage
 
 # Create your registration related models here.
@@ -91,6 +104,7 @@ class Registration(User):
         ordering = ("date_joined",)
 
 
+@register_streamfield_block
 class Gitlab_Server(blocks.StructBlock):
     organisation = blocks.CharBlock(
         null=True,
@@ -105,6 +119,10 @@ class Gitlab_Server(blocks.StructBlock):
         help_text="The domain of supported gitlab server.",
     )
 
+    graphql_fields = [
+        GraphQLString("organisation"),
+        GraphQLString("domain"),
+    ]
 
 class FormField(AbstractFormField):
     page = ParentalKey(
