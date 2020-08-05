@@ -1,215 +1,156 @@
+from django.http import HttpResponse
 from django.db import models
-from django.conf import settings
+from wagtail.core.fields import RichTextField, StreamField
 from wagtail.core.models import Page
-from wagtail.core import fields
 from wagtail.core import blocks
-from wagtail.documents import blocks as docblocks
-from wagtail.images.blocks import ImageChooserBlock
-from wagtail.snippets.blocks import SnippetChooserBlock
-from wagtail.embeds.blocks import EmbedBlock
 from wagtail.admin.edit_handlers import (
-    StreamFieldPanel,
-    FieldPanel,
     PageChooserPanel,
     TabbedInterface,
     ObjectList,
     InlinePanel,
+    StreamFieldPanel,
     MultiFieldPanel,
+    FieldPanel,
 )
-from wagtail.images.edit_handlers import ImageChooserPanel
+from wagtail.images.blocks import ImageChooserBlock
 from wagtail.snippets.models import register_snippet
+from wagtail.snippets.edit_handlers import SnippetChooserPanel
+from wagtail.snippets.blocks import SnippetChooserBlock
+from wagtail.contrib.settings.models import BaseSetting, register_setting
+from wagtail.images.edit_handlers import ImageChooserPanel
+from wagtail.contrib.forms.models import AbstractForm, AbstractFormField
+from modelcluster.fields import ParentalKey
 
-import uuid
+from esite.colorfield.fields import ColorField, ColorAlphaField
+from esite.colorfield.blocks import ColorBlock, ColorAlphaBlock, GradientColorBlock
 
 from esite.bifrost.models import (
-    GraphQLInt,
-    GraphQLBoolean,
+    GraphQLField,
     GraphQLString,
-    GraphQLFloat,
-    GraphQLImage,
-    GraphQLDocument,
-    GraphQLSnippet,
-    GraphQLEmbed,
     GraphQLStreamfield,
 )
-from esite.bifrost.helpers import register_streamfield_block
 
-# > Sections
-@register_streamfield_block
-class _S_SmallBlock(blocks.StructBlock):
-    charblock = blocks.CharBlock()
-    textblock = blocks.TextBlock()
-    emailblock = blocks.EmailBlock()
+# Create your homepage related models here.
 
-    graphql_fields = [
-        GraphQLString("charblock"),
-        GraphQLString("textblock"),
-        GraphQLString("emailblock"),
-    ]
-
-
-@register_streamfield_block
-class _S_BigBlock(blocks.StructBlock):
-    integerblock = blocks.IntegerBlock()
-    floatblock = blocks.FloatBlock()
-    decimalblock = blocks.DecimalBlock()
-    regexblock = blocks.RegexBlock(regex="")
-    urlblock = blocks.URLBlock()
-    booleanblock = blocks.BooleanBlock()
-    dateblock = blocks.DateBlock()
-
-    graphql_fields = [
-        GraphQLInt("integerblock"),
-        GraphQLFloat("floatblock"),
-        GraphQLFloat("decimalblock"),
-        GraphQLString("regexblock"),
-        GraphQLString("urlblock"),
-        GraphQLBoolean("booleanblock"),
-        GraphQLString("dateblock"),
-    ]
-
-
-@register_streamfield_block
-class _S_TallBlock(blocks.StructBlock):
-    timeblock = blocks.TimeBlock()
-    datetimeblock = blocks.DateTimeBlock()
-    richtextblock = blocks.RichTextBlock()
-    rawhtmlblock = blocks.RawHTMLBlock()
-    blockquoteblock = blocks.BlockQuoteBlock()
-    choiceblock = blocks.ChoiceBlock(
-        choices=[("apples", "Apple"), ("bananas", "Bananas"),]
-    )
-
-    graphql_fields = [
-        GraphQLString("timeblock"),
-        GraphQLString("datetimeblock"),
-        GraphQLString("richtextblock"),
-        GraphQLString("rawhtmlblock"),
-        GraphQLString("blockquoteblock"),
-        GraphQLString("choiceblock"),
-    ]
-
-
-@register_streamfield_block
-class _S_LightBlock(blocks.StructBlock):
-    documentchooserblock = docblocks.DocumentChooserBlock()
-    imagechooserblock = ImageChooserBlock()
-    snippetchooserblock = SnippetChooserBlock(target_model="utils.Button")
-    embedblock = EmbedBlock()
-    staticblock = blocks.StaticBlock()
-
-    graphql_fields = [
-        GraphQLDocument("documentchooserblock"),
-        GraphQLImage("imagechooserblock"),
-        GraphQLSnippet("snippetchooserblock", snippet_model="utils.Button"),
-        GraphQLEmbed("embedblock"),
-        GraphQLString("staticblock"),
-    ]
-
-
-# > Pages
+# > Homepage
 class HomePage(Page):
-    # Only allow creating HomePages at the root level
-    parent_page_types = ["wagtailcore.Page"]
+    city = models.CharField(null=True, blank=False, max_length=255)
+    zip_code = models.CharField(null=True, blank=False, max_length=255)
+    address = models.CharField(null=True, blank=False, max_length=255)
+    telephone = models.CharField(null=True, blank=False, max_length=255)
+    telefax = models.CharField(null=True, blank=False, max_length=255)
+    vat_number = models.CharField(null=True, blank=False, max_length=255)
+    whatsapp_telephone = models.CharField(null=True, blank=True, max_length=255)
+    whatsapp_contactline = models.CharField(null=True, blank=True, max_length=255)
+    tax_id = models.CharField(null=True, blank=False, max_length=255)
+    trade_register_number = models.CharField(null=True, blank=False, max_length=255)
+    court_of_registry = models.CharField(null=True, blank=False, max_length=255)
+    place_of_registry = models.CharField(null=True, blank=False, max_length=255)
+    trade_register_number = models.CharField(null=True, blank=False, max_length=255)
+    ownership = models.CharField(null=True, blank=False, max_length=255)
+    email = models.CharField(null=True, blank=False, max_length=255)
 
-    bigintegerfield = models.BigIntegerField(blank=False, null=True)
-    booleanfield = models.BooleanField(blank=False, null=True)
-    charfield = models.CharField(max_length=22, blank=False, null=True)
-    datefield = models.DateField(blank=False, null=True)
-    datetimefield = models.DateTimeField(blank=False, null=True)
-    decimalfield = models.DecimalField(
-        decimal_places=5, max_digits=22, blank=False, null=True
-    )
-    durationfield = models.DurationField(blank=False, null=True)
-    emailfield = models.EmailField(blank=False, null=True)
-    floatfield = models.FloatField(blank=False, null=True)
-    imagefield = models.ForeignKey(
-        settings.WAGTAILIMAGES_IMAGE_MODEL,
-        null=True,
-        blank=True,
-        on_delete=models.SET_NULL,
-        related_name="+",
-    )
-    integerfield = models.IntegerField(blank=False, null=True)
-    genericipaddressfield = models.GenericIPAddressField(blank=False, null=True)
-    nullbooleanfield = models.NullBooleanField(blank=False, null=True)
-    positiveintegerfield = models.PositiveIntegerField(blank=False, null=True)
-    positivesmallintegerfield = models.SmallIntegerField(blank=False, null=True)
-    slugfield = models.SlugField(blank=False, null=True)
-    smallintegerfield = models.SmallIntegerField(blank=False, null=True)
-    textfield = models.TextField(blank=False, null=True)
-    timefield = models.TimeField(blank=False, null=True)
-    urlfield = models.URLField(blank=False, null=True)
-    uuidfield = models.UUIDField(blank=False, null=True, default=uuid.uuid4)
+    copyrightholder = models.CharField(null=True, blank=False, max_length=255)
 
-    sections = fields.StreamField(
+    about = RichTextField(null=True, blank=False)
+    privacy = RichTextField(null=True, blank=False)
+
+    sociallinks = StreamField(
         [
-            ("s_smallblock", _S_SmallBlock()),
-            ("s_bigblock", _S_BigBlock()),
-            ("s_tallblock", _S_TallBlock()),
-            ("s_lightblock", _S_LightBlock()),
+            (
+                "link",
+                blocks.URLBlock(
+                    help_text="Important! Format https://www.domain.tld/xyz"
+                ),
+            )
+        ]
+    )
+
+    array = []
+
+    def sociallink_company(self):
+        for link in self.sociallinks:
+            self.array.append(str(link).split(".")[1])
+        return self.array
+
+    headers = StreamField(
+        [
+            (
+                "code",
+                blocks.RawHTMLBlock(
+                    null=True, blank=True, classname="full", icon="code"
+                ),
+            )
         ],
         null=True,
         blank=False,
     )
 
+    sections = StreamField(
+        [
+            (
+                "code",
+                blocks.RawHTMLBlock(
+                    null=True, blank=True, classname="full", icon="code"
+                ),
+            )
+        ],
+        null=True,
+        blank=False,
+    )
+
+    token = models.CharField(null=True, blank=True, max_length=255)
+
     graphql_fields = [
-        # GraphQLInt("autofield"),
-        # GraphQLInt("bigautofield"),
-        GraphQLInt("bigintegerfield"),
-        GraphQLInt("binaryfield"),
-        GraphQLBoolean("booleanfield"),
-        GraphQLString("charfield"),
-        GraphQLString("datefield"),
-        GraphQLString("datetimefield"),
-        GraphQLFloat("decimalfield"),
-        GraphQLString("durationfield"),
-        GraphQLString("emailfield"),
-        # GraphQLGenericScala("filefield"),
-        GraphQLString("filepathfield"),
-        GraphQLFloat("floatfield"),
-        # GraphQLGenericScala("imagefield"),
-        GraphQLInt("integerfield"),
-        GraphQLString("genericipaddressfield"),
-        GraphQLBoolean("nullbooleanfield"),
-        GraphQLInt("positiveintegerfield"),
-        GraphQLString("slugfield"),
-        GraphQLInt("smallintegerfield"),
-        GraphQLString("textfield"),
-        GraphQLString("timefield"),
-        GraphQLString("urlfield"),
-        GraphQLString("uuidfield"),
+        GraphQLStreamfield("headers"),
         GraphQLStreamfield("sections"),
-        GraphQLInt("positivesmallintegerfield"),
     ]
 
-    main_content_panels = [
-        FieldPanel("bigintegerfield"),
-        FieldPanel("booleanfield"),
-        FieldPanel("charfield"),
-        FieldPanel("datefield"),
-        FieldPanel("datetimefield"),
-        FieldPanel("decimalfield"),
-        FieldPanel("durationfield"),
-        FieldPanel("emailfield"),
-        FieldPanel("floatfield"),
-        ImageChooserPanel("imagefield"),
-        FieldPanel("integerfield"),
-        FieldPanel("genericipaddressfield"),
-        FieldPanel("nullbooleanfield"),
-        FieldPanel("positiveintegerfield"),
-        FieldPanel("positivesmallintegerfield"),
-        FieldPanel("slugfield"),
-        FieldPanel("smallintegerfield"),
-        FieldPanel("textfield"),
-        FieldPanel("timefield"),
-        FieldPanel("urlfield"),
-        FieldPanel("uuidfield"),
-        StreamFieldPanel("sections"),
+    main_content_panels = [StreamFieldPanel("headers"), StreamFieldPanel("sections")]
+
+    imprint_panels = [
+        MultiFieldPanel(
+            [
+                FieldPanel("city"),
+                FieldPanel("zip_code"),
+                FieldPanel("address"),
+                FieldPanel("telephone"),
+                FieldPanel("telefax"),
+                FieldPanel("whatsapp_telephone"),
+                FieldPanel("whatsapp_contactline"),
+                FieldPanel("email"),
+                FieldPanel("copyrightholder"),
+            ],
+            heading="contact",
+        ),
+        MultiFieldPanel(
+            [
+                FieldPanel("vat_number"),
+                FieldPanel("tax_id"),
+                FieldPanel("trade_register_number"),
+                FieldPanel("court_of_registry"),
+                FieldPanel("place_of_registry"),
+                FieldPanel("trade_register_number"),
+                FieldPanel("ownership"),
+            ],
+            heading="legal",
+        ),
+        StreamFieldPanel("sociallinks"),
+        MultiFieldPanel(
+            [FieldPanel("about"), FieldPanel("privacy")], heading="privacy",
+        ),
     ]
 
-    content_panels = Page.content_panels + main_content_panels
+    token_panel = [FieldPanel("token")]
 
-
-# SPDX-License-Identifier: (EUPL-1.2)
-# Copyright © 2019-2020 Simon Prast
+    edit_handler = TabbedInterface(
+        [
+            ObjectList(Page.content_panels + main_content_panels, heading="Main"),
+            ObjectList(imprint_panels, heading="Imprint"),
+            ObjectList(
+                Page.promote_panels + token_panel + Page.settings_panels,
+                heading="Settings",
+                classname="settings",
+            ),
+        ]
+    )
