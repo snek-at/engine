@@ -39,7 +39,7 @@ class CacheUser(graphene.Mutation):
         # user.platform_data = platform_data
         # user.save()
 
-        profile_page = Page.objects.get(slug=f"{user.username}").specific
+        profile_page = Page.objects.get(slug=f"user_{user.username}").specific
 
         profile_page.platform_data = platform_data
 
