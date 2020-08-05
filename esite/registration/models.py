@@ -124,6 +124,7 @@ class Gitlab_Server(blocks.StructBlock):
         GraphQLString("domain"),
     ]
 
+
 class FormField(AbstractFormField):
     page = ParentalKey(
         "RegistrationFormPage", on_delete=models.CASCADE, related_name="form_fields"

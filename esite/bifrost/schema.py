@@ -33,12 +33,12 @@ def create_schema():
     from .types.snippets import SnippetsQuery
     from .types.redirects import RedirectsQuery
 
-    #import esite.user.schema
+    import esite.user.schema
     from .jwtauth.schema import ObtainJSONWebToken
     from esite.caching.schema import CacheUser, CacheUserByName
 
     class Query(
-        #esite.user.schema.Query,
+        esite.user.schema.Query,
         graphene.ObjectType,
         PagesQuery(),
         ImagesQuery(),

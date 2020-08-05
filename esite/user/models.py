@@ -22,6 +22,20 @@ from wagtail.admin.edit_handlers import (
     MultiFieldPanel,
     FieldPanel,
 )
+from esite.bifrost.helpers import register_streamfield_block
+
+from esite.bifrost.models import (
+    GraphQLForeignKey,
+    GraphQLField,
+    GraphQLStreamfield,
+    GraphQLImage,
+    GraphQLString,
+    GraphQLCollection,
+    GraphQLEmbed,
+    GraphQLSnippet,
+    GraphQLBoolean,
+    GraphQLSnippet,
+)
 
 from esite.utils.models import BasePage
 
@@ -66,6 +80,10 @@ class User(AbstractUser):
         FieldPanel("username"),
         FieldPanel("is_customer"),
         FieldPanel("registration_data"),
+    ]
+
+    graphql_fields = [
+        GraphQLString("username"),
     ]
 
     def __str__(self):

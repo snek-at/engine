@@ -10,19 +10,13 @@ from graphql_jwt.decorators import (
     superuser_required,
 )
 
-from esite.user.models import User
+from esite.bifrost.registry import registry
 
 # Create your registration related graphql schemes here.
 
 
-class UserType(DjangoObjectType):
-    class Meta:
-        model = User
-        exclude_fields = ["password"]
-
-
 class CreateUser(graphene.Mutation):
-    user = graphene.Field(UserType)
+    user = graphene.Field(registry.models[get_user_model()])
 
     class Arguments:
         username = graphene.String(required=True)
@@ -44,13 +38,17 @@ class Mutation(graphene.ObjectType):
 
 
 class Query(graphene.ObjectType):
-    me = graphene.Field(UserType, token=graphene.String(required=False))
-    users = graphene.List(UserType, token=graphene.String(required=False))
+    me = graphene.Field(
+        registry.models[get_user_model()], token=graphene.String(required=False)
+    )
+    users = graphene.List(
+        registry.models[get_user_model()], token=graphene.String(required=False)
+    )
 
     @superuser_required
     def resolve_users(self, info, **_kwargs):
 
-        return User.objects.all()
+        return get_user_model().objects.all()
 
     @login_required
     def resolve_me(self, info, **_kwargs):
