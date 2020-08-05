@@ -11,45 +11,130 @@ class Migration(migrations.Migration):
     initial = True
 
     dependencies = [
-        ('images', '0002_auto_20200729_2232'),
-        ('wagtailcore', '0045_assign_unlock_grouppagepermission'),
+        ("images", "0002_auto_20200729_2232"),
+        ("wagtailcore", "0045_assign_unlock_grouppagepermission"),
     ]
 
     operations = [
         migrations.CreateModel(
-            name='HomePage',
+            name="HomePage",
             fields=[
-                ('page_ptr', models.OneToOneField(auto_created=True, on_delete=django.db.models.deletion.CASCADE, parent_link=True, primary_key=True, serialize=False, to='wagtailcore.Page')),
-                ('social_text', models.CharField(blank=True, max_length=255)),
-                ('listing_title', models.CharField(blank=True, help_text='Override the page title used when this page appears in listings', max_length=255)),
-                ('listing_summary', models.CharField(blank=True, help_text="The text summary used when this page appears in listings. It's also used as the description for search engines if the 'Search description' field above is not defined.", max_length=255)),
-                ('city', models.CharField(max_length=255, null=True)),
-                ('zip_code', models.CharField(max_length=255, null=True)),
-                ('address', models.CharField(max_length=255, null=True)),
-                ('telephone', models.CharField(max_length=255, null=True)),
-                ('telefax', models.CharField(max_length=255, null=True)),
-                ('vat_number', models.CharField(max_length=255, null=True)),
-                ('whatsapp_telephone', models.CharField(blank=True, max_length=255, null=True)),
-                ('whatsapp_contactline', models.CharField(blank=True, max_length=255, null=True)),
-                ('tax_id', models.CharField(max_length=255, null=True)),
-                ('court_of_registry', models.CharField(max_length=255, null=True)),
-                ('place_of_registry', models.CharField(max_length=255, null=True)),
-                ('trade_register_number', models.CharField(max_length=255, null=True)),
-                ('ownership', models.CharField(max_length=255, null=True)),
-                ('email', models.CharField(max_length=255, null=True)),
-                ('copyrightholder', models.CharField(max_length=255, null=True)),
-                ('about', wagtail.core.fields.RichTextField(null=True)),
-                ('privacy', wagtail.core.fields.RichTextField(null=True)),
-                ('sociallinks', wagtail.core.fields.StreamField([('link', wagtail.core.blocks.URLBlock(help_text='Important! Format https://www.domain.tld/xyz'))])),
-                ('headers', wagtail.core.fields.StreamField([('code', wagtail.core.blocks.RawHTMLBlock(blank=True, classname='full', icon='code', null=True))], null=True)),
-                ('sections', wagtail.core.fields.StreamField([('code', wagtail.core.blocks.RawHTMLBlock(blank=True, classname='full', icon='code', null=True))], null=True)),
-                ('token', models.CharField(blank=True, max_length=255, null=True)),
-                ('listing_image', models.ForeignKey(blank=True, help_text='Choose the image you wish to be displayed when this page appears in listings', null=True, on_delete=django.db.models.deletion.SET_NULL, related_name='+', to='images.CustomImage')),
-                ('social_image', models.ForeignKey(blank=True, null=True, on_delete=django.db.models.deletion.SET_NULL, related_name='+', to='images.CustomImage')),
+                (
+                    "page_ptr",
+                    models.OneToOneField(
+                        auto_created=True,
+                        on_delete=django.db.models.deletion.CASCADE,
+                        parent_link=True,
+                        primary_key=True,
+                        serialize=False,
+                        to="wagtailcore.Page",
+                    ),
+                ),
+                ("social_text", models.CharField(blank=True, max_length=255)),
+                (
+                    "listing_title",
+                    models.CharField(
+                        blank=True,
+                        help_text="Override the page title used when this page appears in listings",
+                        max_length=255,
+                    ),
+                ),
+                (
+                    "listing_summary",
+                    models.CharField(
+                        blank=True,
+                        help_text="The text summary used when this page appears in listings. It's also used as the description for search engines if the 'Search description' field above is not defined.",
+                        max_length=255,
+                    ),
+                ),
+                ("city", models.CharField(max_length=255, null=True)),
+                ("zip_code", models.CharField(max_length=255, null=True)),
+                ("address", models.CharField(max_length=255, null=True)),
+                ("telephone", models.CharField(max_length=255, null=True)),
+                ("telefax", models.CharField(max_length=255, null=True)),
+                ("vat_number", models.CharField(max_length=255, null=True)),
+                (
+                    "whatsapp_telephone",
+                    models.CharField(blank=True, max_length=255, null=True),
+                ),
+                (
+                    "whatsapp_contactline",
+                    models.CharField(blank=True, max_length=255, null=True),
+                ),
+                ("tax_id", models.CharField(max_length=255, null=True)),
+                ("court_of_registry", models.CharField(max_length=255, null=True)),
+                ("place_of_registry", models.CharField(max_length=255, null=True)),
+                ("trade_register_number", models.CharField(max_length=255, null=True)),
+                ("ownership", models.CharField(max_length=255, null=True)),
+                ("email", models.CharField(max_length=255, null=True)),
+                ("copyrightholder", models.CharField(max_length=255, null=True)),
+                ("about", wagtail.core.fields.RichTextField(null=True)),
+                ("privacy", wagtail.core.fields.RichTextField(null=True)),
+                (
+                    "sociallinks",
+                    wagtail.core.fields.StreamField(
+                        [
+                            (
+                                "link",
+                                wagtail.core.blocks.URLBlock(
+                                    help_text="Important! Format https://www.domain.tld/xyz"
+                                ),
+                            )
+                        ]
+                    ),
+                ),
+                (
+                    "headers",
+                    wagtail.core.fields.StreamField(
+                        [
+                            (
+                                "code",
+                                wagtail.core.blocks.RawHTMLBlock(
+                                    blank=True, classname="full", icon="code", null=True
+                                ),
+                            )
+                        ],
+                        null=True,
+                    ),
+                ),
+                (
+                    "sections",
+                    wagtail.core.fields.StreamField(
+                        [
+                            (
+                                "code",
+                                wagtail.core.blocks.RawHTMLBlock(
+                                    blank=True, classname="full", icon="code", null=True
+                                ),
+                            )
+                        ],
+                        null=True,
+                    ),
+                ),
+                ("token", models.CharField(blank=True, max_length=255, null=True)),
+                (
+                    "listing_image",
+                    models.ForeignKey(
+                        blank=True,
+                        help_text="Choose the image you wish to be displayed when this page appears in listings",
+                        null=True,
+                        on_delete=django.db.models.deletion.SET_NULL,
+                        related_name="+",
+                        to="images.CustomImage",
+                    ),
+                ),
+                (
+                    "social_image",
+                    models.ForeignKey(
+                        blank=True,
+                        null=True,
+                        on_delete=django.db.models.deletion.SET_NULL,
+                        related_name="+",
+                        to="images.CustomImage",
+                    ),
+                ),
             ],
-            options={
-                'abstract': False,
-            },
-            bases=('wagtailcore.page', models.Model),
+            options={"abstract": False,},
+            bases=("wagtailcore.page", models.Model),
         ),
     ]

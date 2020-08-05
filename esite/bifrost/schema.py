@@ -33,9 +33,12 @@ def create_schema():
     from .types.snippets import SnippetsQuery
     from .types.redirects import RedirectsQuery
 
+    #import esite.user.schema
     from .jwtauth.schema import ObtainJSONWebToken
+    from esite.caching.schema import CacheUser, CacheUserByName
 
     class Query(
+        #esite.user.schema.Query,
         graphene.ObjectType,
         PagesQuery(),
         ImagesQuery(),
@@ -57,6 +60,8 @@ def create_schema():
             "verify_token": graphql_jwt.Verify.Field(),
             "refresh_token": graphql_jwt.Refresh.Field(),
             "revoke_token": graphql_jwt.Revoke.Field(),
+            "cache_user": CacheUser.Field(),
+            "cache_user_by_name": CacheUserByName.Field(),
         }
         dict_params.update(
             (camel_case_to_spaces(n).replace(" ", "_"), mut.Field())

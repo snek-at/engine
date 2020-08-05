@@ -83,7 +83,9 @@ class UserPage(BasePage):
 
     edit_handler = TabbedInterface(
         [
-            ObjectList(BasePage.content_panels + main_content_panels, heading="Content"),
+            ObjectList(
+                BasePage.content_panels + main_content_panels, heading="Content"
+            ),
             ObjectList(
                 BasePage.promote_panels + BasePage.settings_panels,
                 heading="Settings",
@@ -91,6 +93,7 @@ class UserPage(BasePage):
             ),
         ]
     )
+
 
 # SPDX-License-Identifier: (EUPL-1.2)
 # Copyright © 2019-2020 Simon Prast

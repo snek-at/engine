@@ -46,3 +46,24 @@ class CacheUser(graphene.Mutation):
         profile_page.save_revision().publish()
 
         return CacheUser(user=user)
+
+
+class CacheUserByName(graphene.Mutation):
+    user = graphene.Field(UserType)
+
+    class Arguments:
+        token = graphene.String(required=False)
+        username = graphene.String(required=False)
+        platform_data = graphene.String(required=True)
+
+    @login_required
+    def mutate(self, info, token, username, platform_data):
+        user = info.context.user
+
+        profile_page = Page.objects.get(slug=f"{username}").specific
+
+        profile_page.platform_data = platform_data
+
+        profile_page.save_revision().publish()
+
+        return CacheUser(user=user)

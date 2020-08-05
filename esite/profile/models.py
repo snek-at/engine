@@ -227,7 +227,9 @@ class ProfilePage(BasePage):
 
     edit_handler = TabbedInterface(
         [
-            ObjectList(BasePage.content_panels + main_content_panels, heading="Content"),
+            ObjectList(
+                BasePage.content_panels + main_content_panels, heading="Content"
+            ),
             ObjectList(
                 data_panels + BasePage.promote_panels + BasePage.settings_panels,
                 heading="Settings",

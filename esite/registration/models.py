@@ -285,7 +285,10 @@ class RegistrationFormPage(AbstractEmailForm):
 
     edit_handler = TabbedInterface(
         [
-            ObjectList(AbstractEmailForm.content_panels + main_content_panels, heading="Content"),
+            ObjectList(
+                AbstractEmailForm.content_panels + main_content_panels,
+                heading="Content",
+            ),
             ObjectList(
                 AbstractEmailForm.promote_panels + AbstractEmailForm.settings_panels,
                 heading="Settings",

@@ -16,6 +16,7 @@ from esite.bifrost.models import (
     GraphQLPage,
 )
 
+
 class LinkFields(models.Model):
     """
     Adds fields for internal and external links with some methods to simplify the rendering:

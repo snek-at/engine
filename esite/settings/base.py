@@ -172,6 +172,11 @@ BIFROST_APPS = {
     "utils": "",
     "documents": "",
     "images": "",
+    "user": "",
+    "navigation": "",
+    "utils": "",
+    "registration": "",
+    "profile": "",
 }
 
 # > Password Validation
