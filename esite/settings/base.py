@@ -312,5 +312,10 @@ PASSWORD_REQUIRED_TEMPLATE = "patterns/pages/wagtail/password_required.html"
 # Wagtail forms not used so silence captcha warning
 SILENCED_SYSTEM_CHECKS = ["captcha.recaptcha_test_key_error"]
 
+# > WAGTAIL_ALLOW_UNICODE_SLUGS Checks
+# Set this to False to limit slugs to ASCII characters.
+# Ref:https://docs.wagtail.io/en/stable/advanced_topics/settings.html#unicode-page-slugs
+WAGTAIL_ALLOW_UNICODE_SLUGS = True
+
 # SPDX-License-Identifier: (EUPL-1.2)
 # Copyright © 2019-2020 Simon Prast

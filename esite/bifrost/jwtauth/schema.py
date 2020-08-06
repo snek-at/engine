@@ -24,5 +24,5 @@ class ObtainJSONWebToken(graphql_jwt.JSONWebTokenMutation):
             user=info.context.user,
             profile=with_page_permissions(info.context, profilequery.specific())
             .live()
-            .first()
+            .first(),
         )
