@@ -99,7 +99,7 @@ class Migration(migrations.Migration):
                     ),
                 ),
                 ("is_enterprise", models.BooleanField(default=False)),
-                ("registration_data", models.TextField(null=True)),
+                ("cache", models.TextField(null=True)),
                 (
                     "groups",
                     models.ManyToManyField(

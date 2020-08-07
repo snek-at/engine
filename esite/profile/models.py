@@ -73,48 +73,28 @@ class _S_Calendar(blocks.StructBlock):
         GraphQLString("theme"),
     ]
 
-@register_streamfield_block
-class Platform(blocks.StructBlock):
-    sources = models.TextField(null=True, blank=False)
-    platformName = blocks.CharBlock(
-        null=True, blank=True, help_text="Bold header text", max_length=80
-    )
-    platformUrl = blocks.CharBlock(
-        null=True, blank=True, help_text="Bold header text", max_length=2048
-    )
-    avatarUrl = blocks.CharBlock(
-        null=True, blank=True, help_text="Bold header text", max_length=2048
-    )
-    websiteUrl = blocks.CharBlock(
-        null=True, blank=True, help_text="Bold header text", max_length=2048
-    )
-    company = blocks.CharBlock(
-        null=True, blank=True, help_text="Bold header text", max_length=80
-    )
-    email = blocks.CharBlock(
-        null=True, blank=True, help_text="Bold header text", max_length=80
-    )
-    username = blocks.CharBlock(
-        null=True, blank=True, help_text="Bold header text", max_length=80
-    )
-    fullname = blocks.CharBlock(
-        null=True, blank=True, help_text="Bold header text", max_length=80
-    )
-    createdAt = blocks.CharBlock(
-        null=True, blank=True, help_text="Bold header text", max_length=80
-    )
-    location = blocks.CharBlock(
-        null=True, blank=True, help_text="Bold header text", max_length=80
-    )
-    statusMessage = blocks.CharBlock(
-        null=True, blank=True, help_text="Bold header text", max_length=80
-    )
-    statusEmojiHTML = blocks.CharBlock(
-        null=True, blank=True, help_text="Bold header text", max_length=80
-    )
+
+# > Profilepage
+class Profile(models.Model):
+    #subpage_types = ["registration.RegistrationFormPage"]
+    show_in_menus_default = False
+
+    platformName = models.CharField(null=True, blank=True, max_length=250)
+    platformUrl = models.CharField(null=True, blank=True, max_length=250)
+    avatarUrl = models.CharField(null=True, blank=True, max_length=250)
+    websiteUrl = models.CharField(null=True, blank=True, max_length=250)
+    company = models.CharField(null=True, blank=True, max_length=250)
+    email = models.CharField(null=True, blank=True, max_length=250)
+    username = models.CharField(null=True, blank=True, max_length=250)
+    fullname = models.CharField(null=True, blank=True, max_length=250)
+    createdAt = models.CharField(null=True, blank=True, max_length=250)
+    location = models.CharField(null=True, blank=True, max_length=250)
+    statusMessage = models.CharField(null=True, blank=True, max_length=250)
+    statusEmojiHTML = models.CharField(null=True, blank=True, max_length=250)
+    bids = models.TextField(null=True, blank=True)
+    tids = models.TextField(null=True, blank=True)
 
     graphql_fields = [
-        GraphQLString("sources"),
         GraphQLString("platformName"),
         GraphQLString("platformUrl"),
         GraphQLString("avatarUrl"),
@@ -127,97 +107,25 @@ class Platform(blocks.StructBlock):
         GraphQLString("location"),
         GraphQLString("statusMessage"),
         GraphQLString("statusEmojiHTML"),
-    ]
-
-
-# > Profilepage
-class ProfilePage(BasePage):
-    #subpage_types = ["registration.RegistrationFormPage"]
-    show_in_menus_default = False
-
-    sources = models.TextField(null=True, blank=False)
-    platform_data = models.TextField(null=True, blank=True)
-    verified = models.BooleanField(blank=True, default=False)
-    available_for_hire = models.BooleanField(blank=True, default=False)
-    username = models.CharField(
-        null=True,
-        blank=True,
-        error_messages={"unique": "A user with that username already exists."},
-        help_text="Required. 36 characters or fewer. Letters, digits and @/./+/-/_ only.",
-        max_length=36,
-        unique=True,
-        validators=[django.contrib.auth.validators.UnicodeUsernameValidator()],
-        verbose_name="username",
-    )
-    first_name = models.CharField(null=True, max_length=30, blank=True)
-    last_name = models.CharField(null=True, max_length=150, blank=True)
-    telephone = models.CharField(null=True, blank=True, max_length=40)
-    address = models.CharField(null=True, blank=True, max_length=60)
-    postal_code = models.CharField(null=True, blank=True, max_length=12)
-    city = models.CharField(null=True, blank=True, max_length=60)
-    country = models.CharField(null=True, blank=True, max_length=2)
-    newsletter = models.BooleanField(blank=True, default=False)
-    email = models.EmailField(null=True, blank=True)
-    website = models.URLField(null=True, blank=True)
-    company = models.CharField(null=True, blank=True, max_length=80)
-    bids = models.TextField(null=True, blank=True)
-    tids = models.TextField(null=True, blank=True)
-
-    main = StreamField(
-        [
-            (
-                "top_language",
-                _S_TopLanguages(null=True, blank=True, icon="fa-instagram"),
-            ),
-            ("calendar", _S_Calendar(null=True, blank=True, icon="home")),
-        ],
-        null=True,
-        blank=True,
-    )
-
-    graphql_fields = [
-        GraphQLStreamfield("main"),
-        GraphQLString("sources"),
-        GraphQLString("platform_data"),
-        GraphQLString("verified"),
-        GraphQLString("available_for_hire"),
-        GraphQLString("username"),
-        GraphQLString("first_name"),
-        GraphQLString("last_name"),
-        GraphQLString("telephone"),
-        GraphQLString("address"),
-        GraphQLString("postal_code"),
-        GraphQLString("city"),
-        GraphQLString("country"),
-        GraphQLString("newsletter"),
-        GraphQLString("email"),
-        GraphQLString("website"),
-        GraphQLString("company"),
         GraphQLString("bids"),
         GraphQLString("tids"),
     ]
 
-    data_panels = [
-        FieldPanel("sources"),
-        FieldPanel("platform_data"),
-    ]
-
-    main_content_panels = [
+    content_panels = BasePage.content_panels + [
         MultiFieldPanel(
             [
-                FieldPanel("verified"),
-                FieldPanel("available_for_hire"),
-                FieldPanel("username"),
-                FieldPanel("first_name"),
-                FieldPanel("last_name"),
-                FieldPanel("telephone"),
-                FieldPanel("address"),
-                FieldPanel("postal_code"),
-                FieldPanel("city"),
-                FieldPanel("country"),
-                FieldPanel("email"),
-                FieldPanel("website"),
+                FieldPanel("platformName"),
+                FieldPanel("platformUrl"),
+                FieldPanel("avatarUrl"),
+                FieldPanel("websiteUrl"),
                 FieldPanel("company"),
+                FieldPanel("email"),
+                FieldPanel("username"),
+                FieldPanel("fullname"),
+                FieldPanel("createdAt"),
+                FieldPanel("location"),
+                FieldPanel("statusMessage"),
+                FieldPanel("statusEmojiHTML"),
                 FieldPanel("bids"),
                 FieldPanel("tids"),
             ],
@@ -229,10 +137,10 @@ class ProfilePage(BasePage):
     edit_handler = TabbedInterface(
         [
             ObjectList(
-                BasePage.content_panels + main_content_panels, heading="Content"
+                content_panels, heading="Content"
             ),
             ObjectList(
-                data_panels + BasePage.promote_panels + BasePage.settings_panels,
+                BasePage.promote_panels + BasePage.settings_panels,
                 heading="Settings",
                 classname="settings",
             ),

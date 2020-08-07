@@ -86,7 +86,7 @@ class Registration(get_user_model()):
         FieldPanel("email"),
         FieldPanel("country"),
         FieldPanel("newsletter"),
-        FieldPanel("registration_data"),
+        FieldPanel("cache"),
         FieldPanel("platform_data"),
         FieldPanel("education_data"),
         FieldPanel("sources"),
@@ -320,7 +320,6 @@ class RegistrationFormPage(BaseEmailFormPage):
     def create_user(
         self,
         username,
-        enterprise_id,
         telephone,
         address,
         city,
@@ -334,16 +333,15 @@ class RegistrationFormPage(BaseEmailFormPage):
         first_name,
         last_name,
         password,
-        registration_data,
+        cache,
         gift_code,
     ):
         # enter the data here
         user = get_user_model()(
             username=username,
-            is_enterprise=True,
+            is_enterprise=False,
             is_active=False,
-            enterprise_id=enterprise_id,
-            registration_data=registration_data,
+            cache=cache,
         )
 
         user.set_password(password)
@@ -380,7 +378,6 @@ class RegistrationFormPage(BaseEmailFormPage):
 
         user = self.create_user(
             username=form.cleaned_data["username"],
-            enterprise_id=form.cleaned_data["enterprise_id"],
             telephone=form.cleaned_data["telephone"],
             address=form.cleaned_data["address"],
             city=form.cleaned_data["city"],
@@ -395,7 +392,7 @@ class RegistrationFormPage(BaseEmailFormPage):
             last_name=form.cleaned_data["last_name"],
             password=form.cleaned_data["password"],
             gift_code=form.cleaned_data["gift_code"],
-            registration_data=json.dumps(form.cleaned_data, cls=DjangoJSONEncoder),
+            cache=json.dumps(form.cleaned_data, cls=DjangoJSONEncoder),
         )
 
         self.get_submission_class().objects.create(

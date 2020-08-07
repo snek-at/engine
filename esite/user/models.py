@@ -52,14 +52,14 @@ class SNEKUser(AbstractUser):
         verbose_name="username",
     )
     is_enterprise = models.BooleanField(blank=False, default=False)
-    registration_data = models.TextField(null=True, blank=False)
+    cache = models.TextField(null=True, blank=False)
 
     # Custom save function
     def save(self, *args, **kwargs):
         if not self.username:
             self.username = str(uuid.uuid4())
 
-        if not self.registration_data or self.is_enterprise:
+        if not self.cache or self.is_enterprise:
             if not self.is_active:
                 self.is_active = True
 
@@ -79,7 +79,7 @@ class SNEKUser(AbstractUser):
     panels = [
         FieldPanel("username"),
         FieldPanel("is_enterprise"),
-        FieldPanel("registration_data"),
+        FieldPanel("cache"),
     ]
 
     graphql_fields = [

@@ -76,7 +76,7 @@ class Enterprise(get_user_model()):
         # FieldPanel('city'),
         # FieldPanel('country'),
         # FieldPanel('newsletter'),
-        # FieldPanel('registration_data'),
+        # FieldPanel('cache'),
     ]
 
     def __str__(self):
@@ -310,19 +310,17 @@ class _S_ProjectBlock(blocks.StructBlock):
 
 
 # > Pages
-class EnterpriseRootPage(BasePage):
-    # Only allow creating HomePages at the root level
-    parent_page_types = ["wagtailcore.Page"]
-
 class EnterpriseFormField(AbstractFormField):
     page = ParentalKey(
         "EnterpriseFormPage", on_delete=models.CASCADE, related_name="form_fields"
     )
 
+class EnterpriseFormSubmission(AbstractFormSubmission):
+    user = models.ForeignKey(get_user_model(), on_delete=models.CASCADE)
 
 class EnterpriseFormPage(BaseEmailFormPage):
     # Only allow creating HomePages at the root level
-    parent_page_types = ["EnterpriseRootPage"]
+    parent_page_types = ["EnterpriseIndex"]
     graphql_fields = []
 
     """[Tabs]
@@ -487,7 +485,7 @@ class EnterpriseFormPage(BaseEmailFormPage):
     cache = models.TextField(null=True, blank=True)
 
     cache_panels = [FieldPanel("cache")]
-    form_panels = AbstractEmailForm.content_panels + [
+    form_panels = [
         MultiFieldPanel(
             [
                 FieldRowPanel(
@@ -523,3 +521,89 @@ class EnterpriseFormPage(BaseEmailFormPage):
             ),
         ]
     )
+
+    def get_submission_class(self):
+        return RegistrationFormSubmission
+
+    # Create a new user
+    def create_enterprise_user(
+        cache,
+    ):
+        # enter the data here
+        user = get_user_model()(
+            username="anexia",
+            is_enterprise=True,
+            is_active=False,
+            cache=cache,
+        )
+
+        user.set_password(password)
+
+        user.save()
+
+        return user
+
+    # Called when a user registers
+    def send_mail(self, form):
+        addresses = [x.strip() for x in self.to_address.split(",")]
+
+        emailheader = "New registration via Pharmaziegasse Website"
+
+        content = []
+        for field in form:
+            value = field.value()
+            if isinstance(value, list):
+                value = ", ".join(value)
+            content.append("{}: {}".format(field.label, value))
+        content = "\n".join(content)
+
+        content += "\n\nMade with ❤ by a tiny SNEK"
+
+        # emailfooter = '<style>@keyframes pulse { 10% { color: red; } }</style><p>Made with <span style="width: 20px; height: 1em; color:#dd0000; animation: pulse 1s infinite;">&#x2764;</span> by <a style="color: lightgrey" href="https://www.aichner-christian.com" target="_blank">Werbeagentur Christian Aichner</a></p>'
+
+        # html_message = f"{emailheader}\n\n{content}\n\n{emailfooter}"
+
+        send_mail(
+            self.subject, f"{emailheader}\n\n{content}", addresses, self.from_address
+        )
+
+    def process_form_submission(self, form):
+
+        user = self.create_enterprise_user(
+            cache=json.dumps(form.cleaned_data, cls=DjangoJSONEncoder),
+        )
+
+        self.get_submission_class().objects.create(
+            form_data=json.dumps(form.cleaned_data, cls=DjangoJSONEncoder),
+            page=self,
+            user=user,
+        )
+
+        if self.to_address:
+            self.send_mail(form)
+
+
+
+class EnterpriseIndex(BasePage):
+    #template = 'patterns/pages/enterprise/person_index_page.html'
+
+    # Only allow creating HomePages at the root level
+    parent_page_types = ["wagtailcore.Page"]
+    subpage_types = ['EnterpriseFormPage']
+
+    def get_context(self, request, *args, **kwargs):
+        enterprise = EnterpriseFormPage.objects.live().public().descendant_of(self).order_by('slug')
+
+        page_number = request.GET.get('page', 1)
+        paginator = Paginator(enterprise, settings.DEFAULT_PER_PAGE)
+        try:
+            enterprise = paginator.page(page_number)
+        except PageNotAnInteger:
+            enterprise = paginator.page(1)
+        except EmptyPage:
+            enterprise = paginator.page(paginator.num_pages)
+
+        context = super().get_context(request, *args, **kwargs)
+        context.update(enterprise=enterprise)
+
+        return context

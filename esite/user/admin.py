@@ -13,7 +13,7 @@ from esite.registration.admin import RegistrationAdmin
 
 class UserAdmin(ModelAdmin):
    model = get_user_model()
-   menu_label = "User"
+   menu_label = "People"
    menu_icon = "user"
    menu_order = 290
    add_to_settings_menu = False
