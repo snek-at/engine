@@ -98,7 +98,7 @@ class Migration(migrations.Migration):
                         verbose_name="username",
                     ),
                 ),
-                ("is_customer", models.BooleanField(default=False)),
+                ("is_enterprise", models.BooleanField(default=False)),
                 ("registration_data", models.TextField(null=True)),
                 (
                     "groups",

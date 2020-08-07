@@ -27,7 +27,6 @@ from wagtail.contrib.forms.models import (
     AbstractForm,
     AbstractFormField,
     AbstractEmailForm,
-    AbstractFormField,
     AbstractFormSubmission,
 )
 from wagtail.admin.mail import send_mail
@@ -68,7 +67,7 @@ from esite.utils.models import BasePage
 # Model manager to use in Proxy model
 class ProxyManager(BaseUserManager):
     def get_queryset(self):
-        # filter the objects for non-customer datasets based on the User model
+        # filter the objects for non-enterprise datasets based on the User model
         return super(ProxyManager, self).get_queryset().filter(is_active=False)
 
 
@@ -79,8 +78,8 @@ class Registration(User):
     # Panels/fields to fill in the Add Registration form
     panels = [
         FieldPanel("username"),
-        FieldPanel("is_customer"),
-        FieldPanel("customer_id"),
+        FieldPanel("is_enterprise"),
+        FieldPanel("enterprise_id"),
         FieldPanel("birthdate"),
         FieldPanel("telephone"),
         FieldPanel("address"),
@@ -125,7 +124,7 @@ class Gitlab_Server(blocks.StructBlock):
     ]
 
 
-class FormField(AbstractFormField):
+class RegistrationFormField(AbstractFormField):
     page = ParentalKey(
         "RegistrationFormPage", on_delete=models.CASCADE, related_name="form_fields"
     )
@@ -323,7 +322,7 @@ class RegistrationFormPage(AbstractEmailForm):
     def create_user(
         self,
         username,
-        customer_id,
+        enterprise_id,
         telephone,
         address,
         city,
@@ -343,9 +342,9 @@ class RegistrationFormPage(AbstractEmailForm):
         # enter the data here
         user = get_user_model()(
             username=username,
-            is_customer=True,
+            is_enterprise=True,
             is_active=False,
-            customer_id=customer_id,
+            enterprise_id=enterprise_id,
             registration_data=registration_data,
         )
 
@@ -383,7 +382,7 @@ class RegistrationFormPage(AbstractEmailForm):
 
         user = self.create_user(
             username=form.cleaned_data["username"],
-            customer_id=form.cleaned_data["customer_id"],
+            enterprise_id=form.cleaned_data["enterprise_id"],
             telephone=form.cleaned_data["telephone"],
             address=form.cleaned_data["address"],
             city=form.cleaned_data["city"],

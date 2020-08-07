@@ -37,8 +37,9 @@ INSTALLED_APPS = [
     "esite.registration",
     "esite.profile",
     "esite.gift",
-    "esite.customer",
+    "esite.enterprise",
     "esite.caching",
+    "esite.talk",
     # Django core apps
     "django.contrib.admin",
     "django.contrib.auth",
@@ -177,6 +178,8 @@ BIFROST_APPS = {
     "utils": "",
     "registration": "",
     "profile": "",
+    "talk": "",
+    "enterprise": "",
 }
 
 # > Password Validation

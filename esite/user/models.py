@@ -51,7 +51,7 @@ class User(AbstractUser):
         validators=[django.contrib.auth.validators.UnicodeUsernameValidator()],
         verbose_name="username",
     )
-    is_customer = models.BooleanField(blank=False, default=False)
+    is_enterprise = models.BooleanField(blank=False, default=False)
     registration_data = models.TextField(null=True, blank=False)
 
     # Custom save function
@@ -59,7 +59,7 @@ class User(AbstractUser):
         if not self.username:
             self.username = str(uuid.uuid4())
 
-        if not self.registration_data or self.is_customer:
+        if not self.registration_data or self.is_enterprise:
             if not self.is_active:
                 self.is_active = True
 
@@ -78,7 +78,7 @@ class User(AbstractUser):
 
     panels = [
         FieldPanel("username"),
-        FieldPanel("is_customer"),
+        FieldPanel("is_enterprise"),
         FieldPanel("registration_data"),
     ]
 
@@ -96,6 +96,8 @@ class UserPage(BasePage):
     parent_page_types = ["wagtailcore.Page"]
     # subpage_types = ['news.NewsIndex', 'standardpages.StandardPage', 'articles.ArticleIndex',
     #                 'people.PersonIndex', 'events.EventIndex']
+
+    user_cache = models.TextField(null=True, blank=True)
 
     main_content_panels = []
 

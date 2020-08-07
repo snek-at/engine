@@ -13,7 +13,7 @@ class Migration(migrations.Migration):
 
     operations = [
         migrations.CreateModel(
-            name="Customer",
+            name="Enterprise",
             fields=[],
             options={
                 "ordering": ("date_joined",),

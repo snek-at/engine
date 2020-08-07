@@ -4,14 +4,14 @@ import graphene
 from graphene_django import DjangoObjectType
 from graphql import GraphQLError
 
-from .models import Customer
+from .models import Enterprise
 
-# Create your customer related graphql schemes here.
+# Create your enterprise related graphql schemes here.
 
 
 class UserType(DjangoObjectType):
     class Meta:
-        model = Customer
+        model = Enterprise
 
 
 class CreateUser(graphene.Mutation):
@@ -47,7 +47,7 @@ class Query(graphene.ObjectType):
 
     def resolve_users(self, info):
         # To list all users
-        return Customer.objects.all()
+        return Enterprise.objects.all()
 
     def resolve_me(self, info):
         user = info.context.user

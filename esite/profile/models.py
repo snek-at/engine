@@ -53,7 +53,7 @@ from esite.utils.models import BasePage
 
 # Create your homepage related models here.
 
-
+@register_streamfield_block
 class _S_TopLanguages(blocks.StructBlock):
     theme = blocks.CharBlock(
         null=True, blank=True, help_text="Bold header text", max_length=64
@@ -63,7 +63,7 @@ class _S_TopLanguages(blocks.StructBlock):
         GraphQLString("theme"),
     ]
 
-
+@register_streamfield_block
 class _S_Calendar(blocks.StructBlock):
     theme = blocks.CharBlock(
         null=True, blank=True, help_text="Bold header text", max_length=64
@@ -73,7 +73,7 @@ class _S_Calendar(blocks.StructBlock):
         GraphQLString("theme"),
     ]
 
-
+@register_streamfield_block
 class Platform(blocks.StructBlock):
     sources = models.TextField(null=True, blank=False)
     platformName = blocks.CharBlock(
@@ -133,6 +133,7 @@ class Platform(blocks.StructBlock):
 # > Profilepage
 class ProfilePage(BasePage):
     subpage_types = ["registration.RegistrationFormPage"]
+    show_in_menus_default = False
 
     sources = models.TextField(null=True, blank=False)
     platform_data = models.TextField(null=True, blank=True)

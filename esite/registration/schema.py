@@ -11,7 +11,7 @@ from graphql_jwt.decorators import (
 )
 
 from esite.user.models import User
-from esite.customer.models import Customer
+from esite.enterprise.models import Enterprise
 
 # Create your registration related graphql schemes here.
 
@@ -53,7 +53,7 @@ class Mutation(graphene.ObjectType):
 class Query(graphene.ObjectType):
     me = graphene.Field(UserType, token=graphene.String(required=False))
     users = graphene.List(UserType, token=graphene.String(required=False))
-    customers = graphene.List(UserType, token=graphene.String(required=False))
+    enterprises = graphene.List(UserType, token=graphene.String(required=False))
 
     @superuser_required
     def resolve_users(self, info, **_kwargs):
@@ -67,14 +67,14 @@ class Query(graphene.ObjectType):
         return User.objects.all()
 
     @superuser_required
-    def resolve_customers(self, info, **_kwargs):
+    def resolve_enterprisemers(self, info, **_kwargs):
         # session authentication
         # user = info.context.user
         # if user.is_anonymous:
-        #    raise GraphQLError('You must be logged to list customer')
+        #    raise GraphQLError('You must be logged to list enterprise')
         # if not user.is_superuser:
-        #    raise Exception(f'You must be superuser to list customer {user.is_superuser}')
-        return Customer.objects.all()
+        #    raise Exception(f'You must be superuser to list enterprise {user.is_superuser}')
+        return Enterprise.objects.all()
 
     @login_required
     def resolve_me(self, info, **_kwargs):
