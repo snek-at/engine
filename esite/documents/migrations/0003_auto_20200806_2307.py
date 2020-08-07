@@ -9,7 +9,6 @@ class Migration(migrations.Migration):
 
     dependencies = [
         migrations.swappable_dependency(settings.AUTH_USER_MODEL),
-        ('wagtailcore', '0046_auto_20200806_2307'),
         ('taggit', '0003_taggeditem_add_unique_index'),
         ('documents', '0002_customdocument_uploaded_by_user'),
     ]
