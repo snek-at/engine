@@ -13,7 +13,6 @@ class Migration(migrations.Migration):
         ('wagtailsearchpromotions', '0002_capitalizeverbose'),
         ('contenttypes', '0002_remove_content_type_name'),
         ('wagtailredirects', '0006_redirect_increase_max_length'),
-        ('wagtailcore', '0047_auto_20200807_1358'),
         ('wagtailforms', '0004_add_verbose_name_plural'),
         ('enterprise', '0003_auto_20200807_1419'),
     ]

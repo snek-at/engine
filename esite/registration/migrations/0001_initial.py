@@ -16,7 +16,6 @@ class Migration(migrations.Migration):
         ('images', '0002_auto_20200729_2232'),
         ('utils', '0001_initial'),
         ('user', '0002_initial_data'),
-        ('wagtailcore', '0047_auto_20200807_1358'),
         migrations.swappable_dependency(settings.AUTH_USER_MODEL),
     ]
 
