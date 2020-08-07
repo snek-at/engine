@@ -9,7 +9,6 @@ class Migration(migrations.Migration):
 
     dependencies = [
         migrations.swappable_dependency(settings.AUTH_USER_MODEL),
-        ('wagtailcore', '0047_auto_20200807_1358'),
         ('enterprise', '0004_auto_20200807_2050'),
     ]
 
