@@ -31,8 +31,6 @@ from wagtail.contrib.forms.models import (
 )
 from wagtail.admin.mail import send_mail
 
-from esite.user.models import User
-
 from esite.bifrost.models import (
     GraphQLInt,
     GraphQLBoolean,
@@ -60,7 +58,7 @@ from esite.bifrost.models import (
     GraphQLSnippet,
 )
 
-from esite.utils.models import BasePage
+from esite.utils.models import BasePage, BaseEmailFormPage
 
 # Create your registration related models here.
 
@@ -71,7 +69,7 @@ class ProxyManager(BaseUserManager):
         return super(ProxyManager, self).get_queryset().filter(is_active=False)
 
 
-class Registration(User):
+class Registration(get_user_model()):
     # call the model manager on user objects
     objects = ProxyManager()
 
@@ -130,7 +128,7 @@ class RegistrationFormField(AbstractFormField):
     )
 
 
-class RegistrationFormPage(AbstractEmailForm):
+class RegistrationFormPage(BaseEmailFormPage):
     # When creating a new Form page in Wagtail
     registration_head = models.CharField(null=True, blank=False, max_length=255)
     registration_newsletter_text = models.CharField(

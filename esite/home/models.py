@@ -150,7 +150,7 @@ class HomePage(BasePage):
             ObjectList(Page.content_panels + main_content_panels, heading="Content"),
             ObjectList(imprint_panels, heading="Imprint"),
             ObjectList(
-                BasePage.promote_panels + token_panel + Page.settings_panels,
+                BasePage.promote_panels + token_panel + BasePage.settings_panels,
                 heading="Settings",
                 classname="settings",
             ),

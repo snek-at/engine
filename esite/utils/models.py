@@ -9,6 +9,13 @@ from wagtail.core.models import Orderable, Page
 from wagtail.images.edit_handlers import ImageChooserPanel
 from wagtail.snippets.models import register_snippet
 
+from wagtail.contrib.forms.models import (
+    AbstractForm,
+    AbstractFormField,
+    AbstractEmailForm,
+    AbstractFormSubmission,
+)
+
 from esite.utils.cache import get_default_cache_control_decorator
 
 from esite.bifrost.models import (
@@ -116,7 +123,7 @@ class RelatedPage(Orderable, models.Model):
 # Generic social fields abstract class to add social image/text to any new content type easily.
 class SocialFields(models.Model):
     social_image = models.ForeignKey(
-        "images.CustomImage",
+        "images.SNEKImage",
         null=True,
         blank=True,
         on_delete=models.SET_NULL,
@@ -138,7 +145,7 @@ class SocialFields(models.Model):
 # Generic listing fields abstract class to add listing image/text to any new content type easily.
 class ListingFields(models.Model):
     listing_image = models.ForeignKey(
-        "images.CustomImage",
+        "images.SNEKImage",
         null=True,
         blank=True,
         on_delete=models.SET_NULL,
@@ -229,37 +236,37 @@ class BasePage(SocialFields, ListingFields, Page):
 
 
 # Apply default cache headers on this page model's serve method.
-# @method_decorator(get_default_cache_control_decorator(), name="serve")
-# class BaseFormPage(SocialFields, ListingFields, AbstractForm):
-#     show_in_menus_default = True
+@method_decorator(get_default_cache_control_decorator(), name="serve")
+class BaseFormPage(SocialFields, ListingFields, AbstractForm):
+    show_in_menus_default = True
 
-#     class Meta:
-#         abstract = True
+    class Meta:
+        abstract = True
 
-#     # This is used by the feed generator (RSS)
-#     def get_absolute_url(self):
-#         return self.full_url
+    # This is used by the feed generator (RSS)
+    def get_absolute_url(self):
+        return self.full_url
 
-#     promote_panels = (
-#         Page.promote_panels + SocialFields.promote_panels + ListingFields.promote_panels
-#     )
+    promote_panels = (
+        Page.promote_panels + SocialFields.promote_panels + ListingFields.promote_panels
+    )
 
 
-# # Apply default cache headers on this page model's serve method.
-# @method_decorator(get_default_cache_control_decorator(), name="serve")
-# class BaseEmailFormPage(SocialFields, ListingFields, AbstractEmailForm):
-#     show_in_menus_default = True
+# Apply default cache headers on this page model's serve method.
+@method_decorator(get_default_cache_control_decorator(), name="serve")
+class BaseEmailFormPage(SocialFields, ListingFields, AbstractEmailForm):
+    show_in_menus_default = True
 
-#     class Meta:
-#         abstract = True
+    class Meta:
+        abstract = True
 
-#     # This is used by the feed generator (RSS)
-#     def get_absolute_url(self):
-#         return self.full_url
+    # This is used by the feed generator (RSS)
+    def get_absolute_url(self):
+        return self.full_url
 
-#     promote_panels = (
-#         Page.promote_panels + SocialFields.promote_panels + ListingFields.promote_panels
-#     )
+    promote_panels = (
+        Page.promote_panels + SocialFields.promote_panels + ListingFields.promote_panels
+    )
 
 
 # > Snippets

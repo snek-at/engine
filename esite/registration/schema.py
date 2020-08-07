@@ -10,7 +10,6 @@ from graphql_jwt.decorators import (
     superuser_required,
 )
 
-from esite.user.models import User
 from esite.enterprise.models import Enterprise
 
 # Create your registration related graphql schemes here.
@@ -18,7 +17,7 @@ from esite.enterprise.models import Enterprise
 
 class UserType(DjangoObjectType):
     class Meta:
-        model = User
+        model = get_user_model()
         exclude_fields = ["password"]
 
 
@@ -64,7 +63,7 @@ class Query(graphene.ObjectType):
         #    raise GraphQLError('You must be logged to list a user')
         # if not user.is_superuser:
         #    raise Exception('You must be superuser to list a user')
-        return User.objects.all()
+        return get_user_model().objects.all()
 
     @superuser_required
     def resolve_enterprisemers(self, info, **_kwargs):

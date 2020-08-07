@@ -33,10 +33,8 @@ from wagtail.contrib.forms.models import (
     AbstractEmailForm,
     AbstractFormSubmission,
 )
-from esite.user.models import User
-
-from esite.utils.models import BasePage
-
+from modelcluster.fields import ParentalKey
+from esite.utils.models import BasePage, BaseEmailFormPage
 from esite.bifrost.helpers import register_streamfield_block
 from esite.bifrost.models import (
     GraphQLInt,
@@ -60,7 +58,7 @@ class ProxyManager(BaseUserManager):
         return super(ProxyManager, self).get_queryset().filter(is_enterprise=True)
 
 
-class Enterprise(User):
+class Enterprise(get_user_model()):
     # call the model manager on user objects
     objects = ProxyManager()
 
@@ -316,8 +314,13 @@ class EnterpriseRootPage(BasePage):
     # Only allow creating HomePages at the root level
     parent_page_types = ["wagtailcore.Page"]
 
+class EnterpriseFormField(AbstractFormField):
+    page = ParentalKey(
+        "EnterpriseFormPage", on_delete=models.CASCADE, related_name="form_fields"
+    )
 
-class EnterprisePage(BasePage):
+
+class EnterpriseFormPage(BaseEmailFormPage):
     # Only allow creating HomePages at the root level
     parent_page_types = ["EnterpriseRootPage"]
     graphql_fields = []
@@ -484,6 +487,23 @@ class EnterprisePage(BasePage):
     cache = models.TextField(null=True, blank=True)
 
     cache_panels = [FieldPanel("cache")]
+    form_panels = AbstractEmailForm.content_panels + [
+        MultiFieldPanel(
+            [
+                FieldRowPanel(
+                    [
+                        FieldPanel("from_address", classname="col6"),
+                        FieldPanel("to_address", classname="col6"),
+                    ]
+                ),
+                FieldPanel("subject"),
+            ],
+            heading="Email Settings",
+        ),
+        MultiFieldPanel(
+            [InlinePanel("form_fields", label="Form fields")], heading="data",
+        ),
+    ]
 
     graphql_fields += [
         GraphQLString("cache"),
@@ -495,8 +515,9 @@ class EnterprisePage(BasePage):
             ObjectList(user_panels, heading="Users"),
             ObjectList(project_panels, heading="Projects"),
             ObjectList(imprint_panels, heading="Imprint"),
+            ObjectList(form_panels, heading="Form"),
             ObjectList(
-                Page.promote_panels + Page.settings_panels + cache_panels,
+                BasePage.promote_panels + BasePage.settings_panels + cache_panels,
                 heading="Settings",
                 classname="settings",
             ),

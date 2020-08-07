@@ -43,8 +43,8 @@ class Migration(migrations.Migration):
                 ('bids', models.TextField(blank=True, null=True)),
                 ('tids', models.TextField(blank=True, null=True)),
                 ('main', wagtail.core.fields.StreamField([('top_language', wagtail.core.blocks.StructBlock([('theme', wagtail.core.blocks.CharBlock(blank=True, help_text='Bold header text', max_length=64, null=True))], blank=True, icon='fa-instagram', null=True)), ('calendar', wagtail.core.blocks.StructBlock([('theme', wagtail.core.blocks.CharBlock(blank=True, help_text='Bold header text', max_length=64, null=True))], blank=True, icon='home', null=True))], blank=True, null=True)),
-                ('listing_image', models.ForeignKey(blank=True, help_text='Choose the image you wish to be displayed when this page appears in listings', null=True, on_delete=django.db.models.deletion.SET_NULL, related_name='+', to='images.CustomImage')),
-                ('social_image', models.ForeignKey(blank=True, null=True, on_delete=django.db.models.deletion.SET_NULL, related_name='+', to='images.CustomImage')),
+                ('listing_image', models.ForeignKey(blank=True, help_text='Choose the image you wish to be displayed when this page appears in listings', null=True, on_delete=django.db.models.deletion.SET_NULL, related_name='+', to='images.SNEKImage')),
+                ('social_image', models.ForeignKey(blank=True, null=True, on_delete=django.db.models.deletion.SET_NULL, related_name='+', to='images.SNEKImage')),
             ],
             options={
                 'abstract': False,

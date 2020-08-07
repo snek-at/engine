@@ -12,7 +12,6 @@ from graphql_jwt.decorators import (
 
 from wagtail.core.models import Page
 
-from esite.user.models import User
 from esite.profile.models import ProfilePage
 from esite.customer.models import Customer
 from esite.registration.schema import UserType

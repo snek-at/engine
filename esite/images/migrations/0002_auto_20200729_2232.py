@@ -19,7 +19,7 @@ class Migration(migrations.Migration):
 
     operations = [
         migrations.AddField(
-            model_name="customimage",
+            model_name="snekimage",
             name="license",
             field=models.ForeignKey(
                 blank=True,
@@ -30,7 +30,7 @@ class Migration(migrations.Migration):
             ),
         ),
         migrations.AddField(
-            model_name="customimage",
+            model_name="snekimage",
             name="tags",
             field=taggit.managers.TaggableManager(
                 blank=True,
@@ -41,7 +41,7 @@ class Migration(migrations.Migration):
             ),
         ),
         migrations.AddField(
-            model_name="customimage",
+            model_name="snekimage",
             name="uploaded_by_user",
             field=models.ForeignKey(
                 blank=True,

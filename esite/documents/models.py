@@ -6,7 +6,7 @@ from wagtail.documents.models import Document as WagtailDocument
 from esite.bifrost.models import GraphQLString
 
 
-class CustomDocument(AbstractDocument):
+class SNEKDocument(AbstractDocument):
     description = models.TextField(max_length=255, blank=True, null=True)
     admin_form_fields = WagtailDocument.admin_form_fields + ("description",)
 

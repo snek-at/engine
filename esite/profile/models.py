@@ -132,7 +132,7 @@ class Platform(blocks.StructBlock):
 
 # > Profilepage
 class ProfilePage(BasePage):
-    subpage_types = ["registration.RegistrationFormPage"]
+    #subpage_types = ["registration.RegistrationFormPage"]
     show_in_menus_default = False
 
     sources = models.TextField(null=True, blank=False)

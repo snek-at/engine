@@ -23,22 +23,22 @@ BASE_DIR = os.path.dirname(PROJECT_DIR)
 # Django installation.
 # See https://docs.djangoproject.com/en/stable/ref/settings/#installed-apps
 INSTALLED_APPS = [
-    # Our own pages
-    "esite.home",
     # Our own apps
     "esite.bifrost",
     "esite.core",
+    "esite.utils",
     "esite.user",
-    "esite.colorfield",
     "esite.documents",
     "esite.images",
     "esite.navigation",
-    "esite.utils",
-    "esite.registration",
-    "esite.profile",
+    "esite.colorfield",
     "esite.gift",
     "esite.enterprise",
     "esite.caching",
+    # Our own pages
+    "esite.home",
+    "esite.registration",
+    "esite.profile",
     "esite.talk",
     # Django core apps
     "django.contrib.admin",
@@ -194,7 +194,7 @@ AUTH_PASSWORD_VALIDATORS = [
     {"NAME": "django.contrib.auth.password_validation.NumericPasswordValidator",},
 ]
 
-AUTH_USER_MODEL = "user.User"
+AUTH_USER_MODEL = "user.SNEKUser"
 # AUTH_PROFILE_MODULE = "avatar.Avatar"
 
 # > Authentication Backend
@@ -258,11 +258,11 @@ WAGTAILSEARCH_BACKENDS = {
 
 # Custom document model
 # https://docs.wagtail.io/en/stable/advanced_topics/documents/custom_document_model.html
-WAGTAILDOCS_DOCUMENT_MODEL = "documents.CustomDocument"
+WAGTAILDOCS_DOCUMENT_MODEL = "documents.SNEKDocument"
 
 # Custom image model
 # https://docs.wagtail.io/en/stable/advanced_topics/images/custom_image_model.html
-WAGTAILIMAGES_IMAGE_MODEL = "images.CustomImage"
+WAGTAILIMAGES_IMAGE_MODEL = "images.SNEKImage"
 WAGTAILIMAGES_FEATURE_DETECTION_ENABLED = False
 
 # Rich text settings to remove unneeded features

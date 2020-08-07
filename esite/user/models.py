@@ -37,10 +37,10 @@ from esite.bifrost.models import (
     GraphQLSnippet,
 )
 
-from esite.utils.models import BasePage
+#from esite.utils.models import BasePage
 
 # Extend AbstractUser Model from django.contrib.auth.models
-class User(AbstractUser):
+class SNEKUser(AbstractUser):
     username = models.CharField(
         null=True,
         blank=False,
@@ -74,7 +74,7 @@ class User(AbstractUser):
         else:
             self.is_active = False
 
-        super(User, self).save(*args, **kwargs)
+        super(SNEKUser, self).save(*args, **kwargs)
 
     panels = [
         FieldPanel("username"),
@@ -91,28 +91,28 @@ class User(AbstractUser):
 
 
 # Extend AbstractUser Model from django.contrib.auth.models
-class UserPage(BasePage):
-    # Only allow creating HomePages at the root level
-    parent_page_types = ["wagtailcore.Page"]
-    # subpage_types = ['news.NewsIndex', 'standardpages.StandardPage', 'articles.ArticleIndex',
-    #                 'people.PersonIndex', 'events.EventIndex']
+# class UserPage(BasePage):
+#     # Only allow creating HomePages at the root level
+#     parent_page_types = ["wagtailcore.Page"]
+#     # subpage_types = ['news.NewsIndex', 'standardpages.StandardPage', 'articles.ArticleIndex',
+#     #                 'people.PersonIndex', 'events.EventIndex']
 
-    user_cache = models.TextField(null=True, blank=True)
+#     user_cache = models.TextField(null=True, blank=True)
 
-    main_content_panels = []
+#     main_content_panels = []
 
-    edit_handler = TabbedInterface(
-        [
-            ObjectList(
-                BasePage.content_panels + main_content_panels, heading="Content"
-            ),
-            ObjectList(
-                BasePage.promote_panels + BasePage.settings_panels,
-                heading="Settings",
-                classname="settings",
-            ),
-        ]
-    )
+#     edit_handler = TabbedInterface(
+#         [
+#             ObjectList(
+#                 BasePage.content_panels + main_content_panels, heading="Content"
+#             ),
+#             ObjectList(
+#                 BasePage.promote_panels + BasePage.settings_panels,
+#                 heading="Settings",
+#                 classname="settings",
+#             ),
+#         ]
+#     )
 
 
 # SPDX-License-Identifier: (EUPL-1.2)

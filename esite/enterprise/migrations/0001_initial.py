@@ -21,6 +21,6 @@ class Migration(migrations.Migration):
                 "indexes": [],
                 "constraints": [],
             },
-            bases=("user.user",),
+            bases=("user.snekuser",),
         ),
     ]

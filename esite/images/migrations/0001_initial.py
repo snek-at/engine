@@ -17,7 +17,7 @@ class Migration(migrations.Migration):
 
     operations = [
         migrations.CreateModel(
-            name="CustomImage",
+            name="SNEKImage",
             fields=[
                 (
                     "id",
@@ -112,7 +112,7 @@ class Migration(migrations.Migration):
                     models.ForeignKey(
                         on_delete=django.db.models.deletion.CASCADE,
                         related_name="renditions",
-                        to="images.CustomImage",
+                        to="images.SNEKImage",
                     ),
                 ),
             ],
