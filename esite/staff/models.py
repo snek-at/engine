@@ -1,8 +1,7 @@
 from django.conf import settings
 from django.core.paginator import EmptyPage, PageNotAnInteger, Paginator
 from django.db import models
-from django.contrib.auth import get_user_model
-from django.contrib.auth.models import AbstractUser, BaseUserManager
+
 from modelcluster.fields import ParentalKey
 from wagtail.admin.edit_handlers import (FieldPanel, InlinePanel,
                                          MultiFieldPanel, StreamFieldPanel)
@@ -64,48 +63,14 @@ class SocialMediaProfile(models.Model):
         if self.service == 'twitter' and self.username.startswith('@'):
             self.username = self.username[1:]
 
-# Model manager to use in Proxy model
-class ProxyManager(BaseUserManager):
-    def get_queryset(self):
-        # filter the objects for activate enterprise datasets based on the User model
-        return super(ProxyManager, self).get_queryset().filter(is_enterprise=True, is_staff=False)
 
-class Person(get_user_model()):
-    # call the model manager on user objects
-    objects = ProxyManager()
-
-    # Panels/fields to fill in the Add enterprise form
-    panels = [
-        FieldPanel("is_enterprise"),
-        FieldPanel("date_joined"),
-        # FieldPanel('title'),
-        # FieldPanel('first_name'),
-        # FieldPanel('last_name'),
-        # FieldPanel('email'),
-        # FieldPanel('telephone'),
-        # FieldPanel('address'),
-        # FieldPanel('zipCode'),
-        # FieldPanel('city'),
-        # FieldPanel('country'),
-        # FieldPanel('newsletter'),
-        # FieldPanel('cache'),
-    ]
-
-    def __str__(self):
-        return self.username
-
-    class Meta:
-        proxy = True
-        ordering = ("date_joined",)
-
-
-class PersonFormField(AbstractFormField):
+class StaffFormField(AbstractFormField):
     page = ParentalKey(
         "PersonFormPage", on_delete=models.CASCADE, related_name="form_fields"
     )
 
 
-class PersonFormPage(BaseFormPage):
+class StaffFormPage(BaseFormPage):
     template = 'patterns/pages/people/person_page.html'
 
     parent_page_types = ['people.PersonIndex']

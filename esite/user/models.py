@@ -59,7 +59,7 @@ class SNEKUser(AbstractUser):
         if not self.username:
             self.username = str(uuid.uuid4())
 
-        if not self.cache or self.is_enterprise:
+        if not self.is_staff or self.is_enterprise:
             if not self.is_active:
                 self.is_active = True
 

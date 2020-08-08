@@ -7,7 +7,7 @@ def create_initialuser(apps, schema_editor):
     User = get_user_model()
 
     # Create anonymous user
-    anonuser = User.objects.create(username="cisco", is_enterprise=False,)
+    anonuser = User.objects.create(username="cisco")
 
     anonuser.set_password("ciscocisco")
 

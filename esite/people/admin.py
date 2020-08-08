@@ -1,13 +1,13 @@
 from wagtail.contrib.modeladmin.options import ModelAdmin, modeladmin_register
 
-from .models import Registration
+from .models import Person
 
 # Register your registration related models here.
 
 
-class RegistrationAdmin(ModelAdmin):
-    model = Registration
-    menu_label = "Registration"
+class PeopleAdmin(ModelAdmin):
+    model = Person
+    menu_label = "People"
     menu_icon = "mail"
     menu_order = 290
     add_to_settings_menu = False
