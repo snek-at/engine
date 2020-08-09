@@ -77,7 +77,7 @@ class _S_Calendar(blocks.StructBlock):
 # > Profilepage
 class Profile(models.Model):
     page = ParentalKey(
-        "person.PersonFormPage", on_delete=models.CASCADE, related_name="profile_fields"
+        "person.PersonFormPage", null=True, on_delete=models.CASCADE, related_name="profile_fields"
     )
     platformName = models.CharField(null=True, blank=True, max_length=250)
     platformUrl = models.CharField(null=True, blank=True, max_length=250)
