@@ -76,9 +76,9 @@ class _S_Calendar(blocks.StructBlock):
 
 # > Profilepage
 class Profile(models.Model):
-    #subpage_types = ["registration.RegistrationFormPage"]
-    show_in_menus_default = False
-
+    page = ParentalKey(
+        "person.PersonFormPage", on_delete=models.CASCADE, related_name="profile_fields"
+    )
     platformName = models.CharField(null=True, blank=True, max_length=250)
     platformUrl = models.CharField(null=True, blank=True, max_length=250)
     avatarUrl = models.CharField(null=True, blank=True, max_length=250)
@@ -111,38 +111,31 @@ class Profile(models.Model):
         GraphQLString("tids"),
     ]
 
-    content_panels = BasePage.content_panels + [
-        MultiFieldPanel(
-            [
-                FieldPanel("platformName"),
-                FieldPanel("platformUrl"),
-                FieldPanel("avatarUrl"),
-                FieldPanel("websiteUrl"),
-                FieldPanel("company"),
-                FieldPanel("email"),
-                FieldPanel("username"),
-                FieldPanel("fullname"),
-                FieldPanel("createdAt"),
-                FieldPanel("location"),
-                FieldPanel("statusMessage"),
-                FieldPanel("statusEmojiHTML"),
-                FieldPanel("bids"),
-                FieldPanel("tids"),
-            ],
-            heading="aside",
-        ),
-        StreamFieldPanel("main"),
-    ]
+    # content_panels = [
+    #     MultiFieldPanel(
+    #         [
+    #             FieldPanel("platformName"),
+    #             FieldPanel("platformUrl"),
+    #             FieldPanel("avatarUrl"),
+    #             FieldPanel("websiteUrl"),
+    #             FieldPanel("company"),
+    #             FieldPanel("email"),
+    #             FieldPanel("username"),
+    #             FieldPanel("fullname"),
+    #             FieldPanel("createdAt"),
+    #             FieldPanel("location"),
+    #             FieldPanel("statusMessage"),
+    #             FieldPanel("statusEmojiHTML"),
+    #             FieldPanel("bids"),
+    #             FieldPanel("tids"),
+    #         ],
+    #     ),
+    # ]
 
-    edit_handler = TabbedInterface(
-        [
-            ObjectList(
-                content_panels, heading="Content"
-            ),
-            ObjectList(
-                BasePage.promote_panels + BasePage.settings_panels,
-                heading="Settings",
-                classname="settings",
-            ),
-        ]
-    )
+    # edit_handler = TabbedInterface(
+    #     [
+    #         ObjectList(
+    #             content_panels, heading="Content"
+    #         ),
+    #     ]
+    # )

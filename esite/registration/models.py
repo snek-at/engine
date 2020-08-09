@@ -74,24 +74,24 @@ class Registration(get_user_model()):
     objects = ProxyManager()
 
     # Panels/fields to fill in the Add Registration form
-    panels = [
-        FieldPanel("username"),
-        FieldPanel("is_enterprise"),
-        FieldPanel("enterprise_id"),
-        FieldPanel("birthdate"),
-        FieldPanel("telephone"),
-        FieldPanel("address"),
-        FieldPanel("city"),
-        FieldPanel("postal_code"),
-        FieldPanel("email"),
-        FieldPanel("country"),
-        FieldPanel("newsletter"),
-        FieldPanel("cache"),
-        FieldPanel("platform_data"),
-        FieldPanel("education_data"),
-        FieldPanel("sources"),
-        FieldPanel("verified"),
-    ]
+    # panels = [
+    #     FieldPanel("username"),
+    #     FieldPanel("is_enterprise"),
+    #     FieldPanel("enterprise_id"),
+    #     FieldPanel("birthdate"),
+    #     FieldPanel("telephone"),
+    #     FieldPanel("address"),
+    #     FieldPanel("city"),
+    #     FieldPanel("postal_code"),
+    #     FieldPanel("email"),
+    #     FieldPanel("country"),
+    #     FieldPanel("newsletter"),
+    #     FieldPanel("cache"),
+    #     FieldPanel("platform_data"),
+    #     FieldPanel("education_data"),
+    #     FieldPanel("sources"),
+    #     FieldPanel("verified"),
+    # ]
 
     def __str__(self):
         return self.username
@@ -129,6 +129,14 @@ class RegistrationFormField(AbstractFormField):
 
 
 class RegistrationFormPage(BaseEmailFormPage):
+    # Only allow creating HomePages at the root level
+    parent_page_types = ["wagtailcore.Page"]
+    subpage_types = []
+
+
+    class Meta:
+        verbose_name = "Registration Form Page"
+
     # When creating a new Form page in Wagtail
     registration_head = models.CharField(null=True, blank=False, max_length=255)
     registration_newsletter_text = models.CharField(

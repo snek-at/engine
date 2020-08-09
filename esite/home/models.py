@@ -36,6 +36,14 @@ from esite.utils.models import BasePage
 
 # > Homepage
 class HomePage(BasePage):
+    # Only allow creating HomePages at the root level
+    parent_page_types = ["wagtailcore.Page"]
+    subpage_types = []
+
+
+    class Meta:
+        verbose_name = "Home Page"
+
     city = models.CharField(null=True, blank=False, max_length=255)
     zip_code = models.CharField(null=True, blank=False, max_length=255)
     address = models.CharField(null=True, blank=False, max_length=255)

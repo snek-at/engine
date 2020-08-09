@@ -42,6 +42,7 @@ from esite.bifrost.models import (
 # Extend AbstractUser Model from django.contrib.auth.models
 class SNEKUser(AbstractUser):
     username = models.CharField(
+        'username',
         null=True,
         blank=False,
         error_messages={"unique": "A user with that username already exists."},
@@ -49,9 +50,8 @@ class SNEKUser(AbstractUser):
         max_length=36,
         unique=True,
         validators=[django.contrib.auth.validators.UnicodeUsernameValidator()],
-        verbose_name="username",
     )
-    is_enterprise = models.BooleanField(blank=False, default=False)
+    is_enterprise = models.BooleanField('enterprise', blank=False, default=False)
     cache = models.TextField(null=True, blank=False)
 
     # Custom save function
@@ -78,6 +78,11 @@ class SNEKUser(AbstractUser):
 
     panels = [
         FieldPanel("username"),
+        FieldPanel("first_name"),
+        FieldPanel("last_name"),
+        FieldPanel("email"),
+        FieldPanel("is_staff"),
+        FieldPanel("is_active"),
         FieldPanel("is_enterprise"),
         FieldPanel("cache"),
     ]
@@ -95,7 +100,7 @@ class SNEKUser(AbstractUser):
 #     # Only allow creating HomePages at the root level
 #     parent_page_types = ["wagtailcore.Page"]
 #     # subpage_types = ['news.NewsIndex', 'standardpages.StandardPage', 'articles.ArticleIndex',
-#     #                 'people.PersonIndex', 'events.EventIndex']
+#     #                 'person.PersonIndex', 'events.EventIndex']
 
 #     user_cache = models.TextField(null=True, blank=True)
 

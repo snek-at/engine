@@ -13,7 +13,7 @@ class Migration(migrations.Migration):
         ('registration', '0001_initial'),
         ('wagtailredirects', '0006_redirect_increase_max_length'),
         ('images', '0002_auto_20200729_2232'),
-        ('people', '0003_auto_20190324_1021'),
+        ('person', '0003_auto_20190324_1021'),
     ]
 
     operations = [
@@ -50,7 +50,7 @@ class Migration(migrations.Migration):
         migrations.AlterField(
             model_name='socialmediaprofile',
             name='person_page',
-            field=modelcluster.fields.ParentalKey(on_delete=django.db.models.deletion.CASCADE, related_name='social_media_profile', to='people.PersonFormPage'),
+            field=modelcluster.fields.ParentalKey(on_delete=django.db.models.deletion.CASCADE, related_name='social_media_profile', to='person.PersonFormPage'),
         ),
         migrations.DeleteModel(
             name='PersonPage',

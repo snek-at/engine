@@ -35,7 +35,7 @@ INSTALLED_APPS = [
     "esite.gift",
     "esite.enterprise",
     "esite.caching",
-    "esite.people",
+    "esite.person",
     # Our own pages
     "esite.home",
     "esite.registration",
@@ -181,7 +181,7 @@ BIFROST_APPS = {
     "profile": "",
     "talk": "",
     "enterprise": "",
-    "people": "",
+    "person": "",
 }
 
 # > Password Validation

@@ -6,7 +6,7 @@ from django.db import migrations, models
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('people', '0006_remove_personindex_introduction'),
+        ('person', '0006_remove_personindex_introduction'),
     ]
 
     operations = [

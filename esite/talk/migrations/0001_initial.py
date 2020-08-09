@@ -22,7 +22,7 @@ class Migration(migrations.Migration):
                 ('talk_url', models.URLField(blank=True, help_text='Important! Format https://www.domain.tld/xyz', null=True)),
                 ('talk_displayUrl', models.URLField(blank=True, help_text='Important! Format https://www.domain.tld/xyz', null=True)),
                 ('talk_downloadUrl', models.URLField(blank=True, help_text='Important! Format https://www.domain.tld/xyz', null=True)),
-                ('talk_comments', wagtail.core.fields.StreamField([('e_comment', wagtail.core.blocks.StructBlock([('comment_owner', wagtail.core.blocks.PageChooserBlock(help_text='Owner of the comment', null=True, page_type=['people.PersonFormPage'], required=False)), ('comment_datetime', wagtail.core.blocks.DateTimeBlock(null=True, required=False)), ('comment_message', wagtail.core.blocks.TextBlock(help_text='Other information', null=True, required=False))], icon='fa-id-badge', null=True))], null=True)),
+                ('talk_comments', wagtail.core.fields.StreamField([('e_comment', wagtail.core.blocks.StructBlock([('comment_owner', wagtail.core.blocks.PageChooserBlock(help_text='Owner of the comment', null=True, page_type=['person.PersonFormPage'], required=False)), ('comment_datetime', wagtail.core.blocks.DateTimeBlock(null=True, required=False)), ('comment_message', wagtail.core.blocks.TextBlock(help_text='Other information', null=True, required=False))], icon='fa-id-badge', null=True))], null=True)),
             ],
         ),
     ]

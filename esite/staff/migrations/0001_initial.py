@@ -33,7 +33,7 @@ class Migration(migrations.Migration):
                 ('social_image', models.ForeignKey(blank=True, null=True, on_delete=django.db.models.deletion.SET_NULL, related_name='+', to=settings.WAGTAILIMAGES_IMAGE_MODEL)),
             ],
             options={
-                'verbose_name': 'People Index',
+                'verbose_name': 'Person Index',
             },
             bases=('wagtailcore.page', models.Model),
         ),
@@ -65,7 +65,7 @@ class Migration(migrations.Migration):
                 ('id', models.AutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
                 ('service', models.CharField(choices=[('twitter', 'Twitter'), ('linkedin', 'LinkedIn')], max_length=200)),
                 ('username', models.CharField(max_length=255)),
-                ('person_page', modelcluster.fields.ParentalKey(on_delete=django.db.models.deletion.CASCADE, related_name='social_media_profile', to='people.PersonPage')),
+                ('person_page', modelcluster.fields.ParentalKey(on_delete=django.db.models.deletion.CASCADE, related_name='social_media_profile', to='person.PersonPage')),
             ],
         ),
     ]

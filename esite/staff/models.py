@@ -71,9 +71,9 @@ class StaffFormField(AbstractFormField):
 
 
 class StaffFormPage(BaseFormPage):
-    template = 'patterns/pages/people/person_page.html'
+    template = 'patterns/pages/person/person_page.html'
 
-    parent_page_types = ['people.PersonIndex']
+    parent_page_types = ['person.PersonIndex']
     subpage_types = []
 
     first_name = models.CharField(max_length=255)
@@ -154,29 +154,29 @@ class StaffFormPage(BaseFormPage):
 
 
 class PersonIndex(BasePage):
-    template = 'patterns/pages/people/person_index_page.html'
+    template = 'patterns/pages/person/person_index_page.html'
 
     # Only allow creating HomePages at the root level
     parent_page_types = ["wagtailcore.Page"]
-    subpage_types = ['PersonFormPage']
+    subpage_types = ['StaffFormPage']
 
 
     class Meta:
-        verbose_name = "People Index"
+        verbose_name = "Person Index"
 
     def get_context(self, request, *args, **kwargs):
-        people = PersonFormPage.objects.live().public().descendant_of(self).order_by('slug')
+        person = PersonFormPage.objects.live().public().descendant_of(self).order_by('slug')
 
         page_number = request.GET.get('page', 1)
-        paginator = Paginator(people, settings.DEFAULT_PER_PAGE)
+        paginator = Paginator(person, settings.DEFAULT_PER_PAGE)
         try:
-            people = paginator.page(page_number)
+            person = paginator.page(page_number)
         except PageNotAnInteger:
-            people = paginator.page(1)
+            person = paginator.page(1)
         except EmptyPage:
-            people = paginator.page(paginator.num_pages)
+            person = paginator.page(paginator.num_pages)
 
         context = super().get_context(request, *args, **kwargs)
-        context.update(people=people)
+        context.update(person=person)
 
         return context

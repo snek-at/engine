@@ -7,7 +7,7 @@ class Migration(migrations.Migration):
 
     dependencies = [
         ('user', '0002_initial_data'),
-        ('people', '0007_auto_20200807_2234'),
+        ('person', '0007_auto_20200807_2234'),
     ]
 
     operations = [

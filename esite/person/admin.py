@@ -5,9 +5,9 @@ from .models import Person
 # Register your registration related models here.
 
 
-class PeopleAdmin(ModelAdmin):
+class PersonAdmin(ModelAdmin):
     model = Person
-    menu_label = "People"
+    menu_label = "Person"
     menu_icon = "mail"
     menu_order = 290
     add_to_settings_menu = False
@@ -26,4 +26,4 @@ class PeopleAdmin(ModelAdmin):
     )
 
 
-# modeladmin_register(RegistrationAdmin)
+# modeladmin_register(PersonAdmin)

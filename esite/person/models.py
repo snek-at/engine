@@ -75,21 +75,21 @@ class Person(get_user_model()):
     objects = ProxyManager()
 
     # Panels/fields to fill in the Add enterprise form
-    panels = [
-        FieldPanel("is_enterprise"),
-        FieldPanel("date_joined"),
-        # FieldPanel('title'),
-        # FieldPanel('first_name'),
-        # FieldPanel('last_name'),
-        # FieldPanel('email'),
-        # FieldPanel('telephone'),
-        # FieldPanel('address'),
-        # FieldPanel('zipCode'),
-        # FieldPanel('city'),
-        # FieldPanel('country'),
-        # FieldPanel('newsletter'),
-        # FieldPanel('cache'),
-    ]
+    # panels = [
+    #     FieldPanel("is_enterprise"),
+    #     FieldPanel("date_joined"),
+    #     # FieldPanel('title'),
+    #     # FieldPanel('first_name'),
+    #     # FieldPanel('last_name'),
+    #     # FieldPanel('email'),
+    #     # FieldPanel('telephone'),
+    #     # FieldPanel('address'),
+    #     # FieldPanel('zipCode'),
+    #     # FieldPanel('city'),
+    #     # FieldPanel('country'),
+    #     # FieldPanel('newsletter'),
+    #     # FieldPanel('cache'),
+    # ]
 
     def __str__(self):
         return self.username
@@ -106,10 +106,14 @@ class PersonFormField(AbstractFormField):
 
 
 class PersonFormPage(BaseFormPage):
-    template = 'patterns/pages/people/person_page.html'
+    template = 'patterns/pages/person/person_page.html'
 
-    parent_page_types = ['people.PersonIndex']
+    parent_page_types = ['person.PersonIndex']
     subpage_types = []
+
+
+    class Meta:
+        verbose_name = "Person Form Page"
 
     first_name = models.CharField(max_length=255)
     last_name = models.CharField(max_length=255)
@@ -146,6 +150,7 @@ class PersonFormPage(BaseFormPage):
         FieldPanel('display_workplace'),
         FieldPanel('job_title'),
         InlinePanel('social_media_profile', label='Social accounts'),
+        InlinePanel('profile_fields', label='Profile'),
         MultiFieldPanel([
             FieldPanel('email'),
             FieldPanel('display_email'),
@@ -189,7 +194,7 @@ class PersonFormPage(BaseFormPage):
 
 
 class PersonIndex(BasePage):
-    template = 'patterns/pages/people/person_index_page.html'
+    template = 'patterns/pages/person/person_index_page.html'
 
     # Only allow creating HomePages at the root level
     parent_page_types = ["wagtailcore.Page"]
@@ -197,21 +202,21 @@ class PersonIndex(BasePage):
 
 
     class Meta:
-        verbose_name = "People Index"
+        verbose_name = "Person Index"
 
     def get_context(self, request, *args, **kwargs):
-        people = PersonFormPage.objects.live().public().descendant_of(self).order_by('slug')
+        person = PersonFormPage.objects.live().public().descendant_of(self).order_by('slug')
 
         page_number = request.GET.get('page', 1)
-        paginator = Paginator(people, settings.DEFAULT_PER_PAGE)
+        paginator = Paginator(person, settings.DEFAULT_PER_PAGE)
         try:
-            people = paginator.page(page_number)
+            person = paginator.page(page_number)
         except PageNotAnInteger:
-            people = paginator.page(1)
+            person = paginator.page(1)
         except EmptyPage:
-            people = paginator.page(paginator.num_pages)
+            person = paginator.page(paginator.num_pages)
 
         context = super().get_context(request, *args, **kwargs)
-        context.update(people=people)
+        context.update(person=person)
 
         return context

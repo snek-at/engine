@@ -63,21 +63,21 @@ class Enterprise(get_user_model()):
     objects = ProxyManager()
 
     # Panels/fields to fill in the Add enterprise form
-    panels = [
-        FieldPanel("is_enterprise"),
-        FieldPanel("date_joined"),
-        # FieldPanel('title'),
-        # FieldPanel('first_name'),
-        # FieldPanel('last_name'),
-        # FieldPanel('email'),
-        # FieldPanel('telephone'),
-        # FieldPanel('address'),
-        # FieldPanel('zipCode'),
-        # FieldPanel('city'),
-        # FieldPanel('country'),
-        # FieldPanel('newsletter'),
-        # FieldPanel('cache'),
-    ]
+    # panels = [
+    #     FieldPanel("is_enterprise"),
+    #     FieldPanel("date_joined"),
+    #     # FieldPanel('title'),
+    #     # FieldPanel('first_name'),
+    #     # FieldPanel('last_name'),
+    #     # FieldPanel('email'),
+    #     # FieldPanel('telephone'),
+    #     # FieldPanel('address'),
+    #     # FieldPanel('zipCode'),
+    #     # FieldPanel('city'),
+    #     # FieldPanel('country'),
+    #     # FieldPanel('newsletter'),
+    #     # FieldPanel('cache'),
+    # ]
 
     def __str__(self):
         return self.username
@@ -321,10 +321,14 @@ class EnterpriseFormSubmission(AbstractFormSubmission):
 class EnterpriseFormPage(BaseEmailFormPage):
     # Only allow creating HomePages at the root level
     parent_page_types = ["EnterpriseIndex"]
+    subpage_types = []
     graphql_fields = []
 
+
+    class Meta:
+        verbose_name = "Enterprise Form Page"
+
     """[Tabs]
-    
     Wagtail content and API definition of all tabs
     """
     # Overview
@@ -590,6 +594,10 @@ class EnterpriseIndex(BasePage):
     # Only allow creating HomePages at the root level
     parent_page_types = ["wagtailcore.Page"]
     subpage_types = ['EnterpriseFormPage']
+
+
+    class Meta:
+        verbose_name = "Enterprise Index"
 
     def get_context(self, request, *args, **kwargs):
         enterprise = EnterpriseFormPage.objects.live().public().descendant_of(self).order_by('slug')
