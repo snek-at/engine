@@ -36,6 +36,7 @@ INSTALLED_APPS = [
     "esite.enterprise",
     "esite.caching",
     "esite.person",
+    #"esite.search",
     # Our own pages
     "esite.home",
     "esite.registration",
@@ -78,6 +79,7 @@ INSTALLED_APPS = [
     "channels",
     "wagtailfontawesome",
     "pattern_library",
+    'esite.project_styleguide.apps.ProjectStyleguideConfig',
 ]
 
 # > Middleware Definition

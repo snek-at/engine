@@ -72,7 +72,7 @@
         <nav class="navbar navbar-expand-lg navbar-light bg-white pt-1 pb-1" aria-label="Primary">
             <div class="container">
                 <a class="navbar-brand" href="{% slugurl 'home' %}">
-                    helsenorgelab.no
+                    snek.at
                 </a>
                 <div class="collapse navbar-collapse" id="navbarContent">
                     {% primarynav %}
@@ -94,7 +94,7 @@
         <div class="collapse navbar-collapse bg-dark" id="headerSearch">
             <div class="container py-1">
                 <form action="{% url 'search' %}" method="get" role="search" class="form-inline">
-                    <span class="sr-only">S&oslash;k p&aring; helsenorgelab.no</span>
+                    <span class="sr-only">S&oslash;k p&aring; snek.at</span>
                     <input class="input form-control mr-0_25 rounded-pill" id="navbarSearch" type="text" placeholder="S&oslash;keord" name="query" {% if search_query %} value="{{ search_query }}"{% endif %}>
                     <button class="btn btn-outline-light px-1 my-2 my-sm-0 rounded-pill" type="submit">
                                 S&oslash;k

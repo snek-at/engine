@@ -1,5 +1,6 @@
 from django.contrib.auth import get_user_model
 from wagtail.core.models import Page as wagtailPage
+from graphene.types.generic import GenericScalar
 
 import graphene
 import graphql_jwt

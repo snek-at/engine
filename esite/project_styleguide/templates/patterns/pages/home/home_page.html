@@ -3,7 +3,7 @@
 
 {% block content %}
 
-        <h1 class="sr-only">helsenorgelab.no</h1>
+        <h1 class="sr-only">snek.at</h1>
 
         {% if page.featured_image %}
 
@@ -37,7 +37,7 @@
 
                 <h2 class="display-3 pt-5 pb-2 text-primary">{{ articles_title|default:"Artikler" }}</h2>
 
-        
+
                 {% if article_top.listing_image or article_top.featured_image %}
                     {% include "patterns/molecules/card/card-page-horizontal.html" with page=article_top %}
                 {% else %}
@@ -93,10 +93,10 @@
             <section id="news" class="container">
                 <h2 class="display-3 text-primary pt-5 pb-1">{{ news_title|default:"Notert" }}</h2>
                 {% include "patterns/molecules/lists/list_group-links.html" with linklist=latest_news %}
-                
+
                 {% if news_link %}
                     <p class="pt-1"><a href="{% pageurl news_link %}" class="btn btn-light">{{ news_linktext|default:"Flere nyheter" }}</a></p>
-                {% endif %} 
+                {% endif %}
             </section>
             {% endif %}
 
