@@ -3,16 +3,16 @@ from django.db import models
 from django.core.validators import RegexValidator
 from wagtail.admin.edit_handlers import FieldPanel
 
-# from grapple.models import (
-#    GraphQLField,
-#    GraphQLString,
-#    GraphQLStreamfield,
-# )
+from esite.bifrost.models import (
+    GraphQLField,
+    GraphQLString,
+    GraphQLStreamfield,
+)
 
 # Create your homepage related models here.
 
 
-class GiftCode(models.Model):
+class Redemption(models.Model):
     hkey = models.CharField(primary_key=True, max_length=14)
     bid = models.CharField(
         null=True,
@@ -40,7 +40,7 @@ class GiftCode(models.Model):
     )
     is_active = models.BooleanField(null=False, blank=False, default=True)
 
-    panels = [FieldPanel("hkey"), FieldPanel("bid"), FieldPanel("tid")]
+    #panels = [FieldPanel("hkey"), FieldPanel("bid"), FieldPanel("tid")]
 
     def __str__(self):
         return self.hkey

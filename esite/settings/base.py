@@ -32,7 +32,7 @@ INSTALLED_APPS = [
     "esite.images",
     "esite.navigation",
     "esite.colorfield",
-    "esite.gift",
+    "esite.redemption",
     "esite.enterprise",
     "esite.caching",
     "esite.person",
@@ -182,6 +182,7 @@ BIFROST_APPS = {
     "talk": "",
     "enterprise": "",
     "person": "",
+    "redemption": "",
 }
 
 # > Password Validation

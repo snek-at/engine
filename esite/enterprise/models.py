@@ -1,5 +1,7 @@
 import uuid
 import json
+from django.conf import settings
+from django.core.paginator import EmptyPage, PageNotAnInteger, Paginator
 from django.contrib.auth import get_user_model
 from django.contrib.auth.models import AbstractUser, BaseUserManager
 from django.core.serializers.json import DjangoJSONEncoder
@@ -12,6 +14,7 @@ from wagtail.admin.edit_handlers import (
     InlinePanel,
     MultiFieldPanel,
 )
+from wagtail.admin.mail import send_mail
 from wagtail.core.fields import StreamField, RichTextField
 from wagtail.snippets.edit_handlers import SnippetChooserPanel
 from wagtail.admin.edit_handlers import (
@@ -33,7 +36,8 @@ from wagtail.contrib.forms.models import (
     AbstractEmailForm,
     AbstractFormSubmission,
 )
-from modelcluster.fields import ParentalKey
+from modelcluster.fields import ParentalKey, ParentalManyToManyField
+from modelcluster.models import ClusterableModel
 from esite.utils.models import BasePage, BaseEmailFormPage
 from esite.bifrost.helpers import register_streamfield_block
 from esite.bifrost.models import (
@@ -46,6 +50,8 @@ from esite.bifrost.models import (
     GraphQLSnippet,
     GraphQLEmbed,
     GraphQLStreamfield,
+    GraphQLCollection,
+    GraphQLForeignKey,
 )
 from esite.colorfield.blocks import ColorBlock
 from wagtail.images.blocks import ImageChooserBlock
@@ -87,225 +93,180 @@ class Enterprise(get_user_model()):
         ordering = ("date_joined",)
 
 
-# > Overview Section
-@register_streamfield_block
-class _S_OverviewBlock(blocks.StructBlock):
-    # feed = blocks.StreamBlock(
-    #     [("feed", Overview_FeedBlock(null=True, blank=False, icon="fa-newspaper-o"),)],
-    #     null=True,
-    #     blank=False,
-    # )
-    # total contribs of all projects
-    # statistic of past and current week
-    # statistic of al lyears # current
-    # source code statistic language
-    # source code statistic lines of code
-    pass
-
-
-#  "commit": "e5ab38813bfc2bb100352adcf525a98caf396411",
-#       "author": "Administrator \u003cadmin@example.com\u003e",
-#       "date": "Thu Jul 30 11:15:12 2020 +0000",
-#       "message": "Update-.gitlab-ci.yml",
-#       "files": [
-#         {
-#           "insertions": "1",
-#           "deletions": "1",
-#           "path": ".gitlab-ci.yml",
-#           "raw_changes": "\u001b[31m-    paths: [log.log]\u001b[m\n\u001b[32m+\u001b[m\u001b[32m    paths: [tmp.json]\u001b[m\n"
-#         }
-#       ]
-
-
-@register_streamfield_block
-class CodeStatisticLanguageBlock(blocks.StructBlock):
-    language_name = blocks.CharBlock()
-    color = ColorBlock()
-    insertions = blocks.CharBlock()
-    deletions = blocks.CharBlock()
+# > Models
+class ContributionFeed(ClusterableModel):
+    page = ParentalKey(
+        "EnterpriseFormPage",
+        related_name="epfeed",
+        on_delete=models.SET_NULL,
+        null=True,
+    )
+    type = models.CharField(null=True, max_length=255)
+    cid = models.CharField(null=True, max_length=255)
+    datetime = models.DateTimeField(null=True)
+    message = models.CharField(null=True, max_length=255)
+    files = ParentalManyToManyField(
+        "ContributionFile", related_name="files", null=True, blank=True
+    )
 
     graphql_fields = [
-        GraphQLString("language_name"),
-        GraphQLString("color"),
-        GraphQLString("insertions"),
-        GraphQLString("deletions"),
+        GraphQLForeignKey("page", content_type="enterprise.Contributor"),
+        GraphQLString("type"),
+        GraphQLString("cid"),
+        GraphQLString("datetime"),
+        GraphQLString("message"),
+        GraphQLCollection(
+            GraphQLForeignKey, "files", "enterprise.ContributionFile"
+        ),
     ]
 
-
-@register_streamfield_block
-class CodeStatisticBlock(blocks.StructBlock):
-    insertions = blocks.CharBlock()
-    deletions = blocks.CharBlock()
-    date = blocks.DateTimeBlock()
-
-    graphql_fields = [
-        GraphQLString("insertions"),
-        GraphQLString("deletions"),
-        GraphQLString("date"),
-    ]
+    def __str__(self):
+        # (commit) cid
+        return f"({self.type}) {self.cid}"
 
 
-@register_streamfield_block
-class FeedCommitFileBlock(blocks.StructBlock):
-    insertions = blocks.CharBlock()
-    deletions = blocks.CharBlock()
-    path = blocks.CharBlock()
-    raw_changes = blocks.TextBlock()
+class ContributionFile(models.Model):
+    feed = ParentalKey(
+        "EnterpriseFormPage",
+        related_name="epfeed2",
+        on_delete=models.SET_NULL,
+        null=True,
+    )
+    insertions = models.IntegerField(null=True)
+    deletions = models.IntegerField(null=True)
+    path = models.CharField(null=True, max_length=255)
+    raw_changes = models.TextField(null=True, max_length=255)
 
     graphql_fields = [
+        GraphQLForeignKey("page", content_type="enterprise.Contributor"),
         GraphQLString("insertions"),
         GraphQLString("deletions"),
         GraphQLString("path"),
         GraphQLString("raw_changes"),
     ]
 
-
-@register_streamfield_block
-class FeedCommitBlock(blocks.StructBlock):
-    contribution_id = blocks.CharBlock()
-    date = blocks.DateTimeBlock()
-    message = blocks.TextBlock()
-    files = blocks.StreamBlock(
-        [("file", FeedCommitFileBlock(null=True, blank=True, icon="fa-newspaper-o"),)],
-        null=True,
-        blank=True,
-    )
-
-    graphql_fields = [
-        GraphQLString("contribution_id"),
-        GraphQLString("date"),
-        GraphQLString("message"),
-        GraphQLStreamfield("files"),
-    ]
+    def __str__(self):
+        # /src/test.py (+100/-200)
+        return f"{self.path} (+{self.insertions}/-{self.deletions})"
 
 
-@register_streamfield_block
-class FeedBlock(blocks.StructBlock):
-    datetime = blocks.DateTimeBlock(null=True, required=True)
-    data = blocks.StreamBlock(
-        [
-            ("commit", FeedCommitBlock(null=True, blank=True, icon="fa-newspaper-o"),),
-            ("issue", FeedCommitBlock(null=True, blank=True, icon="fa-newspaper-o"),),
-            ("pr", FeedCommitBlock(null=True, blank=True, icon="fa-newspaper-o"),),
-            ("review", FeedCommitBlock(null=True, blank=True, icon="fa-newspaper-o"),),
-        ],
-        null=True,
-        blank=True,
-    )
-
-    graphql_fields = [
-        GraphQLString("contribution_id"),
-        GraphQLStreamfield("data"),
-    ]
-
-
-@register_streamfield_block
-class _S_ScpPageUser(blocks.StructBlock):
-    name = blocks.CharBlock()
-    username = blocks.CharBlock()
-    active = blocks.BooleanBlock(default=False)
-    avatar = ImageChooserBlock()
-    feed = blocks.StreamBlock(
-        [("feed", FeedBlock(null=True, blank=False, icon="fa-newspaper-o"),)],
-        null=True,
-        blank=True,
-    )
-    history = blocks.StreamBlock(
-        [
-            (
-                "history",
-                CodeStatisticBlock(null=True, blank=False, icon="fa-newspaper-o"),
-            )
-        ],
-        null=True,
-        blank=True,
-    )
-
-    languages = blocks.StreamBlock(
-        [
-            (
-                "language",
-                CodeStatisticLanguageBlock(
-                    null=True, blank=True, icon="fa-newspaper-o"
-                ),
-            )
-        ],
-        null=True,
-        blank=True,
-    )
+class CodeLanguageStatistic(models.Model):
+    name = models.CharField(null=True, max_length=255, default="Unkown")
+    color = models.CharField(null=True, max_length=255, default="Unkown")
+    insertions = models.IntegerField(null=True, default="Unkown")
+    deletions = models.IntegerField(null=True, default="Unkown")
 
     graphql_fields = [
         GraphQLString("name"),
-        GraphQLString("username"),
-        GraphQLString("active"),
-        GraphQLString("avatar"),
-        GraphQLStreamfield("feed"),
-        GraphQLStreamfield("history"),
-        GraphQLStreamfield("languages"),
+        GraphQLString("color"),
+        GraphQLString("insertions"),
+        GraphQLString("deletions"),
     ]
 
 
-@register_streamfield_block
-class _S_ProjectBlock(blocks.StructBlock):
-    name = blocks.CharBlock(null=True, required=True, help_text="Project name")
-    url = blocks.URLBlock(
+class CodeTransitionStatistic(models.Model):
+    insertions = models.IntegerField(null=True, default="Unkown")
+    deletions = models.IntegerField(null=True, default="Unkown")
+    datetime = models.DateTimeField(null=True)
+
+    graphql_fields = [
+        GraphQLString("insertions"),
+        GraphQLString("deletions"),
+        GraphQLString("datetime"),
+    ]
+
+
+class Contributor(ClusterableModel):
+    page = ParentalKey(
+        "EnterpriseFormPage",
+        related_name="epcontributor",
+        on_delete=models.SET_NULL,
         null=True,
-        required=True,
-        help_text="Important! Format https://www.domain.tld/xyz",
     )
-    description = blocks.TextBlock(
-        null=True, required=False, help_text="Project description"
+    name = models.CharField(null=True, max_length=255, default="Unkown")
+    username = models.CharField(null=True, max_length=255, default="Unkown")
+    active = models.BooleanField(default=True)
+    avatar = models.ImageField()
+    feed = ParentalManyToManyField(
+        "ContributionFeed", related_name="contributor_feed", blank=True
     )
-
-    maintainer_name = blocks.CharBlock()
-    maintainer_username = blocks.CharBlock()
-    maintainer_email = blocks.EmailBlock()
-
-    contributors = blocks.StreamBlock(
-        [("contributor", _S_ScpPageUser(null=True, blank=False, icon="fa-user"),)]
+    codelanguages = ParentalManyToManyField(
+        "CodeLanguageStatistic", related_name="contributor_codelanguages", blank=True
     )
-
-    feed = blocks.StreamBlock(
-        [("feed", FeedBlock(null=True, blank=False, icon="fa-newspaper-o"),)],
-        null=True,
-        blank=True,
-    )
-
-    history = blocks.StreamBlock(
-        [
-            (
-                "history",
-                CodeStatisticBlock(null=True, blank=False, icon="fa-newspaper-o"),
-            )
-        ],
-        null=True,
-        blank=True,
-    )
-
-    languages = blocks.StreamBlock(
-        [
-            (
-                "language",
-                CodeStatisticLanguageBlock(
-                    null=True, blank=True, icon="fa-newspaper-o"
-                ),
-            )
-        ],
-        null=True,
-        blank=True,
+    codetransition = ParentalManyToManyField(
+        "CodeTransitionStatistic", related_name="contributor_codetransition", blank=True
     )
 
     graphql_fields = [
+        GraphQLForeignKey("page", content_type="enterprise.Contributor"),
+        GraphQLString("name"),
+        GraphQLString("username"),
+        GraphQLBoolean("active"),
+        GraphQLImage("avatar"),
+        GraphQLCollection(GraphQLForeignKey, "feed", "enterprise.ContributionFeed"),
+        GraphQLCollection(
+            GraphQLForeignKey, "codelanguages", "enterprise.CodeLanguageStatistic"
+        ),
+        GraphQLCollection(
+            GraphQLForeignKey,
+            "codetransition",
+            "enterprise.CodeTransitionStatistic",
+        ),
+    ]
+
+    def __str__(self):
+        return f"{self.username}"
+
+
+class Project(ClusterableModel):
+    page = ParentalKey(
+        "EnterpriseFormPage",
+        related_name="opsprojects",
+        on_delete=models.SET_NULL,
+        null=True,
+    )
+
+    name = models.CharField(null=True, blank=True, max_length=255, default="Unkown")
+    url = models.URLField(null=True, blank=True, max_length=255, default="Unkown")
+    description = models.TextField(null=True, blank=True, default="Unkown")
+    owner_name = models.CharField(
+        null=True, blank=True, max_length=255, default="Unkown"
+    )
+    owner_username = models.CharField(
+        null=True, blank=True, max_length=255, default="Unkown"
+    )
+    owner_email = models.EmailField(null=True, blank=True, default="Unkown")
+    contributors = ParentalManyToManyField(
+        "Contributor", related_name="project_contributor", blank=True
+    )
+    feed = ParentalManyToManyField(
+        "ContributionFeed", related_name="project_feed", blank=True
+    )
+    codelanguages = ParentalManyToManyField(
+        "CodeLanguageStatistic", related_name="project_codelanguages", blank=True
+    )
+    codetransition = ParentalManyToManyField(
+        "CodeTransitionStatistic", related_name="project_codetransition", blank=True
+    )
+
+    graphql_fields = [
+        GraphQLForeignKey("page", content_type="enterprise.Project"),
         GraphQLString("name"),
         GraphQLString("url"),
         GraphQLString("description"),
-        GraphQLString("maintainer_name"),
-        GraphQLString("maintainer_username"),
-        GraphQLString("maintainer_email"),
-        GraphQLStreamfield("contributors"),
-        GraphQLStreamfield("feed"),
-        GraphQLStreamfield("history"),
-        GraphQLStreamfield("languages"),
+        GraphQLString("owner_name"),
+        GraphQLString("owner_username"),
+        GraphQLString("owner_email"),
+        GraphQLCollection(GraphQLForeignKey, "feed", "enterprise.ContributionFeed"),
+        GraphQLCollection(
+            GraphQLForeignKey, "contributors", "enterprise.Contributor"
+        ),
+        GraphQLCollection(
+            GraphQLForeignKey, "codelanguages", "enterprise.CodeLanguageStatistic"
+        ),
+        GraphQLCollection(
+            GraphQLForeignKey, "codetransition", "enterprise.CodeLanguageStatistic"
+        ),
     ]
 
 
@@ -315,15 +276,16 @@ class EnterpriseFormField(AbstractFormField):
         "EnterpriseFormPage", on_delete=models.CASCADE, related_name="form_fields"
     )
 
+
 class EnterpriseFormSubmission(AbstractFormSubmission):
     user = models.ForeignKey(get_user_model(), on_delete=models.CASCADE)
+
 
 class EnterpriseFormPage(BaseEmailFormPage):
     # Only allow creating HomePages at the root level
     parent_page_types = ["EnterpriseIndex"]
     subpage_types = []
     graphql_fields = []
-
 
     class Meta:
         verbose_name = "Enterprise Form Page"
@@ -332,75 +294,23 @@ class EnterpriseFormPage(BaseEmailFormPage):
     Wagtail content and API definition of all tabs
     """
     # Overview
-    overview_tab_name = models.CharField(null=True, blank=True, max_length=255)
-    feed_section = fields.StreamField(
-        [("feed", FeedBlock(null=True, blank=False, icon="fa-newspaper-o"),)],
-        null=True,
-        blank=True,
-    )
-    history_section = fields.StreamField(
-        [
-            (
-                "history",
-                CodeStatisticBlock(null=True, blank=False, icon="fa-newspaper-o"),
-            )
-        ],
-        null=True,
-        blank=True,
-    )
-    languages_section = fields.StreamField(
-        [
-            (
-                "language",
-                CodeStatisticLanguageBlock(
-                    null=True, blank=True, icon="fa-newspaper-o"
-                ),
-            )
-        ],
-        null=True,
-        blank=True,
-    )
-
-    overview_panels = [
-        FieldPanel("overview_tab_name"),
-        StreamFieldPanel("feed_section"),
-        StreamFieldPanel("history_section"),
-        StreamFieldPanel("languages_section"),
+    overview_panel = [
+        # InlinePanel("epfeed", label="Contributions", heading="Contribution Feed"),
+        # InlinePanel("opsprojects", label="Project", heading="Projects"),
+        # TestPanel("opsprojects")
+        # InlinePanel("epcontributor", label="Contributor", heading="Contributors"),
     ]
-
-    graphql_fields += [
-        GraphQLString("overview_tab_name"),
-        GraphQLStreamfield("feed_section"),
-        GraphQLStreamfield("history_section"),
-        GraphQLStreamfield("languages_section"),
+    graphql_fields = [
+        # GraphQLForeignKey("opsprojects", "enterprise.Project"),
+        GraphQLCollection(GraphQLForeignKey, "opsprojects", "enterprise.Project"),
+        GraphQLCollection(
+            GraphQLForeignKey, "epcontributor", "enterprise.Contributor"
+        ),
+        GraphQLCollection(
+            GraphQLForeignKey, "epfeed", "enterprise.ContributionFeed"
+        ),
     ]
-
     # Users
-    users_tab_name = models.CharField(null=True, blank=True, max_length=255)
-    users_section = fields.StreamField(
-        [("S_UserBlock", _S_ScpPageUser(null=True, icon="cogs")),],
-        null=True,
-        blank=True,
-    )
-
-    user_panels = [FieldPanel("users_tab_name"), StreamFieldPanel("users_section")]
-    # Projects
-    project_tab_name = models.CharField(null=True, blank=True, max_length=255)
-    projects_section = fields.StreamField(
-        [("S_ProjectBlock", _S_ProjectBlock(null=True, icon="cogs")),],
-        null=True,
-        blank=True,
-    )
-
-    project_panels = [
-        FieldPanel("project_tab_name"),
-        StreamFieldPanel("projects_section"),
-    ]
-
-    graphql_fields += [
-        GraphQLString("project_tab_name"),
-        GraphQLStreamfield("projects_section"),
-    ]
 
     # Imprint
     imprint_tab_name = models.CharField(null=True, blank=True, max_length=255)
@@ -513,9 +423,10 @@ class EnterpriseFormPage(BaseEmailFormPage):
 
     edit_handler = TabbedInterface(
         [
-            ObjectList(Page.content_panels + overview_panels, heading="Overview"),
-            ObjectList(user_panels, heading="Users"),
-            ObjectList(project_panels, heading="Projects"),
+            # ObjectList(Page.content_panels + overview_panels, heading="Overview"),
+            ObjectList(Page.content_panels, heading="Overview"),
+            # ObjectList(user_panels, heading="Users"),
+            # ObjectList(project_panels, heading="Projects"),
             ObjectList(imprint_panels, heading="Imprint"),
             ObjectList(form_panels, heading="Form"),
             ObjectList(
@@ -526,22 +437,126 @@ class EnterpriseFormPage(BaseEmailFormPage):
         ]
     )
 
+    def generate(self):
+        from ...core.services import mongodb
+
+        data = mongodb.get_collection("gitlab").aggregate(
+            [
+                {"$match": {"enterprise_page_slug": f"{self.slug}"}},
+                {"$unwind": "$projects"},
+                {"$unwind": "$projects.events"},
+                {
+                    "$lookup": {
+                        "from": "pipeline",
+                        "let": {"commit_id": "$projects.events.id"},
+                        "pipeline": [
+                            {"$unwind": "$Log"},
+                            {
+                                "$match": {
+                                    "$expr": {"$eq": ["$$commit_id", "$Log.commit"]},
+                                }
+                            },
+                        ],
+                        "as": "projects.events.asset",
+                    }
+                },
+                {
+                    "$unwind": {
+                        "path": "$projects.events.asset",
+                        "preserveNullAndEmptyArrays": True,
+                    }
+                },
+                {
+                    "$group": {
+                        "_id": "$projects.id",
+                        "name": {"$first": "$projects.name"},
+                        "url": {"$first": "$projects.http_url_to_repo"},
+                        "description": {"$first": "$projects.description"},
+                        "maintainer_name": {"$first": "$projects.owner.name"},
+                        "maintainer_username": {"$first": "$projects.owner.username"},
+                        "maintainer_email": {"$first": "$projects.owner.email"},
+                        "events": {"$push": "$projects.events"},
+                    }
+                },
+            ]
+        )
+        Project.objects.all().delete()
+        Contributor.objects.all().delete()
+        ContributionFeed.objects.all().delete()
+        ContributionFile.objects.all().delete()
+        for project in data:
+            p, created = Project.objects.get_or_create(
+                page=self,
+                name=project["name"],
+                url=project["url"],
+                description=project["description"],
+                owner_name=project["maintainer_name"],
+                owner_username=project["maintainer_username"],
+                owner_email=project["maintainer_email"],
+            )
+
+            for event in project["events"]:
+
+                c, created = ContributionFeed.objects.get_or_create(
+                    page=self,
+                    type="commit",
+                    datetime=event["created_at"],
+                    cid=event["id"],
+                    message=event["message"],
+                )
+
+                con, created = Contributor.objects.get_or_create(
+                    page=self,
+                    name=event["committer_name"],
+                    username=event["committer_email"],
+                )
+
+                try:
+                    files = event["asset"]["Log"]["files"]
+                    for file in files:
+                        cf, created = ContributionFile.objects.get_or_create(
+                            insertions=file["insertions"],
+                            deletions=file["deletions"],
+                            path=file["path"],
+                            raw_changes=file["raw_changes"],
+                        )
+
+                        c.files.add(cf)
+
+                        cts, created = CodeTransitionStatistic.objects.get_or_create(
+                            datetime=c.datetime,
+                            insertions=cf.insertions,
+                            deletions=cf.deletions,
+                        )
+
+                        con.codetransition.add(cts)
+                        p.codetransition.add(cts)
+                except:
+                    pass
+
+                con.feed.add(c)
+
+                p.contributors.add(con)
+                p.feed.add(c)
+
+            p.save()
+
+        # a = ContributionFile.objects.all()
+        # print(a)
+
     def get_submission_class(self):
-        return RegistrationFormSubmission
+        return EnterpriseFormSubmission
 
     # Create a new user
     def create_enterprise_user(
-        cache,
+        self, cache,
     ):
         # enter the data here
         user = get_user_model()(
-            username="anexia",
-            is_enterprise=True,
-            is_active=False,
-            cache=cache,
+            username="anexia", is_enterprise=True, is_active=False, cache=cache,
         )
 
-        user.set_password(password)
+        user.set_password("password")
 
         user.save()
 
@@ -587,22 +602,25 @@ class EnterpriseFormPage(BaseEmailFormPage):
             self.send_mail(form)
 
 
-
 class EnterpriseIndex(BasePage):
-    #template = 'patterns/pages/enterprise/person_index_page.html'
+    # template = 'patterns/pages/enterprise/person_index_page.html'
 
     # Only allow creating HomePages at the root level
     parent_page_types = ["wagtailcore.Page"]
-    subpage_types = ['EnterpriseFormPage']
-
+    subpage_types = ["EnterpriseFormPage"]
 
     class Meta:
         verbose_name = "Enterprise Index"
 
     def get_context(self, request, *args, **kwargs):
-        enterprise = EnterpriseFormPage.objects.live().public().descendant_of(self).order_by('slug')
+        enterprise = (
+            EnterpriseFormPage.objects.live()
+            .public()
+            .descendant_of(self)
+            .order_by("slug")
+        )
 
-        page_number = request.GET.get('page', 1)
+        page_number = request.GET.get("page", 1)
         paginator = Paginator(enterprise, settings.DEFAULT_PER_PAGE)
         try:
             enterprise = paginator.page(page_number)
