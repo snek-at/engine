@@ -14,7 +14,7 @@ from wagtail.core.models import Page
 
 from esite.user.models import User
 #from esite.profile.models import ProfilePage
-from esite.enterprise.models import Enterprise
+from esite.enterprises.models import Enterprise
 from esite.registration.schema import UserType
 
 # Create your registration related graphql schemes here.

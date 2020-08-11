@@ -130,7 +130,7 @@ class RegistrationFormField(AbstractFormField):
 
 class RegistrationFormPage(BaseEmailFormPage):
     # Only allow creating HomePages at the root level
-    parent_page_types = ["wagtailcore.Page"]
+    parent_page_types = ["home.HomePage"]
     subpage_types = []
 
 

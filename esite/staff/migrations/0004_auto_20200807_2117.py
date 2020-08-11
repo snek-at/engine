@@ -50,7 +50,7 @@ class Migration(migrations.Migration):
         migrations.AlterField(
             model_name='socialmediaprofile',
             name='person_page',
-            field=modelcluster.fields.ParentalKey(on_delete=django.db.models.deletion.CASCADE, related_name='social_media_profile', to='person.PersonFormPage'),
+            field=modelcluster.fields.ParentalKey(on_delete=django.db.models.deletion.CASCADE, related_name='social_media_profile', to='people.PersonFormPage'),
         ),
         migrations.DeleteModel(
             name='PersonPage',

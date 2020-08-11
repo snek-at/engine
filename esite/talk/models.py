@@ -38,7 +38,7 @@ from esite.utils.models import BasePage
 
 @register_streamfield_block
 class _E_CommentBlock(blocks.StructBlock):
-    comment_owner = blocks.PageChooserBlock(null=True, required=False, target_model="person.PersonFormPage", help_text="Owner of the comment")
+    comment_owner = blocks.PageChooserBlock(null=True, required=False, target_model="people.PersonFormPage", help_text="Owner of the comment")
     comment_datetime = blocks.DateTimeBlock(null=True, required=False)
     comment_message = blocks.TextBlock(null=True, required=False,  help_text="Other information")
 

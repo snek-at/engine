@@ -9,18 +9,14 @@
     <p class="lead">{{ page.introduction }}</p>
 
     <section class="authors-list">
-        {% if enterprise %}
-            {% for enterprise in enterprise %}
+        {% if enterprises %}
+            {% for enterprise in enterprises %}
                 <article class="enterprise pt-2">
                     <h3><a href="{% pageurl enterprise %}">{{ enterprise.title }}</a></h3>
 
-                    {% if enterprise.listing_summary or enterprise.introduction %}
-                        <p>{% firstof enterprise.listing_summary enterprise.introduction %}</p>
-                    {% endif %}
-                </article>
             {% endfor %}
 
-            {% include "patterns/molecules/pagination/pagination.html" with paginator_page=enterprise %}
+            {% include "patterns/molecules/pagination/pagination.html" with paginator_page=enterprises %}
         {% else %}
             {# no results #}
         {% endif %}

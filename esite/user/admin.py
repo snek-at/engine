@@ -5,8 +5,8 @@ from wagtail.contrib.modeladmin.options import (
     modeladmin_register,
 )
 
-from esite.person.admin import PersonAdmin
-from esite.enterprise.admin import EnterpriseAdmin
+from esite.people.admin import PersonAdmin
+from esite.enterprises.admin import EnterpriseAdmin
 from esite.registration.admin import RegistrationAdmin
 from esite.profile.admin import ProfileAdmin
 
@@ -14,16 +14,16 @@ from esite.profile.admin import ProfileAdmin
 
 
 class UserAdmin(ModelAdmin):
-   model = get_user_model()
-   menu_label = "Person"
-   menu_icon = "user"
-   menu_order = 290
-   add_to_settings_menu = False
-   exclude_from_explorer = False
+    model = get_user_model()
+    menu_label = "Person"
+    menu_icon = "user"
+    menu_order = 290
+    add_to_settings_menu = False
+    exclude_from_explorer = False
 
-   # Listed in the user overview
-   list_display = ("date_joined", "username", "email")
-   search_fields = ("date_joined", "username", "email")
+    # Listed in the user overview
+    list_display = ("date_joined", "username", "email")
+    search_fields = ("date_joined", "username", "email")
 
 
 class UserManagementAdmin(ModelAdminGroup):

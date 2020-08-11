@@ -23,7 +23,7 @@ class Migration(migrations.Migration):
                 ('choices', models.TextField(blank=True, help_text='Comma separated list of choices. Only applicable in checkboxes, radio and dropdown.', verbose_name='choices')),
                 ('default_value', models.CharField(blank=True, help_text='Default value. Comma separated values supported for checkboxes.', max_length=255, verbose_name='default value')),
                 ('help_text', models.CharField(blank=True, max_length=255, verbose_name='help text')),
-                ('page', modelcluster.fields.ParentalKey(on_delete=django.db.models.deletion.CASCADE, related_name='form_fields', to='person.PersonFormPage')),
+                ('page', modelcluster.fields.ParentalKey(on_delete=django.db.models.deletion.CASCADE, related_name='form_fields', to='people.PersonFormPage')),
             ],
             options={
                 'ordering': ['sort_order'],

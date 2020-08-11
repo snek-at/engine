@@ -69,7 +69,7 @@ class HomePage(BasePage):
 
     # Only allow creating HomePages at the root level
     parent_page_types = ["wagtailcore.Page"]
-    subpage_types = []
+    #subpage_types = []
 
 
     class Meta:

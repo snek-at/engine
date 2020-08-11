@@ -10,7 +10,7 @@ from graphql_jwt.decorators import (
     superuser_required,
 )
 
-from esite.enterprise.models import Enterprise
+from esite.enterprises.models import Enterprise
 
 # Create your registration related graphql schemes here.
 

@@ -33,9 +33,9 @@ INSTALLED_APPS = [
     "esite.navigation",
     "esite.colorfield",
     "esite.redemption",
-    "esite.enterprise",
+    "esite.enterprises",
+    "esite.people",
     "esite.caching",
-    "esite.person",
     #"esite.search",
     # Our own pages
     "esite.home",
@@ -182,8 +182,8 @@ BIFROST_APPS = {
     "registration": "",
     "profile": "",
     "talk": "",
-    "enterprise": "",
-    "person": "",
+    "enterprises": "",
+    "people": "",
     "redemption": "",
 }
 

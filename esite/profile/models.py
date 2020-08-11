@@ -23,7 +23,7 @@ from wagtail.snippets.blocks import SnippetChooserBlock
 from wagtail.contrib.settings.models import BaseSetting, register_setting
 from wagtail.images.edit_handlers import ImageChooserPanel
 from wagtail.contrib.forms.models import AbstractForm, AbstractFormField
-from modelcluster.fields import ParentalKey
+from modelcluster.fields import ParentalKey, ParentalManyToManyField
 
 from esite.colorfield.fields import ColorField, ColorAlphaField
 from esite.colorfield.blocks import ColorBlock, ColorAlphaBlock, GradientColorBlock
@@ -76,8 +76,8 @@ class _S_Calendar(blocks.StructBlock):
 
 # > Profilepage
 class Profile(models.Model):
-    page = ParentalKey(
-        "person.PersonFormPage", null=True, on_delete=models.CASCADE, related_name="profile_fields"
+    person = ParentalKey(
+        "people.PersonFormPage", related_name="profiles"
     )
     platformName = models.CharField(null=True, blank=True, max_length=250)
     platformUrl = models.CharField(null=True, blank=True, max_length=250)

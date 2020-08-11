@@ -12,7 +12,7 @@ from graphql_jwt.decorators import (
 
 from wagtail.core.models import Page
 
-from esite.enterprise.models import Enterprise
+from esite.enterprises.models import Enterprise
 from esite.registration.schema import UserType
 
 # Create your registration related graphql schemes here.

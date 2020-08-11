@@ -106,17 +106,17 @@ class ContributionFeed(ClusterableModel):
     datetime = models.DateTimeField(null=True)
     message = models.CharField(null=True, max_length=255)
     files = ParentalManyToManyField(
-        "ContributionFile", related_name="files", null=True, blank=True
+        "ContributionFile", related_name="files"
     )
 
     graphql_fields = [
-        GraphQLForeignKey("page", content_type="enterprise.Contributor"),
+        GraphQLForeignKey("page", content_type="enterprises.Contributor"),
         GraphQLString("type"),
         GraphQLString("cid"),
         GraphQLString("datetime"),
         GraphQLString("message"),
         GraphQLCollection(
-            GraphQLForeignKey, "files", "enterprise.ContributionFile"
+            GraphQLForeignKey, "files", "enterprises.ContributionFile"
         ),
     ]
 
@@ -138,7 +138,7 @@ class ContributionFile(models.Model):
     raw_changes = models.TextField(null=True, max_length=255)
 
     graphql_fields = [
-        GraphQLForeignKey("page", content_type="enterprise.Contributor"),
+        GraphQLForeignKey("page", content_type="enterprises.Contributor"),
         GraphQLString("insertions"),
         GraphQLString("deletions"),
         GraphQLString("path"),
@@ -198,19 +198,19 @@ class Contributor(ClusterableModel):
     )
 
     graphql_fields = [
-        GraphQLForeignKey("page", content_type="enterprise.Contributor"),
+        GraphQLForeignKey("page", content_type="enterprises.Contributor"),
         GraphQLString("name"),
         GraphQLString("username"),
         GraphQLBoolean("active"),
         GraphQLImage("avatar"),
-        GraphQLCollection(GraphQLForeignKey, "feed", "enterprise.ContributionFeed"),
+        GraphQLCollection(GraphQLForeignKey, "feed", "enterprises.ContributionFeed"),
         GraphQLCollection(
-            GraphQLForeignKey, "codelanguages", "enterprise.CodeLanguageStatistic"
+            GraphQLForeignKey, "codelanguages", "enterprises.CodeLanguageStatistic"
         ),
         GraphQLCollection(
             GraphQLForeignKey,
             "codetransition",
-            "enterprise.CodeTransitionStatistic",
+            "enterprises.CodeTransitionStatistic",
         ),
     ]
 
@@ -250,22 +250,25 @@ class Project(ClusterableModel):
     )
 
     graphql_fields = [
-        GraphQLForeignKey("page", content_type="enterprise.Project"),
+        GraphQLForeignKey("page", content_type="enterprises.Project"),
         GraphQLString("name"),
         GraphQLString("url"),
         GraphQLString("description"),
         GraphQLString("owner_name"),
         GraphQLString("owner_username"),
         GraphQLString("owner_email"),
-        GraphQLCollection(GraphQLForeignKey, "feed", "enterprise.ContributionFeed"),
+        GraphQLCollection(GraphQLForeignKey, "feed", "enterprises.ContributionFeed"),
         GraphQLCollection(
-            GraphQLForeignKey, "contributors", "enterprise.Contributor"
+            GraphQLForeignKey, "form_fields", "enterprises.EnterpriseFormPage"
         ),
         GraphQLCollection(
-            GraphQLForeignKey, "codelanguages", "enterprise.CodeLanguageStatistic"
+            GraphQLForeignKey, "contributors", "enterprises.Contributor"
         ),
         GraphQLCollection(
-            GraphQLForeignKey, "codetransition", "enterprise.CodeLanguageStatistic"
+            GraphQLForeignKey, "codelanguages", "enterprises.CodeLanguageStatistic"
+        ),
+        GraphQLCollection(
+            GraphQLForeignKey, "codetransition", "enterprises.CodeLanguageStatistic"
         ),
     ]
 
@@ -283,6 +286,8 @@ class EnterpriseFormSubmission(AbstractFormSubmission):
 
 class EnterpriseFormPage(BaseEmailFormPage):
     # Only allow creating HomePages at the root level
+    template = 'patterns/pages/enterprises/enterprise_index_page.html'
+
     parent_page_types = ["EnterpriseIndex"]
     subpage_types = []
     graphql_fields = []
@@ -301,13 +306,13 @@ class EnterpriseFormPage(BaseEmailFormPage):
         # InlinePanel("epcontributor", label="Contributor", heading="Contributors"),
     ]
     graphql_fields = [
-        # GraphQLForeignKey("opsprojects", "enterprise.Project"),
-        GraphQLCollection(GraphQLForeignKey, "opsprojects", "enterprise.Project"),
+        # GraphQLForeignKey("opsprojects", "enterprises.Project"),
+        GraphQLCollection(GraphQLForeignKey, "opsprojects", "enterprises.Project"),
         GraphQLCollection(
-            GraphQLForeignKey, "epcontributor", "enterprise.Contributor"
+            GraphQLForeignKey, "epcontributor", "enterprises.Contributor"
         ),
         GraphQLCollection(
-            GraphQLForeignKey, "epfeed", "enterprise.ContributionFeed"
+            GraphQLForeignKey, "epfeed", "enterprises.ContributionFeed"
         ),
     ]
     # Users
@@ -603,33 +608,28 @@ class EnterpriseFormPage(BaseEmailFormPage):
 
 
 class EnterpriseIndex(BasePage):
-    # template = 'patterns/pages/enterprise/person_index_page.html'
+    template = 'patterns/pages/enterprises/enterprise_index_page.html'
 
     # Only allow creating HomePages at the root level
-    parent_page_types = ["wagtailcore.Page"]
+    parent_page_types = ["home.HomePage"]
     subpage_types = ["EnterpriseFormPage"]
 
     class Meta:
         verbose_name = "Enterprise Index"
 
     def get_context(self, request, *args, **kwargs):
-        enterprise = (
-            EnterpriseFormPage.objects.live()
-            .public()
-            .descendant_of(self)
-            .order_by("slug")
-        )
+        enterprises = EnterpriseFormPage.objects.live().public().descendant_of(self).order_by('slug')
 
-        page_number = request.GET.get("page", 1)
-        paginator = Paginator(enterprise, settings.DEFAULT_PER_PAGE)
+        page_number = request.GET.get('page', 1)
+        paginator = Paginator(enterprises, settings.DEFAULT_PER_PAGE)
         try:
-            enterprise = paginator.page(page_number)
+            enterprises = paginator.page(page_number)
         except PageNotAnInteger:
-            enterprise = paginator.page(1)
+            enterprises = paginator.page(1)
         except EmptyPage:
-            enterprise = paginator.page(paginator.num_pages)
+            enterprises = paginator.page(paginator.num_pages)
 
         context = super().get_context(request, *args, **kwargs)
-        context.update(enterprise=enterprise)
+        context.update(enterprises=enterprises)
 
         return context

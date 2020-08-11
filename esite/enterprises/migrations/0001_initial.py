@@ -58,9 +58,9 @@ class Migration(migrations.Migration):
                 ('username', models.CharField(default='Unkown', max_length=255, null=True)),
                 ('active', models.BooleanField(default=True)),
                 ('avatar', models.ImageField(upload_to='')),
-                ('codelanguages', modelcluster.fields.ParentalManyToManyField(blank=True, related_name='contributor_codelanguages', to='enterprise.CodeLanguageStatistic')),
-                ('codetransition', modelcluster.fields.ParentalManyToManyField(blank=True, related_name='contributor_codetransition', to='enterprise.CodeTransitionStatistic')),
-                ('feed', modelcluster.fields.ParentalManyToManyField(blank=True, related_name='contributor_feed', to='enterprise.ContributionFeed')),
+                ('codelanguages', modelcluster.fields.ParentalManyToManyField(blank=True, related_name='contributor_codelanguages', to='enterprises.CodeLanguageStatistic')),
+                ('codetransition', modelcluster.fields.ParentalManyToManyField(blank=True, related_name='contributor_codetransition', to='enterprises.CodeTransitionStatistic')),
+                ('feed', modelcluster.fields.ParentalManyToManyField(blank=True, related_name='contributor_feed', to='enterprises.ContributionFeed')),
             ],
             options={
                 'abstract': False,
@@ -127,11 +127,11 @@ class Migration(migrations.Migration):
                 ('owner_name', models.CharField(blank=True, default='Unkown', max_length=255, null=True)),
                 ('owner_username', models.CharField(blank=True, default='Unkown', max_length=255, null=True)),
                 ('owner_email', models.EmailField(blank=True, default='Unkown', max_length=254, null=True)),
-                ('codelanguages', modelcluster.fields.ParentalManyToManyField(blank=True, related_name='project_codelanguages', to='enterprise.CodeLanguageStatistic')),
-                ('codetransition', modelcluster.fields.ParentalManyToManyField(blank=True, related_name='project_codetransition', to='enterprise.CodeTransitionStatistic')),
-                ('contributors', modelcluster.fields.ParentalManyToManyField(blank=True, related_name='project_contributor', to='enterprise.Contributor')),
-                ('feed', modelcluster.fields.ParentalManyToManyField(blank=True, related_name='project_feed', to='enterprise.ContributionFeed')),
-                ('page', modelcluster.fields.ParentalKey(null=True, on_delete=django.db.models.deletion.SET_NULL, related_name='opsprojects', to='enterprise.EnterpriseFormPage')),
+                ('codelanguages', modelcluster.fields.ParentalManyToManyField(blank=True, related_name='project_codelanguages', to='enterprises.CodeLanguageStatistic')),
+                ('codetransition', modelcluster.fields.ParentalManyToManyField(blank=True, related_name='project_codetransition', to='enterprises.CodeTransitionStatistic')),
+                ('contributors', modelcluster.fields.ParentalManyToManyField(blank=True, related_name='project_contributor', to='enterprises.Contributor')),
+                ('feed', modelcluster.fields.ParentalManyToManyField(blank=True, related_name='project_feed', to='enterprises.ContributionFeed')),
+                ('page', modelcluster.fields.ParentalKey(null=True, on_delete=django.db.models.deletion.SET_NULL, related_name='opsprojects', to='enterprises.EnterpriseFormPage')),
             ],
             options={
                 'abstract': False,
@@ -178,7 +178,7 @@ class Migration(migrations.Migration):
                 ('choices', models.TextField(blank=True, help_text='Comma separated list of choices. Only applicable in checkboxes, radio and dropdown.', verbose_name='choices')),
                 ('default_value', models.CharField(blank=True, help_text='Default value. Comma separated values supported for checkboxes.', max_length=255, verbose_name='default value')),
                 ('help_text', models.CharField(blank=True, max_length=255, verbose_name='help text')),
-                ('page', modelcluster.fields.ParentalKey(on_delete=django.db.models.deletion.CASCADE, related_name='form_fields', to='enterprise.EnterpriseFormPage')),
+                ('page', modelcluster.fields.ParentalKey(on_delete=django.db.models.deletion.CASCADE, related_name='form_fields', to='enterprises.EnterpriseFormPage')),
             ],
             options={
                 'ordering': ['sort_order'],
@@ -188,7 +188,7 @@ class Migration(migrations.Migration):
         migrations.AddField(
             model_name='contributor',
             name='page',
-            field=modelcluster.fields.ParentalKey(null=True, on_delete=django.db.models.deletion.SET_NULL, related_name='epcontributor', to='enterprise.EnterpriseFormPage'),
+            field=modelcluster.fields.ParentalKey(null=True, on_delete=django.db.models.deletion.SET_NULL, related_name='epcontributor', to='enterprises.EnterpriseFormPage'),
         ),
         migrations.CreateModel(
             name='ContributionFile',
@@ -198,17 +198,17 @@ class Migration(migrations.Migration):
                 ('deletions', models.IntegerField(null=True)),
                 ('path', models.CharField(max_length=255, null=True)),
                 ('raw_changes', models.TextField(max_length=255, null=True)),
-                ('feed', modelcluster.fields.ParentalKey(null=True, on_delete=django.db.models.deletion.SET_NULL, related_name='epfeed2', to='enterprise.EnterpriseFormPage')),
+                ('feed', modelcluster.fields.ParentalKey(null=True, on_delete=django.db.models.deletion.SET_NULL, related_name='epfeed2', to='enterprises.EnterpriseFormPage')),
             ],
         ),
         migrations.AddField(
             model_name='contributionfeed',
             name='files',
-            field=modelcluster.fields.ParentalManyToManyField(blank=True, null=True, related_name='files', to='enterprise.ContributionFile'),
+            field=modelcluster.fields.ParentalManyToManyField(blank=True, null=True, related_name='files', to='enterprises.ContributionFile'),
         ),
         migrations.AddField(
             model_name='contributionfeed',
             name='page',
-            field=modelcluster.fields.ParentalKey(null=True, on_delete=django.db.models.deletion.SET_NULL, related_name='epfeed', to='enterprise.EnterpriseFormPage'),
+            field=modelcluster.fields.ParentalKey(null=True, on_delete=django.db.models.deletion.SET_NULL, related_name='epfeed', to='enterprises.EnterpriseFormPage'),
         ),
     ]
