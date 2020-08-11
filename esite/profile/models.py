@@ -53,21 +53,25 @@ from esite.utils.models import BasePage
 
 # Create your homepage related models here.
 
+
 @register_streamfield_block
 class _S_TopLanguages(blocks.StructBlock):
-    theme = blocks.CharBlock(
-        null=True, blank=True, help_text="Bold header text", max_length=64
-    )
+    theme = blocks.CharBlock(null=True,
+                             blank=True,
+                             help_text="Bold header text",
+                             max_length=64)
 
     graphql_fields = [
         GraphQLString("theme"),
     ]
 
+
 @register_streamfield_block
 class _S_Calendar(blocks.StructBlock):
-    theme = blocks.CharBlock(
-        null=True, blank=True, help_text="Bold header text", max_length=64
-    )
+    theme = blocks.CharBlock(null=True,
+                             blank=True,
+                             help_text="Bold header text",
+                             max_length=64)
 
     graphql_fields = [
         GraphQLString("theme"),
@@ -76,9 +80,9 @@ class _S_Calendar(blocks.StructBlock):
 
 # > Profilepage
 class Profile(models.Model):
-    person = ParentalKey(
-        "people.PersonFormPage", related_name="profiles"
-    )
+    person = ParentalKey("people.PersonFormPage",
+                         null=True,
+                         related_name="profiles")
     platformName = models.CharField(null=True, blank=True, max_length=250)
     platformUrl = models.CharField(null=True, blank=True, max_length=250)
     avatarUrl = models.CharField(null=True, blank=True, max_length=250)
@@ -91,8 +95,6 @@ class Profile(models.Model):
     location = models.CharField(null=True, blank=True, max_length=250)
     statusMessage = models.CharField(null=True, blank=True, max_length=250)
     statusEmojiHTML = models.CharField(null=True, blank=True, max_length=250)
-    bids = models.TextField(null=True, blank=True)
-    tids = models.TextField(null=True, blank=True)
 
     graphql_fields = [
         GraphQLString("platformName"),
@@ -107,8 +109,6 @@ class Profile(models.Model):
         GraphQLString("location"),
         GraphQLString("statusMessage"),
         GraphQLString("statusEmojiHTML"),
-        GraphQLString("bids"),
-        GraphQLString("tids"),
     ]
 
     # content_panels = [

@@ -57,10 +57,14 @@ from esite.bifrost.models import (
     GraphQLBoolean,
     GraphQLSnippet,
 )
-
+from modelcluster.models import ClusterableModel
 from esite.utils.models import BasePage, BaseEmailFormPage
+from esite.people.models import PersonFormPage
+from esite.redemption.models import Redemption
+from esite.profile.models import Profile
 
 # Create your registration related models here.
+
 
 # Model manager to use in Proxy model
 class ProxyManager(BaseUserManager):
@@ -98,21 +102,22 @@ class Registration(get_user_model()):
 
     class Meta:
         proxy = True
-        ordering = ("date_joined",)
+        ordering = ("date_joined", )
 
 
-@register_streamfield_block
-class Gitlab_Server(blocks.StructBlock):
-    organisation = blocks.CharBlock(
+class GitlabServer(ClusterableModel):
+    form = ParentalKey("RegistrationFormPage",
+                       on_delete=models.CASCADE,
+                       related_name="supported_gitlabs")
+
+    organisation = models.CharField(
         null=True,
-        blank=False,
-        classname="full title",
+        max_length=255,
         help_text="The owner of gitlab server.",
     )
-    domain = blocks.CharBlock(
+    domain = models.URLField(
         null=True,
-        blank=False,
-        classname="full title",
+        max_length=255,
         help_text="The domain of supported gitlab server.",
     )
 
@@ -123,25 +128,27 @@ class Gitlab_Server(blocks.StructBlock):
 
 
 class RegistrationFormField(AbstractFormField):
-    page = ParentalKey(
-        "RegistrationFormPage", on_delete=models.CASCADE, related_name="form_fields"
-    )
+    page = ParentalKey("RegistrationFormPage",
+                       on_delete=models.CASCADE,
+                       related_name="form_fields")
 
 
 class RegistrationFormPage(BaseEmailFormPage):
+    template = 'patterns/pages/forms/form_page.html'
     # Only allow creating HomePages at the root level
     parent_page_types = ["home.HomePage"]
     subpage_types = []
-
 
     class Meta:
         verbose_name = "Registration Form Page"
 
     # When creating a new Form page in Wagtail
-    registration_head = models.CharField(null=True, blank=False, max_length=255)
-    registration_newsletter_text = models.CharField(
-        null=True, blank=False, max_length=255
-    )
+    registration_head = models.CharField(null=True,
+                                         blank=False,
+                                         max_length=255)
+    registration_newsletter_text = models.CharField(null=True,
+                                                    blank=False,
+                                                    max_length=255)
     registration_privacy_text = RichTextField(
         null=True,
         blank=False,
@@ -167,12 +174,6 @@ class RegistrationFormPage(BaseEmailFormPage):
         blank=False,
     )
 
-    supported_gitlabs = StreamField(
-        [("gitlab_server", Gitlab_Server(null=True, blank=False, icon="home")),],
-        null=True,
-        blank=False,
-    )
-
     graphql_fields = [
         GraphQLString("registration_head"),
         GraphQLString("registration_newsletter_text"),
@@ -181,10 +182,11 @@ class RegistrationFormPage(BaseEmailFormPage):
         GraphQLSnippet("registration_button", snippet_model="utils.Button"),
         GraphQLString("registration_step_text"),
         GraphQLString("thank_you_text"),
-        GraphQLStreamfield("supported_gitlabs"),
+        GraphQLCollection(GraphQLForeignKey, "supported_gitlabs",
+                          "registration.GitlabServer"),
     ]
 
-    main_content_panels = AbstractEmailForm.content_panels + [
+    content_panels = [
         MultiFieldPanel(
             [
                 FieldPanel("registration_head", classname="full title"),
@@ -194,40 +196,38 @@ class RegistrationFormPage(BaseEmailFormPage):
                 FieldPanel("registration_step_text", classname="full"),
                 SnippetChooserPanel("registration_button", classname="full"),
                 FieldPanel("thank_you_text", classname="full"),
-                StreamFieldPanel("supported_gitlabs"),
+                InlinePanel("supported_gitlabs", label="Supported Gitlabs")
             ],
             heading="content",
         ),
         MultiFieldPanel(
             [
-                FieldRowPanel(
-                    [
-                        FieldPanel("from_address", classname="col6"),
-                        FieldPanel("to_address", classname="col6"),
-                    ]
-                ),
+                FieldRowPanel([
+                    FieldPanel("from_address", classname="col6"),
+                    FieldPanel("to_address", classname="col6"),
+                ]),
                 FieldPanel("subject"),
             ],
             heading="Email Settings",
         ),
         MultiFieldPanel(
-            [InlinePanel("form_fields", label="Form fields")], heading="data",
+            [InlinePanel("form_fields", label="Form fields")],
+            heading="data",
         ),
     ]
 
-    edit_handler = TabbedInterface(
-        [
-            ObjectList(
-                AbstractEmailForm.content_panels + main_content_panels,
-                heading="Content",
-            ),
-            ObjectList(
-                AbstractEmailForm.promote_panels + AbstractEmailForm.settings_panels,
-                heading="Settings",
-                classname="settings",
-            ),
-        ]
-    )
+    edit_handler = TabbedInterface([
+        ObjectList(
+            BaseEmailFormPage.content_panels + content_panels,
+            heading="Content",
+        ),
+        ObjectList(
+            BaseEmailFormPage.promote_panels +
+            BaseEmailFormPage.settings_panels,
+            heading="Settings",
+            classname="settings",
+        ),
+    ])
 
     def get_submission_class(self):
         return RegistrationFormSubmission
@@ -236,33 +236,101 @@ class RegistrationFormPage(BaseEmailFormPage):
     def create_user(
         self,
         username,
-        telephone,
-        address,
-        city,
-        postal_code,
-        email,
-        country,
-        newsletter,
-        platform_data,
-        sources,
-        verified,
         first_name,
         last_name,
+        email,
+        display_email,
+        workplace,
+        display_workplace,
+        job_title,
+        website,
+        location,
+        rank,
+        display_ranke,
+        display_languages,
+        status,
+        bio,
         password,
-        cache,
-        gift_code,
+        redemption_code,
+        registration_data,
     ):
+
         # enter the data here
         user = get_user_model()(
             username=username,
-            is_enterprise=False,
             is_active=False,
-            cache=cache,
+            cache=registration_data,
         )
 
         user.set_password(password)
 
-        user.save()
+        parent_page = Page.objects.get(url_path="/home/people/").specific
+
+        if redemption_code:
+            redemption = Redemption.objects.get(pk=f'{redemption_code}')
+            if gift.is_active:
+                people_page = PersonFormPage(
+                    title=f"{user.username}",
+                    slug=f"p-{user.username}",
+                    first_name=first_name,
+                    last_name=last_name,
+                    email=email,
+                    display_email=False,
+                    workplace="SNEK",
+                    display_workplace=False,
+                    job_title="CTO",
+                    website="https://erebos.xyz",
+                    location="@snek",
+                    rank="A",
+                    status="I am a SNEK",
+                    bio="I am a Reptilian",
+                )
+
+                redemption.is_active = False
+
+            redemption.save()
+
+        else:
+            people_page = PersonFormPage(
+                title=f"{user.username}",
+                slug=f"p-{user.username}",
+                first_name=first_name,
+                last_name=last_name,
+                email=email,
+                display_email=False,
+                workplace="SNEK",
+                display_workplace=False,
+                job_title="CTO",
+                website="https://erebos.xyz",
+                location="@snek",
+                rank="A",
+                status="I am a SNEK",
+                bio="I am a Reptilian",
+            )
+
+        people_page.profiles.add(
+            Profile(
+                platformName="fff",
+                platformUrl="",
+                avatarUrl="",
+                websiteUrl="",
+                company="",
+                email="",
+                username="",
+                fullname="",
+                createdAt="",
+                location="",
+                statusMessage="",
+                statusEmojiHTML="",
+                bids="",
+                tids="",
+            ))
+
+        people_page.user = user
+
+        parent_page.add_child(instance=people_page)
+
+        people_page.save_revision().publish()
 
         return user
 
@@ -286,29 +354,31 @@ class RegistrationFormPage(BaseEmailFormPage):
 
         # html_message = f"{emailheader}\n\n{content}\n\n{emailfooter}"
 
-        send_mail(
-            self.subject, f"{emailheader}\n\n{content}", addresses, self.from_address
-        )
+        send_mail(self.subject, f"{emailheader}\n\n{content}", addresses,
+                  self.from_address)
 
     def process_form_submission(self, form):
 
         user = self.create_user(
             username=form.cleaned_data["username"],
-            telephone=form.cleaned_data["telephone"],
-            address=form.cleaned_data["address"],
-            city=form.cleaned_data["city"],
-            postal_code=form.cleaned_data["postal_code"],
-            email=form.cleaned_data["email"],
-            country=form.cleaned_data["country"],
-            newsletter=form.cleaned_data["newsletter"],
-            platform_data=form.cleaned_data["platform_data"],
-            sources=form.cleaned_data["sources"],
-            verified=form.cleaned_data["verified"],
             first_name=form.cleaned_data["first_name"],
             last_name=form.cleaned_data["last_name"],
+            email=form.cleaned_data["email"],
+            #display_email=form.cleaned_data["display_email"],
+            #workplace=form.cleaned_data["workplace"],
+            #display_workplace=form.cleaned_data["display_workplace"],
+            #job_title=form.cleaned_data["job_title"],
+            #website=form.cleaned_data["website"],
+            #location=form.cleaned_data["location"],
+            #rank=form.cleaned_data["rank"],
+            #display_ranke=form.cleaned_data["display_ranke"],
+            #display_languages=form.cleaned_data["display_languages"],
+            #status=form.cleaned_data["status"],
+            #bio=form.cleaned_data["bio"],
             password=form.cleaned_data["password"],
-            gift_code=form.cleaned_data["gift_code"],
-            cache=json.dumps(form.cleaned_data, cls=DjangoJSONEncoder),
+            redemption_code=form.cleaned_data["redemption_code"],
+            registration_data=json.dumps(form.cleaned_data,
+                                         cls=DjangoJSONEncoder),
         )
 
         self.get_submission_class().objects.create(

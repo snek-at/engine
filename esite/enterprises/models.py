@@ -57,11 +57,13 @@ from esite.colorfield.blocks import ColorBlock
 from wagtail.images.blocks import ImageChooserBlock
 from wagtail.core import fields
 
+
 # Model manager to use in Proxy model
 class ProxyManager(BaseUserManager):
     def get_queryset(self):
         # filter the objects for activate enterprise datasets based on the User model
-        return super(ProxyManager, self).get_queryset().filter(is_enterprise=True)
+        return super(ProxyManager,
+                     self).get_queryset().filter(is_enterprise=True)
 
 
 class Enterprise(get_user_model()):
@@ -90,7 +92,7 @@ class Enterprise(get_user_model()):
 
     class Meta:
         proxy = True
-        ordering = ("date_joined",)
+        ordering = ("date_joined", )
 
 
 # > Models
@@ -105,9 +107,7 @@ class ContributionFeed(ClusterableModel):
     cid = models.CharField(null=True, max_length=255)
     datetime = models.DateTimeField(null=True)
     message = models.CharField(null=True, max_length=255)
-    files = ParentalManyToManyField(
-        "ContributionFile", related_name="files"
-    )
+    files = ParentalManyToManyField("ContributionFile", related_name="files")
 
     graphql_fields = [
         GraphQLForeignKey("page", content_type="enterprises.Contributor"),
@@ -115,9 +115,8 @@ class ContributionFeed(ClusterableModel):
         GraphQLString("cid"),
         GraphQLString("datetime"),
         GraphQLString("message"),
-        GraphQLCollection(
-            GraphQLForeignKey, "files", "enterprises.ContributionFile"
-        ),
+        GraphQLCollection(GraphQLForeignKey, "files",
+                          "enterprises.ContributionFile"),
     ]
 
     def __str__(self):
@@ -187,15 +186,17 @@ class Contributor(ClusterableModel):
     username = models.CharField(null=True, max_length=255, default="Unkown")
     active = models.BooleanField(default=True)
     avatar = models.ImageField()
-    feed = ParentalManyToManyField(
-        "ContributionFeed", related_name="contributor_feed", blank=True
-    )
+    feed = ParentalManyToManyField("ContributionFeed",
+                                   related_name="contributor_feed",
+                                   blank=True)
     codelanguages = ParentalManyToManyField(
-        "CodeLanguageStatistic", related_name="contributor_codelanguages", blank=True
-    )
+        "CodeLanguageStatistic",
+        related_name="contributor_codelanguages",
+        blank=True)
     codetransition = ParentalManyToManyField(
-        "CodeTransitionStatistic", related_name="contributor_codetransition", blank=True
-    )
+        "CodeTransitionStatistic",
+        related_name="contributor_codetransition",
+        blank=True)
 
     graphql_fields = [
         GraphQLForeignKey("page", content_type="enterprises.Contributor"),
@@ -203,10 +204,10 @@ class Contributor(ClusterableModel):
         GraphQLString("username"),
         GraphQLBoolean("active"),
         GraphQLImage("avatar"),
-        GraphQLCollection(GraphQLForeignKey, "feed", "enterprises.ContributionFeed"),
-        GraphQLCollection(
-            GraphQLForeignKey, "codelanguages", "enterprises.CodeLanguageStatistic"
-        ),
+        GraphQLCollection(GraphQLForeignKey, "feed",
+                          "enterprises.ContributionFeed"),
+        GraphQLCollection(GraphQLForeignKey, "codelanguages",
+                          "enterprises.CodeLanguageStatistic"),
         GraphQLCollection(
             GraphQLForeignKey,
             "codetransition",
@@ -226,28 +227,38 @@ class Project(ClusterableModel):
         null=True,
     )
 
-    name = models.CharField(null=True, blank=True, max_length=255, default="Unkown")
-    url = models.URLField(null=True, blank=True, max_length=255, default="Unkown")
+    name = models.CharField(null=True,
+                            blank=True,
+                            max_length=255,
+                            default="Unkown")
+    url = models.URLField(null=True,
+                          blank=True,
+                          max_length=255,
+                          default="Unkown")
     description = models.TextField(null=True, blank=True, default="Unkown")
-    owner_name = models.CharField(
-        null=True, blank=True, max_length=255, default="Unkown"
-    )
-    owner_username = models.CharField(
-        null=True, blank=True, max_length=255, default="Unkown"
-    )
+    owner_name = models.CharField(null=True,
+                                  blank=True,
+                                  max_length=255,
+                                  default="Unkown")
+    owner_username = models.CharField(null=True,
+                                      blank=True,
+                                      max_length=255,
+                                      default="Unkown")
     owner_email = models.EmailField(null=True, blank=True, default="Unkown")
-    contributors = ParentalManyToManyField(
-        "Contributor", related_name="project_contributor", blank=True
-    )
-    feed = ParentalManyToManyField(
-        "ContributionFeed", related_name="project_feed", blank=True
-    )
+    contributors = ParentalManyToManyField("Contributor",
+                                           related_name="project_contributor",
+                                           blank=True)
+    feed = ParentalManyToManyField("ContributionFeed",
+                                   related_name="project_feed",
+                                   blank=True)
     codelanguages = ParentalManyToManyField(
-        "CodeLanguageStatistic", related_name="project_codelanguages", blank=True
-    )
+        "CodeLanguageStatistic",
+        related_name="project_codelanguages",
+        blank=True)
     codetransition = ParentalManyToManyField(
-        "CodeTransitionStatistic", related_name="project_codetransition", blank=True
-    )
+        "CodeTransitionStatistic",
+        related_name="project_codetransition",
+        blank=True)
 
     graphql_fields = [
         GraphQLForeignKey("page", content_type="enterprises.Project"),
@@ -257,27 +268,24 @@ class Project(ClusterableModel):
         GraphQLString("owner_name"),
         GraphQLString("owner_username"),
         GraphQLString("owner_email"),
-        GraphQLCollection(GraphQLForeignKey, "feed", "enterprises.ContributionFeed"),
-        GraphQLCollection(
-            GraphQLForeignKey, "form_fields", "enterprises.EnterpriseFormPage"
-        ),
-        GraphQLCollection(
-            GraphQLForeignKey, "contributors", "enterprises.Contributor"
-        ),
-        GraphQLCollection(
-            GraphQLForeignKey, "codelanguages", "enterprises.CodeLanguageStatistic"
-        ),
-        GraphQLCollection(
-            GraphQLForeignKey, "codetransition", "enterprises.CodeLanguageStatistic"
-        ),
+        GraphQLCollection(GraphQLForeignKey, "feed",
+                          "enterprises.ContributionFeed"),
+        GraphQLCollection(GraphQLForeignKey, "form_fields",
+                          "enterprises.EnterpriseFormPage"),
+        GraphQLCollection(GraphQLForeignKey, "contributors",
+                          "enterprises.Contributor"),
+        GraphQLCollection(GraphQLForeignKey, "codelanguages",
+                          "enterprises.CodeLanguageStatistic"),
+        GraphQLCollection(GraphQLForeignKey, "codetransition",
+                          "enterprises.CodeLanguageStatistic"),
     ]
 
 
 # > Pages
 class EnterpriseFormField(AbstractFormField):
-    page = ParentalKey(
-        "EnterpriseFormPage", on_delete=models.CASCADE, related_name="form_fields"
-    )
+    page = ParentalKey("EnterpriseFormPage",
+                       on_delete=models.CASCADE,
+                       related_name="form_fields")
 
 
 class EnterpriseFormSubmission(AbstractFormSubmission):
@@ -307,15 +315,17 @@ class EnterpriseFormPage(BaseEmailFormPage):
     ]
     graphql_fields = [
         # GraphQLForeignKey("opsprojects", "enterprises.Project"),
-        GraphQLCollection(GraphQLForeignKey, "opsprojects", "enterprises.Project"),
-        GraphQLCollection(
-            GraphQLForeignKey, "epcontributor", "enterprises.Contributor"
-        ),
-        GraphQLCollection(
-            GraphQLForeignKey, "epfeed", "enterprises.ContributionFeed"
-        ),
+        GraphQLCollection(GraphQLForeignKey, "opsprojects",
+                          "enterprises.Project"),
+        GraphQLCollection(GraphQLForeignKey, "epcontributor",
+                          "enterprises.Contributor"),
+        GraphQLCollection(GraphQLForeignKey, "epfeed",
+                          "enterprises.ContributionFeed"),
     ]
     # Users
+    user = ParentalKey("user.SNEKUser",
+                       on_delete=models.CASCADE,
+                       related_name="enterprisepage")
 
     # Imprint
     imprint_tab_name = models.CharField(null=True, blank=True, max_length=255)
@@ -325,13 +335,21 @@ class EnterpriseFormPage(BaseEmailFormPage):
     telephone = models.CharField(null=True, blank=True, max_length=255)
     telefax = models.CharField(null=True, blank=True, max_length=255)
     vat_number = models.CharField(null=True, blank=True, max_length=255)
-    whatsapp_telephone = models.CharField(null=True, blank=True, max_length=255)
-    whatsapp_contactline = models.CharField(null=True, blank=True, max_length=255)
+    whatsapp_telephone = models.CharField(null=True,
+                                          blank=True,
+                                          max_length=255)
+    whatsapp_contactline = models.CharField(null=True,
+                                            blank=True,
+                                            max_length=255)
     tax_id = models.CharField(null=True, blank=True, max_length=255)
-    trade_register_number = models.CharField(null=True, blank=True, max_length=255)
+    trade_register_number = models.CharField(null=True,
+                                             blank=True,
+                                             max_length=255)
     court_of_registry = models.CharField(null=True, blank=True, max_length=255)
     place_of_registry = models.CharField(null=True, blank=True, max_length=255)
-    trade_register_number = models.CharField(null=True, blank=True, max_length=255)
+    trade_register_number = models.CharField(null=True,
+                                             blank=True,
+                                             max_length=255)
     ownership = models.CharField(null=True, blank=True, max_length=255)
     email = models.EmailField(null=True, blank=True)
     employee_count = models.CharField(null=True, blank=True, max_length=255)
@@ -340,6 +358,7 @@ class EnterpriseFormPage(BaseEmailFormPage):
     description = models.CharField(null=True, blank=True, max_length=255)
 
     imprint_panels = [
+        FieldPanel('user'),
         FieldPanel("imprint_tab_name"),
         MultiFieldPanel(
             [
@@ -407,18 +426,17 @@ class EnterpriseFormPage(BaseEmailFormPage):
     form_panels = [
         MultiFieldPanel(
             [
-                FieldRowPanel(
-                    [
-                        FieldPanel("from_address", classname="col6"),
-                        FieldPanel("to_address", classname="col6"),
-                    ]
-                ),
+                FieldRowPanel([
+                    FieldPanel("from_address", classname="col6"),
+                    FieldPanel("to_address", classname="col6"),
+                ]),
                 FieldPanel("subject"),
             ],
             heading="Email Settings",
         ),
         MultiFieldPanel(
-            [InlinePanel("form_fields", label="Form fields")], heading="data",
+            [InlinePanel("form_fields", label="Form fields")],
+            heading="data",
         ),
     ]
 
@@ -426,65 +444,91 @@ class EnterpriseFormPage(BaseEmailFormPage):
         GraphQLString("cache"),
     ]
 
-    edit_handler = TabbedInterface(
-        [
-            # ObjectList(Page.content_panels + overview_panels, heading="Overview"),
-            ObjectList(Page.content_panels, heading="Overview"),
-            # ObjectList(user_panels, heading="Users"),
-            # ObjectList(project_panels, heading="Projects"),
-            ObjectList(imprint_panels, heading="Imprint"),
-            ObjectList(form_panels, heading="Form"),
-            ObjectList(
-                BasePage.promote_panels + BasePage.settings_panels + cache_panels,
-                heading="Settings",
-                classname="settings",
-            ),
-        ]
-    )
+    edit_handler = TabbedInterface([
+        # ObjectList(Page.content_panels + overview_panels, heading="Overview"),
+        ObjectList(Page.content_panels, heading="Overview"),
+        # ObjectList(user_panels, heading="Users"),
+        # ObjectList(project_panels, heading="Projects"),
+        ObjectList(imprint_panels, heading="Imprint"),
+        ObjectList(form_panels, heading="Form"),
+        ObjectList(
+            BasePage.promote_panels + BasePage.settings_panels + cache_panels,
+            heading="Settings",
+            classname="settings",
+        ),
+    ])
 
     def generate(self):
         from ...core.services import mongodb
 
-        data = mongodb.get_collection("gitlab").aggregate(
-            [
-                {"$match": {"enterprise_page_slug": f"{self.slug}"}},
-                {"$unwind": "$projects"},
-                {"$unwind": "$projects.events"},
-                {
-                    "$lookup": {
-                        "from": "pipeline",
-                        "let": {"commit_id": "$projects.events.id"},
-                        "pipeline": [
-                            {"$unwind": "$Log"},
-                            {
-                                "$match": {
-                                    "$expr": {"$eq": ["$$commit_id", "$Log.commit"]},
-                                }
-                            },
-                        ],
-                        "as": "projects.events.asset",
-                    }
-                },
-                {
-                    "$unwind": {
-                        "path": "$projects.events.asset",
-                        "preserveNullAndEmptyArrays": True,
-                    }
-                },
-                {
-                    "$group": {
-                        "_id": "$projects.id",
-                        "name": {"$first": "$projects.name"},
-                        "url": {"$first": "$projects.http_url_to_repo"},
-                        "description": {"$first": "$projects.description"},
-                        "maintainer_name": {"$first": "$projects.owner.name"},
-                        "maintainer_username": {"$first": "$projects.owner.username"},
-                        "maintainer_email": {"$first": "$projects.owner.email"},
-                        "events": {"$push": "$projects.events"},
-                    }
-                },
-            ]
-        )
+        data = mongodb.get_collection("gitlab").aggregate([
+            {
+                "$match": {
+                    "enterprise_page_slug": f"{self.slug}"
+                }
+            },
+            {
+                "$unwind": "$projects"
+            },
+            {
+                "$unwind": "$projects.events"
+            },
+            {
+                "$lookup": {
+                    "from":
+                    "pipeline",
+                    "let": {
+                        "commit_id": "$projects.events.id"
+                    },
+                    "pipeline": [
+                        {
+                            "$unwind": "$Log"
+                        },
+                        {
+                            "$match": {
+                                "$expr": {
+                                    "$eq": ["$$commit_id", "$Log.commit"]
+                                },
+                            }
+                        },
+                    ],
+                    "as":
+                    "projects.events.asset",
+                }
+            },
+            {
+                "$unwind": {
+                    "path": "$projects.events.asset",
+                    "preserveNullAndEmptyArrays": True,
+                }
+            },
+            {
+                "$group": {
+                    "_id": "$projects.id",
+                    "name": {
+                        "$first": "$projects.name"
+                    },
+                    "url": {
+                        "$first": "$projects.http_url_to_repo"
+                    },
+                    "description": {
+                        "$first": "$projects.description"
+                    },
+                    "maintainer_name": {
+                        "$first": "$projects.owner.name"
+                    },
+                    "maintainer_username": {
+                        "$first": "$projects.owner.username"
+                    },
+                    "maintainer_email": {
+                        "$first": "$projects.owner.email"
+                    },
+                    "events": {
+                        "$push": "$projects.events"
+                    },
+                }
+            },
+        ])
         Project.objects.all().delete()
         Contributor.objects.all().delete()
         ContributionFeed.objects.all().delete()
@@ -554,11 +598,15 @@ class EnterpriseFormPage(BaseEmailFormPage):
 
     # Create a new user
     def create_enterprise_user(
-        self, cache,
+        self,
+        cache,
     ):
         # enter the data here
         user = get_user_model()(
-            username="anexia", is_enterprise=True, is_active=False, cache=cache,
+            username="anexia",
+            is_enterprise=True,
+            is_active=False,
+            cache=cache,
         )
 
         user.set_password("password")
@@ -587,15 +635,13 @@ class EnterpriseFormPage(BaseEmailFormPage):
 
         # html_message = f"{emailheader}\n\n{content}\n\n{emailfooter}"
 
-        send_mail(
-            self.subject, f"{emailheader}\n\n{content}", addresses, self.from_address
-        )
+        send_mail(self.subject, f"{emailheader}\n\n{content}", addresses,
+                  self.from_address)
 
     def process_form_submission(self, form):
 
-        user = self.create_enterprise_user(
-            cache=json.dumps(form.cleaned_data, cls=DjangoJSONEncoder),
-        )
+        user = self.create_enterprise_user(cache=json.dumps(
+            form.cleaned_data, cls=DjangoJSONEncoder), )
 
         self.get_submission_class().objects.create(
             form_data=json.dumps(form.cleaned_data, cls=DjangoJSONEncoder),
@@ -618,7 +664,8 @@ class EnterpriseIndex(BasePage):
         verbose_name = "Enterprise Index"
 
     def get_context(self, request, *args, **kwargs):
-        enterprises = EnterpriseFormPage.objects.live().public().descendant_of(self).order_by('slug')
+        enterprises = EnterpriseFormPage.objects.live().public().descendant_of(
+            self).order_by('slug')
 
         page_number = request.GET.get('page', 1)
         paginator = Paginator(enterprises, settings.DEFAULT_PER_PAGE)

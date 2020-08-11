@@ -36,11 +36,12 @@ from esite.bifrost.models import (
     GraphQLBoolean,
     GraphQLSnippet,
 )
+from modelcluster.models import ClusterableModel
 
 #from esite.utils.models import BasePage
 
 # Extend AbstractUser Model from django.contrib.auth.models
-class SNEKUser(AbstractUser):
+class SNEKUser(AbstractUser, ClusterableModel):
     username = models.CharField(
         'username',
         null=True,
@@ -85,6 +86,8 @@ class SNEKUser(AbstractUser):
         FieldPanel("is_active"),
         FieldPanel("is_enterprise"),
         FieldPanel("cache"),
+        InlinePanel("personpage", label="Person Page"),
+        InlinePanel("enterprisepage", label="Enterprise Page"),
     ]
 
     graphql_fields = [

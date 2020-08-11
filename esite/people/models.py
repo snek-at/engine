@@ -44,28 +44,17 @@ from wagtail.contrib.forms.models import (
 )
 from modelcluster.fields import ParentalKey
 
-
 #from esite.utils.blocks import StoryBlock
 from esite.utils.models import BasePage, BaseFormPage
 
 
 class SocialMediaProfile(models.Model):
-    person_page = ParentalKey(
-        'PersonFormPage',
-        related_name='social_media_profile'
-    )
-    site_titles = (
-        ('twitter', "Twitter"),
-        ('linkedin', "LinkedIn")
-    )
-    site_urls = (
-        ('twitter', 'https://twitter.com/'),
-        ('linkedin', 'https://www.linkedin.com/in/')
-    )
-    service = models.CharField(
-        max_length=200,
-        choices=site_titles
-    )
+    person_page = ParentalKey('PersonFormPage',
+                              related_name='social_media_profile')
+    site_titles = (('twitter', "Twitter"), ('linkedin', "LinkedIn"))
+    site_urls = (('twitter', 'https://twitter.com/'),
+                 ('linkedin', 'https://www.linkedin.com/in/'))
+    service = models.CharField(max_length=200, choices=site_titles)
     username = models.CharField(max_length=255)
 
     @property
@@ -76,11 +65,15 @@ class SocialMediaProfile(models.Model):
         if self.service == 'twitter' and self.username.startswith('@'):
             self.username = self.username[1:]
 
+
 # Model manager to use in Proxy model
 class ProxyManager(BaseUserManager):
     def get_queryset(self):
         # filter the objects for activate enterprise datasets based on the User model
-        return super(ProxyManager, self).get_queryset().filter(is_enterprise=True, is_staff=False)
+        return super(ProxyManager,
+                     self).get_queryset().filter(is_enterprise=False,
+                                                 is_staff=False)
+
 
 class Person(get_user_model()):
     # call the model manager on user objects
@@ -108,13 +101,13 @@ class Person(get_user_model()):
 
     class Meta:
         proxy = True
-        ordering = ("date_joined",)
+        ordering = ("date_joined", )
 
 
 class PersonFormField(AbstractFormField):
-    page = ParentalKey(
-        "PersonFormPage", on_delete=models.CASCADE, related_name="form_fields"
-    )
+    page = ParentalKey("PersonFormPage",
+                       on_delete=models.CASCADE,
+                       related_name="form_fields")
 
 
 class PersonFormPage(BaseFormPage):
@@ -123,19 +116,20 @@ class PersonFormPage(BaseFormPage):
     parent_page_types = ['people.PersonIndex']
     subpage_types = []
 
-
     class Meta:
         verbose_name = "Person Form Page"
 
+    user = ParentalKey("user.SNEKUser",
+                       on_delete=models.CASCADE,
+                       related_name="personpage")
+
     first_name = models.CharField(max_length=255)
     last_name = models.CharField(max_length=255)
-    photo = models.ForeignKey(
-        settings.WAGTAILIMAGES_IMAGE_MODEL,
-        null=True,
-        blank=True,
-        related_name='+',
-        on_delete=models.SET_NULL
-    )
+    photo = models.ForeignKey(settings.WAGTAILIMAGES_IMAGE_MODEL,
+                              null=True,
+                              blank=True,
+                              related_name='+',
+                              on_delete=models.SET_NULL)
     email = models.EmailField(blank=True)
     display_email = models.BooleanField(blank=True, default=False)
     workplace = models.CharField(blank=True, max_length=255)
@@ -151,12 +145,13 @@ class PersonFormPage(BaseFormPage):
     bids = models.TextField(null=True, blank=True)
     tids = models.TextField(null=True, blank=True)
 
-
     content_panels = BasePage.content_panels + [
+        FieldPanel('user'),
         MultiFieldPanel([
             FieldPanel('first_name'),
             FieldPanel('last_name'),
-        ], heading="Name"),
+        ],
+                        heading="Name"),
         ImageChooserPanel('photo'),
         FieldPanel('workplace'),
         FieldPanel('display_workplace'),
@@ -166,7 +161,8 @@ class PersonFormPage(BaseFormPage):
         MultiFieldPanel([
             FieldPanel('email'),
             FieldPanel('display_email'),
-        ], heading='Contact information'),
+        ],
+                        heading='Contact information'),
         FieldPanel('website'),
         FieldPanel('rank'),
         FieldPanel('display_rank'),
@@ -180,21 +176,20 @@ class PersonFormPage(BaseFormPage):
 
     form_panels = [
         MultiFieldPanel(
-            [InlinePanel("form_fields", label="Form fields")], heading="data",
+            [InlinePanel("form_fields", label="Form fields")],
+            heading="data",
         ),
     ]
 
-    edit_handler = TabbedInterface(
-        [
-            ObjectList(content_panels, heading="Content"),
-            ObjectList(form_panels, heading="Form"),
-            ObjectList(
-                BasePage.promote_panels + BasePage.settings_panels,
-                heading="Settings",
-                classname="settings",
-            ),
-        ]
-    )
+    edit_handler = TabbedInterface([
+        ObjectList(content_panels, heading="Content"),
+        ObjectList(form_panels, heading="Form"),
+        ObjectList(
+            BasePage.promote_panels + BasePage.settings_panels,
+            heading="Settings",
+            classname="settings",
+        ),
+    ])
 
     graphql_fields = [
         GraphQLString("name"),
@@ -202,12 +197,9 @@ class PersonFormPage(BaseFormPage):
         GraphQLString("status"),
         GraphQLImage("photo"),
         GraphQLStreamfield("bio"),
-        GraphQLCollection(
-            GraphQLForeignKey, "form_fields", "people.PersonFormField"
-        ),
-        GraphQLCollection(
-            GraphQLForeignKey, "profiles", "profile.Profile"
-        ),
+        GraphQLCollection(GraphQLForeignKey, "form_fields",
+                          "people.PersonFormField"),
+        GraphQLCollection(GraphQLForeignKey, "profiles", "profile.Profile"),
     ]
 
 
@@ -218,12 +210,12 @@ class PersonIndex(BasePage):
     parent_page_types = ["home.HomePage"]
     subpage_types = ['PersonFormPage']
 
-
     class Meta:
         verbose_name = "Person Index"
 
     def get_context(self, request, *args, **kwargs):
-        people = PersonFormPage.objects.live().public().descendant_of(self).order_by('slug')
+        people = PersonFormPage.objects.live().public().descendant_of(
+            self).order_by('slug')
 
         page_number = request.GET.get('page', 1)
         paginator = Paginator(people, settings.DEFAULT_PER_PAGE)
