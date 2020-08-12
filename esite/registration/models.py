@@ -541,7 +541,6 @@ class EnterpriseRegistrationFormPage(BaseEmailFormPage):
         enterprise_page = PersonFormPage(
             title=f"{user.username}",
             slug=f"e-{user.username}",
-            imprint_tab_name=imprint_tab_name,
             city=city,
             zip_code=zip_code,
             address=address,
