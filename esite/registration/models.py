@@ -502,7 +502,7 @@ class EnterpriseRegistrationFormPage(BaseEmailFormPage):
     # Create a new user
     def create_user(
         self,
-        imprint_tab_name,
+        company_name,
         city,
         zip_code,
         address,
@@ -526,7 +526,7 @@ class EnterpriseRegistrationFormPage(BaseEmailFormPage):
 
         # enter the data here
         user = get_user_model()(
-            username=username,
+            username=company_username,
             is_active=False,
         )
 
@@ -612,7 +612,7 @@ class EnterpriseRegistrationFormPage(BaseEmailFormPage):
     def process_form_submission(self, form):
 
         user = self.create_user(
-            imprint_tab_name=form.cleaned_data["imprint_tab_name"],
+            company_username=form.cleaned_data["company_name"],
             city=form.cleaned_data["city"],
             zip_code=form.cleaned_data["zip_code"],
             address=form.cleaned_data["address"],
