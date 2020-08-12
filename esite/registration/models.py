@@ -61,7 +61,7 @@ from modelcluster.models import ClusterableModel
 from esite.utils.models import BasePage, BaseEmailFormPage
 from esite.people.models import PersonFormPage
 from esite.enterprises.models import EnterpriseFormPage
-from esite.redemption.models import Redemption
+from esite.redemption.models import RedemptionCode
 from esite.profile.models import Profile
 
 # Create your registration related models here.
@@ -269,7 +269,7 @@ class PersonRegistrationFormPage(BaseEmailFormPage):
         parent_page = Page.objects.get(url_path="/home/people/").specific
 
         if redemption_code:
-            redemption = Redemption.objects.get(pk=f'{redemption_code}')
+            redemption = RedemptionCode.objects.get(pk=f'{redemption_code}')
             if redemption.is_active:
                 people_page = PersonFormPage(
                     title=f"{user.username}",

@@ -1,5 +1,6 @@
 import uuid
 import json
+import os
 from django.conf import settings
 from django.core.paginator import EmptyPage, PageNotAnInteger, Paginator
 from django.contrib.auth import get_user_model
@@ -56,6 +57,7 @@ from esite.bifrost.models import (
 from esite.colorfield.blocks import ColorBlock
 from wagtail.images.blocks import ImageChooserBlock
 from wagtail.core import fields
+import yaml
 
 
 # Model manager to use in Proxy model
@@ -99,7 +101,7 @@ class Enterprise(get_user_model()):
 class ContributionFeed(ClusterableModel):
     page = ParentalKey(
         "EnterpriseFormPage",
-        related_name="epfeed",
+        related_name="enterprise_contribution_feed",
         on_delete=models.SET_NULL,
         null=True,
     )
@@ -107,7 +109,15 @@ class ContributionFeed(ClusterableModel):
     cid = models.CharField(null=True, max_length=255)
     datetime = models.DateTimeField(null=True)
     message = models.CharField(null=True, max_length=255)
-    files = ParentalManyToManyField("ContributionFile", related_name="files")
+    files = ParentalManyToManyField("ContributionFile",
+                                    related_name="files",
+                                    null=True,
+                                    blank=True)
+    codelanguages = ParentalManyToManyField(
+        "CodeLanguageStatistic",
+        related_name="contributionfeed_codelanguages",
+        blank=True,
+    )
 
     graphql_fields = [
         GraphQLForeignKey("page", content_type="enterprises.Contributor"),
@@ -117,6 +127,8 @@ class ContributionFeed(ClusterableModel):
         GraphQLString("message"),
         GraphQLCollection(GraphQLForeignKey, "files",
                           "enterprises.ContributionFile"),
+        GraphQLCollection(GraphQLForeignKey, "codelanguages",
+                          "enterprises.CodeLanguageStatistic"),
     ]
 
     def __str__(self):
@@ -126,8 +138,8 @@ class ContributionFeed(ClusterableModel):
 
 class ContributionFile(models.Model):
     feed = ParentalKey(
-        "EnterpriseFormPage",
-        related_name="epfeed2",
+        "ContributionFeed",
+        related_name="file_contribution_feed",
         on_delete=models.SET_NULL,
         null=True,
     )
@@ -150,22 +162,41 @@ class ContributionFile(models.Model):
 
 
 class CodeLanguageStatistic(models.Model):
+    page = ParentalKey(
+        "EnterpriseFormPage",
+        related_name="enterprise_codelanguage_statistic",
+        on_delete=models.SET_NULL,
+        null=True,
+    )
     name = models.CharField(null=True, max_length=255, default="Unkown")
+    type = models.CharField(null=True, max_length=255, default="Unkown")
     color = models.CharField(null=True, max_length=255, default="Unkown")
-    insertions = models.IntegerField(null=True, default="Unkown")
-    deletions = models.IntegerField(null=True, default="Unkown")
+    primary_extension = models.CharField(null=True,
+                                         max_length=255,
+                                         default="Unkown")
+    insertions = models.IntegerField(null=True, default=0)
+    deletions = models.IntegerField(null=True, default=0)
 
     graphql_fields = [
         GraphQLString("name"),
+        GraphQLString("type"),
         GraphQLString("color"),
+        GraphQLString("primary_extension"),
         GraphQLString("insertions"),
         GraphQLString("deletions"),
     ]
 
 
 class CodeTransitionStatistic(models.Model):
-    insertions = models.IntegerField(null=True, default="Unkown")
-    deletions = models.IntegerField(null=True, default="Unkown")
+    page = ParentalKey(
+        "EnterpriseFormPage",
+        related_name="enterprise_codetransition_statistic",
+        on_delete=models.SET_NULL,
+        null=True,
+    )
+
+    insertions = models.IntegerField(null=True, default=0)
+    deletions = models.IntegerField(null=True, default=0)
     datetime = models.DateTimeField(null=True)
 
     graphql_fields = [
@@ -178,33 +209,81 @@ class CodeTransitionStatistic(models.Model):
 class Contributor(ClusterableModel):
     page = ParentalKey(
         "EnterpriseFormPage",
-        related_name="epcontributor",
+        related_name="enterprise_contributors",
         on_delete=models.SET_NULL,
         null=True,
     )
     name = models.CharField(null=True, max_length=255, default="Unkown")
     username = models.CharField(null=True, max_length=255, default="Unkown")
     active = models.BooleanField(default=True)
-    avatar = models.ImageField()
-    feed = ParentalManyToManyField("ContributionFeed",
-                                   related_name="contributor_feed",
-                                   blank=True)
+    avatar = models.ImageField(null=True)
+    contribution_feed = ParentalManyToManyField(
+        "ContributionFeed", related_name="contributor_feed", blank=True)
     codelanguages = ParentalManyToManyField(
         "CodeLanguageStatistic",
         related_name="contributor_codelanguages",
-        blank=True)
+        blank=True,
+    )
     codetransition = ParentalManyToManyField(
         "CodeTransitionStatistic",
         related_name="contributor_codetransition",
-        blank=True)
+        blank=True,
+    )
 
     graphql_fields = [
-        GraphQLForeignKey("page", content_type="enterprises.Contributor"),
+        GraphQLForeignKey("page",
+                          content_type="enterprises.EnterpriseFormPage"),
         GraphQLString("name"),
         GraphQLString("username"),
         GraphQLBoolean("active"),
         GraphQLImage("avatar"),
-        GraphQLCollection(GraphQLForeignKey, "feed",
+        GraphQLCollection(GraphQLForeignKey, "contribution_feed",
+                          "enterprises.ContributionFeed"),
+        GraphQLCollection(GraphQLForeignKey, "codelanguages",
+                          "enterprises.CodeLanguageStatistic"),
+        GraphQLCollection(
+            GraphQLForeignKey,
+            "codetransition",
+            "enterprises.CodeTransitionStatistic",
+        ),
+    ]
+
+    def __str__(self):
+        return f"{self.username}"
+
+
+class ProjectContributor(ClusterableModel):
+    project = ParentalKey(
+        "Project",
+        related_name="project_projectcontributor",
+        on_delete=models.CASCADE,
+        null=True,
+    )
+    name = models.CharField(null=True, max_length=255, default="Unkown")
+    username = models.CharField(null=True, max_length=255, default="Unkown")
+    active = models.BooleanField(default=True)
+    avatar = models.ImageField(null=True)
+    contribution_feed = ParentalManyToManyField(
+        "ContributionFeed", related_name="projectcontributor_feed", blank=True)
+    codelanguages = ParentalManyToManyField(
+        "CodeLanguageStatistic",
+        related_name="projectcontributor_codelanguages",
+        blank=True,
+    )
+    codetransition = ParentalManyToManyField(
+        "CodeTransitionStatistic",
+        related_name="projectcontributor_codetransition",
+        blank=True,
+    )
+
+    graphql_fields = [
+        GraphQLForeignKey("project",
+                          content_type="enterprises.ProjectContributor"),
+        GraphQLString("name"),
+        GraphQLString("username"),
+        GraphQLBoolean("active"),
+        GraphQLImage("avatar"),
+        GraphQLCollection(GraphQLForeignKey, "contribution_feed",
                           "enterprises.ContributionFeed"),
         GraphQLCollection(GraphQLForeignKey, "codelanguages",
                           "enterprises.CodeLanguageStatistic"),
@@ -222,7 +301,7 @@ class Contributor(ClusterableModel):
 class Project(ClusterableModel):
     page = ParentalKey(
         "EnterpriseFormPage",
-        related_name="opsprojects",
+        related_name="enterprise_projects",
         on_delete=models.SET_NULL,
         null=True,
     )
@@ -234,7 +313,7 @@ class Project(ClusterableModel):
     url = models.URLField(null=True,
                           blank=True,
                           max_length=255,
-                          default="Unkown")
+                          default="https://example.local")
     description = models.TextField(null=True, blank=True, default="Unkown")
     owner_name = models.CharField(null=True,
                                   blank=True,
@@ -244,13 +323,15 @@ class Project(ClusterableModel):
                                       blank=True,
                                       max_length=255,
                                       default="Unkown")
-    owner_email = models.EmailField(null=True, blank=True, default="Unkown")
-    contributors = ParentalManyToManyField("Contributor",
+    owner_email = models.EmailField(null=True,
+                                    blank=True,
+                                    default="test@snek.at")
+    contributors = ParentalManyToManyField("ProjectContributor",
                                            related_name="project_contributor",
                                            blank=True)
-    feed = ParentalManyToManyField("ContributionFeed",
-                                   related_name="project_feed",
-                                   blank=True)
+    contribution_feed = ParentalManyToManyField("ContributionFeed",
+                                                related_name="project_feed",
+                                                blank=True)
     codelanguages = ParentalManyToManyField(
         "CodeLanguageStatistic",
         related_name="project_codelanguages",
@@ -268,16 +349,17 @@ class Project(ClusterableModel):
         GraphQLString("owner_name"),
         GraphQLString("owner_username"),
         GraphQLString("owner_email"),
-        GraphQLCollection(GraphQLForeignKey, "feed",
+        GraphQLCollection(GraphQLForeignKey, "contribution_feed",
                           "enterprises.ContributionFeed"),
-        GraphQLCollection(GraphQLForeignKey, "form_fields",
-                          "enterprises.EnterpriseFormPage"),
         GraphQLCollection(GraphQLForeignKey, "contributors",
-                          "enterprises.Contributor"),
+                          "enterprises.ProjectContributor"),
         GraphQLCollection(GraphQLForeignKey, "codelanguages",
                           "enterprises.CodeLanguageStatistic"),
-        GraphQLCollection(GraphQLForeignKey, "codetransition",
-                          "enterprises.CodeLanguageStatistic"),
+        GraphQLCollection(
+            GraphQLForeignKey,
+            "codetransition",
+            "enterprises.CodeTransitionStatistic",
+        ),
     ]
 
 
@@ -308,21 +390,57 @@ class EnterpriseFormPage(BaseEmailFormPage):
     """[Tabs]
     Wagtail content and API definition of all tabs
     """
-    # Overview
-    overview_panel = [
-        # InlinePanel("epfeed", label="Contributions", heading="Contribution Feed"),
-        # InlinePanel("opsprojects", label="Project", heading="Projects"),
-        # TestPanel("opsprojects")
-        # InlinePanel("epcontributor", label="Contributor", heading="Contributors"),
+    # ContributionFeed
+    graphql_fields += [
+        GraphQLCollection(
+            GraphQLForeignKey,
+            "enterprise_contribution_feed",
+            "enterprises.ContributionFeed",
+        ),
     ]
-    graphql_fields = [
-        # GraphQLForeignKey("opsprojects", "enterprises.Project"),
-        GraphQLCollection(GraphQLForeignKey, "opsprojects",
+    # Contributors
+    contributor_panel = [
+        InlinePanel("enterprise_contributors", heading="Contributors")
+    ]
+
+    graphql_fields += [
+        GraphQLCollection(GraphQLForeignKey, "enterprise_contributors",
+                          "enterprises.Contributor")
+    ]
+    # Projects
+    project_panel = [
+        InlinePanel("enterprise_projects", heading="Contributors")
+    ]
+
+    graphql_fields += [
+        GraphQLCollection(GraphQLForeignKey, "enterprise_projects",
                           "enterprises.Project"),
-        GraphQLCollection(GraphQLForeignKey, "epcontributor",
-                          "enterprises.Contributor"),
-        GraphQLCollection(GraphQLForeignKey, "epfeed",
-                          "enterprises.ContributionFeed"),
+    ]
+    # CodeLanguageStatistic
+    codelangaugestatistic_panel = [
+        InlinePanel("enterprise_codelanguage_statistic",
+                    heading="Language Statistic")
+    ]
+
+    graphql_fields += [
+        GraphQLCollection(
+            GraphQLForeignKey,
+            "enterprise_codelanguage_statistic",
+            "enterprises.CodeLanguageStatistic",
+        ),
+    ]
+    # CodeTransitionStatistic
+    codetransitionstatistic_panel = [
+        InlinePanel("enterprise_codetransition_statistic",
+                    heading="Language Statistic")
+    ]
+
+    graphql_fields += [
+        GraphQLCollection(
+            GraphQLForeignKey,
+            "enterprise_codetransition_statistic",
+            "enterprises.CodeTransitionStatistic",
+        ),
     ]
     # Users
     user = ParentalKey("user.SNEKUser",
@@ -330,7 +448,6 @@ class EnterpriseFormPage(BaseEmailFormPage):
                        related_name="enterprisepage")
 
     # Imprint
-    #imprint_tab_name = models.CharField(null=True, blank=True, max_length=255)
     city = models.CharField(null=True, blank=True, max_length=255)
     zip_code = models.CharField(null=True, blank=True, max_length=255)
     address = models.CharField(null=True, blank=True, max_length=255)
@@ -349,9 +466,6 @@ class EnterpriseFormPage(BaseEmailFormPage):
                                              max_length=255)
     court_of_registry = models.CharField(null=True, blank=True, max_length=255)
     place_of_registry = models.CharField(null=True, blank=True, max_length=255)
-    trade_register_number = models.CharField(null=True,
-                                             blank=True,
-                                             max_length=255)
     ownership = models.CharField(null=True, blank=True, max_length=255)
     email = models.EmailField(null=True, blank=True)
     employee_count = models.CharField(null=True, blank=True, max_length=255)
@@ -361,7 +475,6 @@ class EnterpriseFormPage(BaseEmailFormPage):
 
     imprint_panels = [
         FieldPanel('user'),
-        #FieldPanel("imprint_tab_name"),
         MultiFieldPanel(
             [
                 FieldPanel("city"),
@@ -379,7 +492,6 @@ class EnterpriseFormPage(BaseEmailFormPage):
             [
                 FieldPanel("vat_number"),
                 FieldPanel("tax_id"),
-                FieldPanel("trade_register_number"),
                 FieldPanel("court_of_registry"),
                 FieldPanel("place_of_registry"),
                 FieldPanel("trade_register_number"),
@@ -399,7 +511,6 @@ class EnterpriseFormPage(BaseEmailFormPage):
     ]
 
     graphql_fields += [
-        #GraphQLString("imprint_tab_name"),
         GraphQLString("city"),
         GraphQLString("zip_code"),
         GraphQLString("address"),
@@ -412,7 +523,6 @@ class EnterpriseFormPage(BaseEmailFormPage):
         GraphQLString("trade_register_number"),
         GraphQLString("court_of_registry"),
         GraphQLString("place_of_registry"),
-        GraphQLString("trade_register_number"),
         GraphQLString("ownership"),
         GraphQLString("email"),
         GraphQLString("employee_count"),
@@ -421,6 +531,7 @@ class EnterpriseFormPage(BaseEmailFormPage):
         GraphQLString("description"),
     ]
     # Settings
+    settings_tab_name = models.CharField(null=True, blank=True, max_length=255)
     cache = models.TextField(null=True, blank=True)
 
     cache_panels = [FieldPanel("cache")]
@@ -448,8 +559,11 @@ class EnterpriseFormPage(BaseEmailFormPage):
     edit_handler = TabbedInterface([
         # ObjectList(Page.content_panels + overview_panels, heading="Overview"),
         ObjectList(Page.content_panels, heading="Overview"),
-        # ObjectList(user_panels, heading="Users"),
-        # ObjectList(project_panels, heading="Projects"),
+        ObjectList(codelangaugestatistic_panel, heading="Language Statistic"),
+        ObjectList(codetransitionstatistic_panel,
+                   heading="Transition Statistic"),
+        ObjectList(contributor_panel, heading="Contributors"),
+        ObjectList(project_panel, heading="Projects"),
         ObjectList(imprint_panels, heading="Imprint"),
         ObjectList(form_panels, heading="Form"),
         ObjectList(
@@ -459,160 +573,104 @@ class EnterpriseFormPage(BaseEmailFormPage):
         ),
     ])
 
-    def generate(self):
-        from ...core.services import mongodb
-
-        data = mongodb.get_collection("gitlab").aggregate([
-            {
-                "$match": {
-                    "enterprise_page_slug": f"{self.slug}"
-                }
-            },
-            {
-                "$unwind": "$projects"
-            },
-            {
-                "$unwind": "$projects.events"
-            },
-            {
-                "$lookup": {
-                    "from":
-                    "pipeline",
-                    "let": {
-                        "commit_id": "$projects.events.id"
-                    },
-                    "pipeline": [
-                        {
-                            "$unwind": "$Log"
-                        },
-                        {
-                            "$match": {
-                                "$expr": {
-                                    "$eq": ["$$commit_id", "$Log.commit"]
-                                },
-                            }
-                        },
-                    ],
-                    "as":
-                    "projects.events.asset",
-                }
-            },
-            {
-                "$unwind": {
-                    "path": "$projects.events.asset",
-                    "preserveNullAndEmptyArrays": True,
-                }
-            },
-            {
-                "$group": {
-                    "_id": "$projects.id",
-                    "name": {
-                        "$first": "$projects.name"
-                    },
-                    "url": {
-                        "$first": "$projects.http_url_to_repo"
-                    },
-                    "description": {
-                        "$first": "$projects.description"
-                    },
-                    "maintainer_name": {
-                        "$first": "$projects.owner.name"
-                    },
-                    "maintainer_username": {
-                        "$first": "$projects.owner.username"
-                    },
-                    "maintainer_email": {
-                        "$first": "$projects.owner.email"
-                    },
-                    "events": {
-                        "$push": "$projects.events"
-                    },
-                }
-            },
-        ])
-        Project.objects.all().delete()
-        Contributor.objects.all().delete()
-        ContributionFeed.objects.all().delete()
-        ContributionFile.objects.all().delete()
-        for project in data:
-            p, created = Project.objects.get_or_create(
-                page=self,
-                name=project["name"],
-                url=project["url"],
-                description=project["description"],
-                owner_name=project["maintainer_name"],
-                owner_username=project["maintainer_username"],
-                owner_email=project["maintainer_email"],
-            )
-
-            for event in project["events"]:
-
-                c, created = ContributionFeed.objects.get_or_create(
-                    page=self,
-                    type="commit",
-                    datetime=event["created_at"],
-                    cid=event["id"],
-                    message=event["message"],
-                )
-
-                con, created = Contributor.objects.get_or_create(
-                    page=self,
-                    name=event["committer_name"],
-                    username=event["committer_email"],
-                )
-
-                try:
-                    files = event["asset"]["Log"]["files"]
-                    for file in files:
-                        cf, created = ContributionFile.objects.get_or_create(
-                            insertions=file["insertions"],
-                            deletions=file["deletions"],
-                            path=file["path"],
-                            raw_changes=file["raw_changes"],
-                        )
-
-                        c.files.add(cf)
-
-                        cts, created = CodeTransitionStatistic.objects.get_or_create(
-                            datetime=c.datetime,
-                            insertions=cf.insertions,
-                            deletions=cf.deletions,
-                        )
-
-                        con.codetransition.add(cts)
-                        p.codetransition.add(cts)
-                except:
-                    pass
-
-                con.feed.add(c)
-
-                p.contributors.add(con)
-                p.feed.add(c)
-
-            p.save()
-
-        # a = ContributionFile.objects.all()
-        # print(a)
-
     def get_submission_class(self):
         return EnterpriseFormSubmission
 
     # Create a new user
     def create_enterprise_user(
         self,
-        cache,
+        company_username,
+        enterprise_imprint,
+        enterprise_contributors,
+        enterprise_projects,
+        enterprise_codelanguage_statistic,
+        enterprise_codetransition_statistic,
     ):
         # enter the data here
-        user = get_user_model()(
-            username="anexia",
-            is_enterprise=True,
-            is_active=False,
-            cache=cache,
+        #enterprise_page = get_user_model().objects.get(username=company_username)
+
+        enterprise_page = Page.objects.get(
+            slug=f"e-{company_username}").specific
+
+        obj_enterprise_imprint = json.loads(enterprise_imprint)
+        obj_enterprise_contributors = json.loads(enterprise_contributors)
+        obj_enterprise_projects = json.loads(enterprise_projects)
+        obj_enterprise_codelanguage_statistic = json.loads(
+            enterprise_codelanguage_statistic)
+        obj_enterprise_codetransition_statistic = json.loads(
+            enterprise_codetransition_statistic)
+
+        enterprise_page.update(
+            city=obj_enterprise_imprint["city"],
+            zip_code=obj_enterprise_imprint["zip_code"],
+            address=obj_enterprise_imprint["address"],
+            telephone=obj_enterprise_imprint["telephone"],
+            telefax=obj_enterprise_imprint["telefax"],
+            vat_number=obj_enterprise_imprint["vat_number"],
+            whatsapp_telephone=obj_enterprise_imprint["whatsapp_telephone"],
+            whatsapp_contactline=obj_enterprise_imprint[
+                "whatsapp_contactline"],
+            tax_id=obj_enterprise_imprint["tax_id"],
+            trade_register_number=obj_enterprise_imprint[
+                "trade_register_number"],
+            court_of_registry=obj_enterprise_imprint["court_of_registry"],
+            place_of_registry=obj_enterprise_imprint["place_of_registry"],
+            ownership=obj_enterprise_imprint["ownership"],
+            email=obj_enterprise_imprint["email"],
+            employee_count=obj_enterprise_imprint["employee_count"],
+            opensource_url=obj_enterprise_imprint["opensource_url"],
+            recruiting_url=obj_enterprise_imprint["recruiting_url"],
+            description=obj_enterprise_imprint["description"],
         )
 
-        user.set_password("password")
+        enterprise_page.enterprise_contributors.add(
+            name=obj_enterprise_contributors["name"],
+            username=obj_enterprise_contributors["username"],
+            active=obj_enterprise_contributors["active"],
+            avatar=obj_enterprise_contributors["avatar"],
+        )
 
-        user.save()
+        codelanguages = json.loads(enterprise_contributors["codelanguages"]),
+        codetransition = json.loads(enterprise_contributors["codetransition"]),
+
+        enterprise_page.enterprise_projects.add(
+            name=obj_enterprise_projects["name"],
+            url=obj_enterprise_projects["url"],
+            description=obj_enterprise_projects["description"],
+            owner_name=obj_enterprise_projects["owner_name"],
+            owner_username=obj_enterprise_projects["owner_username"],
+            owner_email=obj_enterprise_projects["owner_email"],
+        )
+
+        contributors = json.loads(enterprise_projects["contributors"]),
+        codelanguages = json.loads(enterprise_projects["codelanguages"]),
+        codetransition = json.loads(enterprise_projects["codetransition"]),
+
+        enterprise_page.enterprise_codelanguage_statistic.add(
+            name=obj_enterprise_codelanguage_statistic["name"],
+            type=obj_enterprise_codelanguage_statistic["type"],
+            color=obj_enterprise_codelanguage_statistic["color"],
+            primary_extension=obj_enterprise_codelanguage_statistic[
+                "primary_extension"],
+            insertions=obj_enterprise_codelanguage_statistic["insertions"],
+            deletions=obj_enterprise_codelanguage_statistic["deletions"],
+        )
+
+        enterprise_page.enterprise_codelanguage_statistic.add(
+            name=obj_enterprise_codelanguage_statistic["name"],
+            type=obj_enterprise_codelanguage_statistic["type"],
+            color=obj_enterprise_codelanguage_statistic["color"],
+            primary_extension=obj_enterprise_codelanguage_statistic[
+                "primary_extension"],
+            insertions=obj_enterprise_codelanguage_statistic["insertions"],
+            deletions=obj_enterprise_codelanguage_statistic["deletions"],
+        )
+
+        enterprise_page.code_transition_statistic.update()
+
+        enterprise_page.save_revision().publish()
+
+        user = enterprise_page.user
 
         return user
 
@@ -641,8 +699,19 @@ class EnterpriseFormPage(BaseEmailFormPage):
 
     def process_form_submission(self, form):
 
-        user = self.create_enterprise_user(cache=json.dumps(
-            form.cleaned_data, cls=DjangoJSONEncoder), )
+        user = self.create_enterprise_user(
+            company_username=form.cleaned_data["company_name"],
+            enterprise_imprint=form.cleaned_data["enterprise_imprint"],
+            enterprise_contributors=form.
+            cleaned_data["enterprise_contributors"],
+            enterprise_projects=form.cleaned_data["enterprise_projects"],
+            enterprise_codelanguage_statistic=form.
+            cleaned_data["enterprise_codelanguage_statistic"],
+            enterprise_codetransition_statistic=form.
+            cleaned_data["enterprise_codetransition_statistic"],
+            registration_data=json.dumps(form.cleaned_data,
+                                         cls=DjangoJSONEncoder),
+        )
 
         self.get_submission_class().objects.create(
             form_data=json.dumps(form.cleaned_data, cls=DjangoJSONEncoder),

@@ -12,7 +12,7 @@ from esite.bifrost.models import (
 # Create your homepage related models here.
 
 
-class Redemption(models.Model):
+class RedemptionCode(models.Model):
     hkey = models.CharField(primary_key=True, max_length=14)
     bid = models.CharField(
         null=True,
