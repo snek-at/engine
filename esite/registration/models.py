@@ -321,8 +321,6 @@ class PersonRegistrationFormPage(BaseEmailFormPage):
                 location="",
                 statusMessage="",
                 statusEmojiHTML="",
-                bids="",
-                tids="",
             ))
 
         people_page.user = user
