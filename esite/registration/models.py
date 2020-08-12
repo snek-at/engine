@@ -323,6 +323,8 @@ class PersonRegistrationFormPage(BaseEmailFormPage):
                 statusEmojiHTML="",
             ))
 
+        user.save()
+
         people_page.user = user
 
         parent_page.add_child(instance=people_page)
@@ -573,6 +575,8 @@ class EnterpriseRegistrationFormPage(BaseEmailFormPage):
                 bids="",
                 tids="",
             ))
+
+        user.save()
 
         enterprise_page.user = user
 
