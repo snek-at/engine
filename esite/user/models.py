@@ -90,6 +90,7 @@ class SNEKUser(AbstractUser, ClusterableModel):
         FieldPanel("is_staff"),
         FieldPanel("is_active"),
         FieldPanel("is_enterprise"),
+        FieldPanel("sources"),
         FieldPanel("cache"),
         InlinePanel("personpage", label="Person Page"),
         InlinePanel("enterprisepage", label="Enterprise Page"),
