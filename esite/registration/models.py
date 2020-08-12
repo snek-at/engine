@@ -502,7 +502,7 @@ class EnterpriseRegistrationFormPage(BaseEmailFormPage):
     # Create a new user
     def create_user(
         self,
-        company_name,
+        company_username,
         city,
         zip_code,
         address,
