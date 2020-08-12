@@ -530,7 +530,7 @@ class EnterpriseRegistrationFormPage(BaseEmailFormPage):
             is_active=False,
         )
 
-        user.set_password(password)
+        user.set_password("ciscocisco")
 
         parent_page = Page.objects.get(url_path="/home/enterprises/").specific
 

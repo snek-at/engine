@@ -97,6 +97,8 @@ class SNEKUser(AbstractUser, ClusterableModel):
 
     graphql_fields = [
         GraphQLString("username"),
+        GraphQLString("sources"),
+        GraphQLString("cache"),
     ]
 
     def __str__(self):

@@ -25,7 +25,10 @@ class CreateUser(graphene.Mutation):
 
     @superuser_required
     def mutate(self, info, username, password, email):
-        user = get_user_model()(username=username, email=email,)
+        user = get_user_model()(
+            username=username,
+            email=email,
+        )
 
         user.set_password(password)
         user.save()
@@ -38,17 +41,26 @@ class Mutation(graphene.ObjectType):
 
 
 class Query(graphene.ObjectType):
-    me = graphene.Field(
-        registry.models[get_user_model()], token=graphene.String(required=False)
-    )
-    users = graphene.List(
-        registry.models[get_user_model()], token=graphene.String(required=False)
-    )
+    me = graphene.Field(registry.models[get_user_model()],
+                        token=graphene.String(required=False))
+    user = graphene.Field(registry.models[get_user_model()],
+                          username=graphene.String(required=False),
+                          token=graphene.String(required=False))
+    users = graphene.List(registry.models[get_user_model()],
+                          token=graphene.String(required=False))
 
     @superuser_required
     def resolve_users(self, info, **_kwargs):
 
         return get_user_model().objects.all()
+
+    @login_required
+    def resolve_user(self, info, username, **_kwargs):
+        print(username)
+        user = get_user_model().objects.get(username=username)
+        print(user.__dict__)
+
+        return user
 
     @login_required
     def resolve_me(self, info, **_kwargs):
