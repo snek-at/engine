@@ -15,14 +15,16 @@ class ProfileAdmin(ModelAdmin):
 
     # Listed in the registration overview
     list_display = (
-        "date_joined",
-        "first_name",
-        "last_name",
+        "username",
+        "platformName",
+        "platformUrl",
+        "createdAt",
     )
     search_fields = (
-        "date_joined",
-        "first_name",
-        "last_name",
+        "username",
+        "platformName",
+        "platformUrl",
+        "createdAt",
     )
 
 

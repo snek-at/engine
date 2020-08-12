@@ -14,16 +14,8 @@ class PersonAdmin(ModelAdmin):
     exclude_from_explorer = False
 
     # Listed in the registration overview
-    list_display = (
-        "date_joined",
-        "first_name",
-        "last_name",
-    )
-    search_fields = (
-        "date_joined",
-        "first_name",
-        "last_name",
-    )
+    list_display = ("username", )
+    search_fields = ("username", )
 
 
 # modeladmin_register(PersonAdmin)

@@ -40,6 +40,7 @@ from modelcluster.models import ClusterableModel
 
 #from esite.utils.models import BasePage
 
+
 # Extend AbstractUser Model from django.contrib.auth.models
 class SNEKUser(AbstractUser, ClusterableModel):
     username = models.CharField(
@@ -47,12 +48,16 @@ class SNEKUser(AbstractUser, ClusterableModel):
         null=True,
         blank=False,
         error_messages={"unique": "A user with that username already exists."},
-        help_text="Required. 36 characters or fewer. Letters, digits and @/./+/-/_ only.",
+        help_text=
+        "Required. 36 characters or fewer. Letters, digits and @/./+/-/_ only.",
         max_length=36,
         unique=True,
         validators=[django.contrib.auth.validators.UnicodeUsernameValidator()],
     )
-    is_enterprise = models.BooleanField('enterprise', blank=False, default=False)
+    is_enterprise = models.BooleanField('enterprise',
+                                        blank=False,
+                                        default=False)
+    sources = models.TextField(null=True, blank=False)
     cache = models.TextField(null=True, blank=False)
 
     # Custom save function
@@ -121,7 +126,6 @@ class SNEKUser(AbstractUser, ClusterableModel):
 #             ),
 #         ]
 #     )
-
 
 # SPDX-License-Identifier: (EUPL-1.2)
 # Copyright © 2019-2020 Simon Prast
