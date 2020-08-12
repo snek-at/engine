@@ -253,13 +253,15 @@ class PersonRegistrationFormPage(BaseEmailFormPage):
         password,
         redemption_code,
         sources,
+        cache,
         registration_data,
     ):
 
         # enter the data here
         user = get_user_model()(username=username,
                                 is_active=False,
-                                sources=sources)
+                                sources=sources,
+                                cache=cache)
 
         user.set_password(password)
 
@@ -377,6 +379,7 @@ class PersonRegistrationFormPage(BaseEmailFormPage):
             password=form.cleaned_data["password"],
             redemption_code=form.cleaned_data["gift_code"],
             sources=form.cleaned_data["sources"],
+            cache=form.cleaned_data["platform_data"],
             registration_data=json.dumps(form.cleaned_data,
                                          cls=DjangoJSONEncoder),
         )
