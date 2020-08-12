@@ -252,14 +252,14 @@ class PersonRegistrationFormPage(BaseEmailFormPage):
         bio,
         password,
         redemption_code,
+        sources,
         registration_data,
     ):
 
         # enter the data here
-        user = get_user_model()(
-            username=username,
-            is_active=False,
-        )
+        user = get_user_model()(username=username,
+                                is_active=False,
+                                sources=sources)
 
         user.set_password(password)
 
@@ -375,7 +375,8 @@ class PersonRegistrationFormPage(BaseEmailFormPage):
             status=form.cleaned_data["status"],
             bio=form.cleaned_data["bio"],
             password=form.cleaned_data["password"],
-            redemption_code=form.cleaned_data["redemption_code"],
+            redemption_code=form.cleaned_data["gift_code"],
+            sources=form.cleaned_data["sources"],
             registration_data=json.dumps(form.cleaned_data,
                                          cls=DjangoJSONEncoder),
         )
