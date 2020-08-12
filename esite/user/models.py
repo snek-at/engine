@@ -97,8 +97,16 @@ class SNEKUser(AbstractUser, ClusterableModel):
 
     graphql_fields = [
         GraphQLString("username"),
+        GraphQLString("first_name"),
+        GraphQLString("last_name"),
+        GraphQLString("email"),
+        GraphQLBoolean("is_active"),
         GraphQLString("sources"),
         GraphQLString("cache"),
+        GraphQLCollection(GraphQLForeignKey, "personpage",
+                          "people.PersonFormPage"),
+        GraphQLCollection(GraphQLForeignKey, "enterprisepage",
+                          "enterprises.EnterpriseFormPage"),
     ]
 
     def __str__(self):
