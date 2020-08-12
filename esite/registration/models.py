@@ -532,6 +532,7 @@ class EnterpriseRegistrationFormPage(BaseEmailFormPage):
         # enter the data here
         user = get_user_model()(
             username=company_username,
+            is_enterprise=True,
             is_active=False,
         )
 

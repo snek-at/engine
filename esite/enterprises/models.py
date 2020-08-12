@@ -421,7 +421,6 @@ class EnterpriseFormPage(BaseEmailFormPage):
         GraphQLString("description"),
     ]
     # Settings
-    settings_tab_name = models.CharField(null=True, blank=True, max_length=255)
     cache = models.TextField(null=True, blank=True)
 
     cache_panels = [FieldPanel("cache")]
