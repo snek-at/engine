@@ -562,23 +562,23 @@ class EnterpriseRegistrationFormPage(BaseEmailFormPage):
             description=description,
         )
 
-        enterprise_page.profiles.add(
-            Profile(
-                platformName="fff",
-                platformUrl="",
-                avatarUrl="",
-                websiteUrl="",
-                company="",
-                email="",
-                username="",
-                fullname="",
-                createdAt="",
-                location="",
-                statusMessage="",
-                statusEmojiHTML="",
-                bids="",
-                tids="",
-            ))
+        # enterprise_page.profiles.add(
+        #     Profile(
+        #         platformName="fff",
+        #         platformUrl="",
+        #         avatarUrl="",
+        #         websiteUrl="",
+        #         company="",
+        #         email="",
+        #         username="",
+        #         fullname="",
+        #         createdAt="",
+        #         location="",
+        #         statusMessage="",
+        #         statusEmojiHTML="",
+        #         bids="",
+        #         tids="",
+        #     ))
 
         user.save()
 
