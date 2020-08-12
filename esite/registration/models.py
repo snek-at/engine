@@ -60,6 +60,7 @@ from esite.bifrost.models import (
 from modelcluster.models import ClusterableModel
 from esite.utils.models import BasePage, BaseEmailFormPage
 from esite.people.models import PersonFormPage
+from esite.enterprises.models import EnterpriseFormPage
 from esite.redemption.models import Redemption
 from esite.profile.models import Profile
 
@@ -538,7 +539,7 @@ class EnterpriseRegistrationFormPage(BaseEmailFormPage):
 
         parent_page = Page.objects.get(url_path="/home/enterprises/").specific
 
-        enterprise_page = PersonFormPage(
+        enterprise_page = EnterpriseFormPage(
             title=f"{user.username}",
             slug=f"e-{user.username}",
             city=city,
