@@ -300,6 +300,8 @@ class EnterpriseFormPage(BaseEmailFormPage):
     subpage_types = []
     graphql_fields = []
 
+    show_in_menus_default = False
+
     class Meta:
         verbose_name = "Enterprise Form Page"
 

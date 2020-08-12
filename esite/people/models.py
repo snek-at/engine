@@ -116,6 +116,8 @@ class PersonFormPage(BaseFormPage):
     parent_page_types = ['people.PersonIndex']
     subpage_types = []
 
+    show_in_menus_default = False
+
     class Meta:
         verbose_name = "Person Form Page"
 
