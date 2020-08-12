@@ -267,7 +267,7 @@ class PersonRegistrationFormPage(BaseEmailFormPage):
 
         if redemption_code:
             redemption = Redemption.objects.get(pk=f'{redemption_code}')
-            if gift.is_active:
+            if redemption.is_active:
                 people_page = PersonFormPage(
                     title=f"{user.username}",
                     slug=f"p-{user.username}",
