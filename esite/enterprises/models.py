@@ -330,7 +330,7 @@ class EnterpriseFormPage(BaseEmailFormPage):
                        related_name="enterprisepage")
 
     # Imprint
-    imprint_tab_name = models.CharField(null=True, blank=True, max_length=255)
+    #imprint_tab_name = models.CharField(null=True, blank=True, max_length=255)
     city = models.CharField(null=True, blank=True, max_length=255)
     zip_code = models.CharField(null=True, blank=True, max_length=255)
     address = models.CharField(null=True, blank=True, max_length=255)
@@ -361,7 +361,7 @@ class EnterpriseFormPage(BaseEmailFormPage):
 
     imprint_panels = [
         FieldPanel('user'),
-        FieldPanel("imprint_tab_name"),
+        #FieldPanel("imprint_tab_name"),
         MultiFieldPanel(
             [
                 FieldPanel("city"),
@@ -399,7 +399,7 @@ class EnterpriseFormPage(BaseEmailFormPage):
     ]
 
     graphql_fields += [
-        GraphQLString("imprint_tab_name"),
+        #GraphQLString("imprint_tab_name"),
         GraphQLString("city"),
         GraphQLString("zip_code"),
         GraphQLString("address"),
