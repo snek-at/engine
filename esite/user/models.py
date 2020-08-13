@@ -109,6 +109,7 @@ class SNEKUser(AbstractUser, ClusterableModel):
                           "people.PersonFormPage"),
         GraphQLCollection(GraphQLForeignKey, "enterprisepage",
                           "enterprises.EnterpriseFormPage"),
+        GraphQLCollection(GraphQLForeignKey, "talk_owner", "talk.Talk"),
         GraphQLCollection(GraphQLForeignKey, "comment_owner",
                           "comment.Comment"),
     ]
