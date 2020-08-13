@@ -42,6 +42,7 @@ INSTALLED_APPS = [
     "esite.registration",
     "esite.profile",
     "esite.talk",
+    "esite.comment",
     # Django core apps
     "django.contrib.admin",
     "django.contrib.auth",
@@ -186,6 +187,7 @@ BIFROST_APPS = {
     "registration": "",
     "profile": "",
     "talk": "",
+    "comment": "",
     "enterprises": "",
     "people": "",
     "redemption": "",

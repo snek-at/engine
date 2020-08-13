@@ -31,9 +31,10 @@ class LinkFields(models.Model):
     <a href="{{ obj.get_link_url }}">{{ obj.get_link_text }}</a>
     """
 
-    link_page = models.ForeignKey(
-        "wagtailcore.Page", blank=True, null=True, on_delete=models.SET_NULL
-    )
+    link_page = models.ForeignKey("wagtailcore.Page",
+                                  blank=True,
+                                  null=True,
+                                  on_delete=models.SET_NULL)
     link_url = models.URLField(blank=True)
     link_text = models.CharField(blank=True, max_length=255)
 
@@ -42,37 +43,32 @@ class LinkFields(models.Model):
 
     def clean(self):
         if not self.link_page and not self.link_url:
-            raise ValidationError(
-                {
-                    "link_url": ValidationError(
-                        "You must specify link page or link url."
-                    ),
-                    "link_page": ValidationError(
-                        "You must specify link page or link url."
-                    ),
-                }
-            )
+            raise ValidationError({
+                "link_url":
+                ValidationError("You must specify link page or link url."),
+                "link_page":
+                ValidationError("You must specify link page or link url."),
+            })
 
         if self.link_page and self.link_url:
-            raise ValidationError(
-                {
-                    "link_url": ValidationError(
-                        "You must specify link page or link url. You can't use both."
-                    ),
-                    "link_page": ValidationError(
-                        "You must specify link page or link url. You can't use both."
-                    ),
-                }
-            )
+            raise ValidationError({
+                "link_url":
+                ValidationError(
+                    "You must specify link page or link url. You can't use both."
+                ),
+                "link_page":
+                ValidationError(
+                    "You must specify link page or link url. You can't use both."
+                ),
+            })
 
         if not self.link_page and not self.link_text:
-            raise ValidationError(
-                {
-                    "link_text": ValidationError(
-                        "You must specify link text, if you use the link url field."
-                    ),
-                }
-            )
+            raise ValidationError({
+                "link_text":
+                ValidationError(
+                    "You must specify link text, if you use the link url field."
+                ),
+            })
 
     def get_link_text(self):
         if self.link_text:
@@ -136,7 +132,10 @@ class SocialFields(models.Model):
 
     promote_panels = [
         MultiFieldPanel(
-            [ImageChooserPanel("social_image"), FieldPanel("social_text"),],
+            [
+                ImageChooserPanel("social_image"),
+                FieldPanel("social_text"),
+            ],
             "Social networks",
         ),
     ]
@@ -150,17 +149,20 @@ class ListingFields(models.Model):
         blank=True,
         on_delete=models.SET_NULL,
         related_name="+",
-        help_text="Choose the image you wish to be displayed when this page appears in listings",
+        help_text=
+        "Choose the image you wish to be displayed when this page appears in listings",
     )
     listing_title = models.CharField(
         max_length=255,
         blank=True,
-        help_text="Override the page title used when this page appears in listings",
+        help_text=
+        "Override the page title used when this page appears in listings",
     )
     listing_summary = models.CharField(
         max_length=255,
         blank=True,
-        help_text="The text summary used when this page appears in listings. It's also used as "
+        help_text=
+        "The text summary used when this page appears in listings. It's also used as "
         "the description for search engines if the 'Search description' field above is not defined.",
     )
 
@@ -187,12 +189,15 @@ class SocialMediaSettings(BaseSetting):
         help_text="Your Twitter username without the @, e.g. katyperry",
     )
     facebook_app_id = models.CharField(
-        max_length=255, blank=True, help_text="Your Facebook app ID.",
+        max_length=255,
+        blank=True,
+        help_text="Your Facebook app ID.",
     )
     default_sharing_text = models.CharField(
         max_length=255,
         blank=True,
-        help_text="Default sharing text to use if social text has not been set on a page.",
+        help_text=
+        "Default sharing text to use if social text has not been set on a page.",
     )
     site_name = models.CharField(
         max_length=255,
@@ -207,14 +212,22 @@ class SystemMessagesSettings(BaseSetting):
     class Meta:
         verbose_name = "system messages"
 
-    title_404 = models.CharField("Title", max_length=255, default="Page not found",)
+    title_404 = models.CharField(
+        "Title",
+        max_length=255,
+        default="Page not found",
+    )
     body_404 = RichTextField(
         "Text",
-        default="<p>You may be trying to find a page that doesn&rsquo;t exist or has been moved.</p>",
+        default=
+        "<p>You may be trying to find a page that doesn&rsquo;t exist or has been moved.</p>",
     )
 
     panels = [
-        MultiFieldPanel([FieldPanel("title_404"), FieldPanel("body_404"),], "404 page"),
+        MultiFieldPanel([
+            FieldPanel("title_404"),
+            FieldPanel("body_404"),
+        ], "404 page"),
     ]
 
 
@@ -230,9 +243,8 @@ class BasePage(SocialFields, ListingFields, Page):
     def get_absolute_url(self):
         return self.full_url
 
-    promote_panels = (
-        Page.promote_panels + SocialFields.promote_panels + ListingFields.promote_panels
-    )
+    promote_panels = (Page.promote_panels + SocialFields.promote_panels +
+                      ListingFields.promote_panels)
 
 
 # Apply default cache headers on this page model's serve method.
@@ -247,9 +259,8 @@ class BaseFormPage(SocialFields, ListingFields, AbstractForm):
     def get_absolute_url(self):
         return self.full_url
 
-    promote_panels = (
-        Page.promote_panels + SocialFields.promote_panels + ListingFields.promote_panels
-    )
+    promote_panels = (Page.promote_panels + SocialFields.promote_panels +
+                      ListingFields.promote_panels)
 
 
 # Apply default cache headers on this page model's serve method.
@@ -264,9 +275,8 @@ class BaseEmailFormPage(SocialFields, ListingFields, AbstractEmailForm):
     def get_absolute_url(self):
         return self.full_url
 
-    promote_panels = (
-        Page.promote_panels + SocialFields.promote_panels + ListingFields.promote_panels
-    )
+    promote_panels = (Page.promote_panels + SocialFields.promote_panels +
+                      ListingFields.promote_panels)
 
 
 # > Snippets

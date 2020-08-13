@@ -30,59 +30,64 @@ from esite.bifrost.models import (
     GraphQLString,
     GraphQLStreamfield,
     GraphQLPage,
+    GraphQLCollection,
+    GraphQLForeignKey,
 )
 
 from esite.utils.models import BasePage
 
+from modelcluster.models import ClusterableModel
+
 # Create your homepage related models here.
 
-@register_streamfield_block
-class _E_CommentBlock(blocks.StructBlock):
-    comment_owner = blocks.PageChooserBlock(null=True, required=False, target_model="people.PersonFormPage", help_text="Owner of the comment")
-    comment_datetime = blocks.DateTimeBlock(null=True, required=False)
-    comment_message = blocks.TextBlock(null=True, required=False,  help_text="Other information")
 
-    graphql_fields = [GraphQLString("comment_owner"), GraphQLString("comment_datetime"), GraphQLString("comment_message"),]
-
-
-class Talk(models.Model):
-    talk_id = models.CharField(primary_key=True, max_length=36)
-    talk_title = models.CharField(null=True, blank=True, max_length=32)
-    talk_description= blocks.TextBlock(null=True, required=False,  help_text="Other information")
-    talk_path = models.CharField(null=True, blank=True, max_length=256)
-    talk_url = models.URLField(null=True, blank=True, help_text="Important! Format https://www.domain.tld/xyz")
-    talk_displayUrl = models.URLField(null=True, blank=True, help_text="Important! Format https://www.domain.tld/xyz")
-    talk_downloadUrl = models.URLField(null=True, blank=True, help_text="Important! Format https://www.domain.tld/xyz")
-    talk_comments = StreamField([
-        ('e_comment', _E_CommentBlock(null=True, icon='fa-id-badge')),
-    ], null=True, blank=False)
-
+class Talk(ClusterableModel):
+    #talk_id = models.CharField(primary_key=True, max_length=36)
+    owner = ParentalKey("user.SNEKUser",
+                        on_delete=models.CASCADE,
+                        related_name="talk_owner")
+    title = models.CharField(null=True, blank=True, max_length=32)
+    description = models.TextField(null=True,
+                                   blank=True,
+                                   help_text="Other information")
+    path = models.CharField(null=True, blank=True, max_length=256)
+    url = models.URLField(
+        null=True,
+        blank=True,
+        help_text="Important! Format https://www.domain.tld/xyz")
+    displayUrl = models.URLField(
+        null=True,
+        blank=True,
+        help_text="Important! Format https://www.domain.tld/xyz")
+    downloadUrl = models.URLField(
+        null=True,
+        blank=True,
+        help_text="Important! Format https://www.domain.tld/xyz")
 
     graphql_fields = [
-        GraphQLString("talk_id"),
-        GraphQLString("talk_title"),
-        GraphQLString("talk_description"),
-        GraphQLString("talk_path"),
-        GraphQLString("talk_url"),
-        GraphQLString("talk_displayUrl"),
-        GraphQLString("talk_downloadUrl"),
-        GraphQLStreamfield("talk_comments"),
+        #GraphQLString("talk_id"),
+        GraphQLString("title"),
+        GraphQLString("description"),
+        GraphQLString("path"),
+        GraphQLString("url"),
+        GraphQLString("displayUrl"),
+        GraphQLString("downloadUrl"),
+        GraphQLCollection(GraphQLForeignKey, "comment_talk",
+                          "comment.Comment"),
     ]
 
     main_content_panels = [
-        FieldPanel("talk_id"),
-        FieldPanel("talk_title"),
-        FieldPanel("talk_description"),
-        FieldPanel("talk_path"),
-        FieldPanel("talk_url"),
-        FieldPanel("talk_displayUrl"),
-        FieldPanel("talk_downloadUrl"),
-        StreamFieldPanel("talk_comments")
+        FieldPanel("owner"),
+        FieldPanel("title"),
+        FieldPanel("title"),
+        FieldPanel("description"),
+        FieldPanel("path"),
+        FieldPanel("url"),
+        FieldPanel("displayUrl"),
+        FieldPanel("downloadUrl"),
+        InlinePanel('comment_talk', label='Comments'),
     ]
 
-
-    edit_handler = TabbedInterface(
-        [
-            ObjectList(main_content_panels, heading="Content"),
-        ]
-    )
+    edit_handler = TabbedInterface([
+        ObjectList(main_content_panels, heading="Content"),
+    ])

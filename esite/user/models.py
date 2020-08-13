@@ -94,6 +94,7 @@ class SNEKUser(AbstractUser, ClusterableModel):
         FieldPanel("cache"),
         InlinePanel("personpage", label="Person Page"),
         InlinePanel("enterprisepage", label="Enterprise Page"),
+        InlinePanel("comment_owner", label="Talk Owner"),
     ]
 
     graphql_fields = [
@@ -108,6 +109,8 @@ class SNEKUser(AbstractUser, ClusterableModel):
                           "people.PersonFormPage"),
         GraphQLCollection(GraphQLForeignKey, "enterprisepage",
                           "enterprises.EnterpriseFormPage"),
+        GraphQLCollection(GraphQLForeignKey, "comment_owner",
+                          "comment.Comment"),
     ]
 
     def __str__(self):
