@@ -617,7 +617,7 @@ class EnterpriseRegistrationFormPage(BaseEmailFormPage):
     def process_form_submission(self, form):
 
         user = self.create_user(
-            enterprise_username=form.cleaned_data["enterprise_name"],
+            enterprise_username=form.cleaned_data["enterprise_username"],
             city=form.cleaned_data["city"],
             zip_code=form.cleaned_data["zip_code"],
             address=form.cleaned_data["address"],
