@@ -472,7 +472,7 @@ class EnterpriseFormPage(BaseEmailFormPage):
     employee_count = models.CharField(null=True, blank=True, max_length=255)
     opensource_url = models.URLField(null=True, blank=True)
     recruiting_url = models.URLField(null=True, blank=True)
-    description = models.CharField(null=True, blank=True, max_length=255)
+    description = models.TextField(null=True, blank=True)
 
     imprint_panels = [
         FieldPanel('user'),
