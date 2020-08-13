@@ -112,7 +112,9 @@ ROOT_URLCONF = "esite.urls"
 TEMPLATES = [
     {
         "BACKEND": "django.template.backends.django.DjangoTemplates",
-        "DIRS": [os.path.join(PROJECT_DIR, "templates"),],
+        "DIRS": [
+            os.path.join(PROJECT_DIR, "templates"),
+        ],
         "APP_DIRS": True,
         "OPTIONS": {
             "context_processors": [
@@ -160,7 +162,9 @@ DATABASES = {
 # > Graphene Configuration
 GRAPHENE = {
     "SCHEMA": "esite.bifrost.schema.schema",
-    "MIDDLEWARE": ["graphql_jwt.middleware.JSONWebTokenMiddleware",],
+    "MIDDLEWARE": [
+        "graphql_jwt.middleware.JSONWebTokenMiddleware",
+    ],
 }
 
 GRAPHQL_JWT = {
@@ -192,11 +196,21 @@ BIFROST_APPS = {
 # https://docs.djangoproject.com/en/stable/ref/settings/#auth-password-validators
 AUTH_PASSWORD_VALIDATORS = [
     {
-        "NAME": "django.contrib.auth.password_validation.UserAttributeSimilarityValidator",
+        "NAME":
+        "django.contrib.auth.password_validation.UserAttributeSimilarityValidator",
     },
-    {"NAME": "django.contrib.auth.password_validation.MinimumLengthValidator",},
-    {"NAME": "django.contrib.auth.password_validation.CommonPasswordValidator",},
-    {"NAME": "django.contrib.auth.password_validation.NumericPasswordValidator",},
+    {
+        "NAME":
+        "django.contrib.auth.password_validation.MinimumLengthValidator",
+    },
+    {
+        "NAME":
+        "django.contrib.auth.password_validation.CommonPasswordValidator",
+    },
+    {
+        "NAME":
+        "django.contrib.auth.password_validation.NumericPasswordValidator",
+    },
 ]
 
 AUTH_USER_MODEL = "user.SNEKUser"
@@ -258,7 +272,10 @@ WAGTAIL_SITE_NAME = "esite"
 # > Search Configuration
 # https://docs.wagtail.io/en/latest/topics/search/backends.html
 WAGTAILSEARCH_BACKENDS = {
-    "default": {"BACKEND": "wagtail.search.backends.db", "INDEX": "esite",},
+    "default": {
+        "BACKEND": "wagtail.search.backends.db",
+        "INDEX": "esite",
+    },
 }
 
 # Custom document model
@@ -310,9 +327,8 @@ DEFAULT_PER_PAGE = 10
 
 # > Styleguide
 PATTERN_LIBRARY_ENABLED = True
-PATTERN_LIBRARY_TEMPLATE_DIR = os.path.join(
-    PROJECT_DIR, "project_styleguide", "templates"
-)
+PATTERN_LIBRARY_TEMPLATE_DIR = os.path.join(PROJECT_DIR, "project_styleguide",
+                                            "templates")
 
 PASSWORD_REQUIRED_TEMPLATE = "patterns/pages/wagtail/password_required.html"
 
