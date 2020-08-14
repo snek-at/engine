@@ -268,47 +268,33 @@ class PersonRegistrationFormPage(BaseEmailFormPage):
 
         parent_page = Page.objects.get(url_path="/home/people/").specific
 
+        people_page = PersonFormPage(
+            title=f"{user.username}",
+            slug=f"p-{user.username}",
+            first_name=first_name,
+            last_name=last_name,
+            email=email,
+            display_email=False,
+            workplace="SNEK",
+            display_workplace=False,
+            job_title="CTO",
+            website="https://erebos.xyz",
+            location="@snek",
+            rank="A",
+            status="I am a SNEK",
+            bio="I am a Reptilian",
+        )
+
         if redemption_code:
             redemption = RedemptionCode.objects.get(pk=f'{redemption_code}')
             if redemption.is_active:
-                people_page = PersonFormPage(
-                    title=f"{user.username}",
-                    slug=f"p-{user.username}",
-                    first_name=first_name,
-                    last_name=last_name,
-                    email=email,
-                    display_email=False,
-                    workplace="SNEK",
-                    display_workplace=False,
-                    job_title="CTO",
-                    website="https://erebos.xyz",
-                    location="@snek",
-                    rank="A",
-                    status="I am a SNEK",
-                    bio="I am a Reptilian",
-                )
+
+                people_page["bids"] = redemption.bids
+                people_page["tids"] = redemption.tids
 
                 redemption.is_active = False
 
             redemption.save()
-
-        else:
-            people_page = PersonFormPage(
-                title=f"{user.username}",
-                slug=f"p-{user.username}",
-                first_name=first_name,
-                last_name=last_name,
-                email=email,
-                display_email=False,
-                workplace="SNEK",
-                display_workplace=False,
-                job_title="CTO",
-                website="https://erebos.xyz",
-                location="@snek",
-                rank="A",
-                status="I am a SNEK",
-                bio="I am a Reptilian",
-            )
 
         people_page.profiles.add(
             Profile(

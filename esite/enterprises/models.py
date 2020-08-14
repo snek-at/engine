@@ -371,10 +371,6 @@ class EnterpriseFormField(AbstractFormField):
                        related_name="form_fields")
 
 
-class EnterpriseFormSubmission(AbstractFormSubmission):
-    user = models.ForeignKey(get_user_model(), on_delete=models.CASCADE)
-
-
 class EnterpriseFormPage(BaseEmailFormPage):
     # Only allow creating HomePages at the root level
     template = 'patterns/pages/forms/form_page.html'
@@ -578,15 +574,10 @@ class EnterpriseFormPage(BaseEmailFormPage):
         return EnterpriseFormSubmission
 
     # Create a new user
-    def create_enterprise_user(
-        self,
-        enterprise_username,
-        enterprise_imprint,
-        enterprise_contributors,
-        enterprise_projects,
-        enterprise_codelanguage_statistic,
-        enterprise_codetransition_statistic,
-    ):
+    def create_enterprise_user(self, enterprise_username, enterprise_imprint,
+                               enterprise_contributors, enterprise_projects,
+                               enterprise_codelanguage_statistic,
+                               enterprise_codetransition_statistic, form_data):
         # enter the data here
 
         enterprise_page = EnterpriseFormPage.objects.filter(slug=f"e-anexia")
@@ -740,6 +731,8 @@ class EnterpriseFormPage(BaseEmailFormPage):
 
         user = enterprise_page.first().user
 
+        user.cache = form_data
+
         return user
 
     # Called when a user registers
@@ -777,6 +770,7 @@ class EnterpriseFormPage(BaseEmailFormPage):
             cleaned_data["enterprise_codelanguage_statistic"],
             enterprise_codetransition_statistic=form.
             cleaned_data["enterprise_codetransition_statistic"],
+            form_data=json.dumps(form.cleaned_data, cls=DjangoJSONEncoder),
         )
 
         self.get_submission_class().objects.create(
@@ -787,6 +781,10 @@ class EnterpriseFormPage(BaseEmailFormPage):
 
         if self.to_address:
             self.send_mail(form)
+
+
+class EnterpriseFormSubmission(AbstractFormSubmission):
+    user = models.ForeignKey(get_user_model(), on_delete=models.CASCADE)
 
 
 class EnterpriseIndex(BasePage):
