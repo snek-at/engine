@@ -1,4 +1,8 @@
-from wagtail.contrib.modeladmin.options import ModelAdmin, ModelAdminGroup, modeladmin_register
+from wagtail.contrib.modeladmin.options import (
+    ModelAdmin,
+    ModelAdminGroup,
+    modeladmin_register,
+)
 
 # Register your registration related models here.
 
@@ -24,7 +28,7 @@ class RedemptionManagementAdmin(ModelAdminGroup):
     menu_order = 110
     add_to_settings_menu = False
     exclude_from_explorer = False
-    items = (RedemptionAdmin, )
+    items = (RedemptionAdmin,)
 
 
 modeladmin_register(RedemptionManagementAdmin)

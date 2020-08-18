@@ -56,10 +56,9 @@ from esite.utils.models import BasePage
 
 @register_streamfield_block
 class _S_TopLanguages(blocks.StructBlock):
-    theme = blocks.CharBlock(null=True,
-                             blank=True,
-                             help_text="Bold header text",
-                             max_length=64)
+    theme = blocks.CharBlock(
+        null=True, blank=True, help_text="Bold header text", max_length=64
+    )
 
     graphql_fields = [
         GraphQLString("theme"),
@@ -68,10 +67,9 @@ class _S_TopLanguages(blocks.StructBlock):
 
 @register_streamfield_block
 class _S_Calendar(blocks.StructBlock):
-    theme = blocks.CharBlock(null=True,
-                             blank=True,
-                             help_text="Bold header text",
-                             max_length=64)
+    theme = blocks.CharBlock(
+        null=True, blank=True, help_text="Bold header text", max_length=64
+    )
 
     graphql_fields = [
         GraphQLString("theme"),
@@ -80,9 +78,7 @@ class _S_Calendar(blocks.StructBlock):
 
 # > Profilepage
 class Profile(models.Model):
-    person = ParentalKey("people.PersonFormPage",
-                         null=True,
-                         related_name="profiles")
+    person = ParentalKey("people.PersonFormPage", null=True, related_name="profiles")
     platformName = models.CharField(null=True, blank=True, max_length=250)
     platformUrl = models.CharField(null=True, blank=True, max_length=250)
     avatarUrl = models.CharField(null=True, blank=True, max_length=250)

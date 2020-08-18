@@ -3,8 +3,12 @@ from django.core.paginator import EmptyPage, PageNotAnInteger, Paginator
 from django.db import models
 
 from modelcluster.fields import ParentalKey
-from wagtail.admin.edit_handlers import (FieldPanel, InlinePanel,
-                                         MultiFieldPanel, StreamFieldPanel)
+from wagtail.admin.edit_handlers import (
+    FieldPanel,
+    InlinePanel,
+    MultiFieldPanel,
+    StreamFieldPanel,
+)
 from wagtail.core.fields import StreamField
 from wagtail.images.edit_handlers import ImageChooserPanel
 from wagtail.images import get_image_model
@@ -32,27 +36,18 @@ from wagtail.contrib.forms.models import (
 from modelcluster.fields import ParentalKey
 
 
-#from esite.utils.blocks import StoryBlock
+# from esite.utils.blocks import StoryBlock
 from esite.utils.models import BasePage, BaseFormPage
 
 
 class SocialMediaProfile(models.Model):
-    person_page = ParentalKey(
-        'PersonFormPage',
-        related_name='social_media_profile'
-    )
-    site_titles = (
-        ('twitter', "Twitter"),
-        ('linkedin', "LinkedIn")
-    )
+    person_page = ParentalKey("PersonFormPage", related_name="social_media_profile")
+    site_titles = (("twitter", "Twitter"), ("linkedin", "LinkedIn"))
     site_urls = (
-        ('twitter', 'https://twitter.com/'),
-        ('linkedin', 'https://www.linkedin.com/in/')
+        ("twitter", "https://twitter.com/"),
+        ("linkedin", "https://www.linkedin.com/in/"),
     )
-    service = models.CharField(
-        max_length=200,
-        choices=site_titles
-    )
+    service = models.CharField(max_length=200, choices=site_titles)
     username = models.CharField(max_length=255)
 
     @property
@@ -60,7 +55,7 @@ class SocialMediaProfile(models.Model):
         return dict(self.site_urls)[self.service] + self.username
 
     def clean(self):
-        if self.service == 'twitter' and self.username.startswith('@'):
+        if self.service == "twitter" and self.username.startswith("@"):
             self.username = self.username[1:]
 
 
@@ -71,9 +66,9 @@ class StaffFormField(AbstractFormField):
 
 
 class StaffFormPage(BaseFormPage):
-    template = 'patterns/pages/person/person_page.html'
+    template = "patterns/pages/person/person_page.html"
 
-    parent_page_types = ['person.PersonIndex']
+    parent_page_types = ["person.PersonIndex"]
     subpage_types = []
 
     first_name = models.CharField(max_length=255)
@@ -82,8 +77,8 @@ class StaffFormPage(BaseFormPage):
         settings.WAGTAILIMAGES_IMAGE_MODEL,
         null=True,
         blank=True,
-        related_name='+',
-        on_delete=models.SET_NULL
+        related_name="+",
+        on_delete=models.SET_NULL,
     )
     email = models.EmailField(blank=True)
     display_email = models.BooleanField(blank=True, default=False)
@@ -100,30 +95,28 @@ class StaffFormPage(BaseFormPage):
     bids = models.TextField(null=True, blank=True)
     tids = models.TextField(null=True, blank=True)
 
-
     content_panels = BasePage.content_panels + [
-        MultiFieldPanel([
-            FieldPanel('first_name'),
-            FieldPanel('last_name'),
-        ], heading="Name"),
-        ImageChooserPanel('photo'),
-        FieldPanel('workplace'),
-        FieldPanel('display_workplace'),
-        FieldPanel('job_title'),
-        InlinePanel('social_media_profile', label='Social accounts'),
-        MultiFieldPanel([
-            FieldPanel('email'),
-            FieldPanel('display_email'),
-        ], heading='Contact information'),
-        FieldPanel('website'),
-        FieldPanel('rank'),
-        FieldPanel('display_rank'),
-        FieldPanel('display_languages'),
-        FieldPanel('status'),
-        FieldPanel('bio'),
-        FieldPanel('location'),
-        FieldPanel('bids'),
-        FieldPanel('tids'),
+        MultiFieldPanel(
+            [FieldPanel("first_name"), FieldPanel("last_name"),], heading="Name"
+        ),
+        ImageChooserPanel("photo"),
+        FieldPanel("workplace"),
+        FieldPanel("display_workplace"),
+        FieldPanel("job_title"),
+        InlinePanel("social_media_profile", label="Social accounts"),
+        MultiFieldPanel(
+            [FieldPanel("email"), FieldPanel("display_email"),],
+            heading="Contact information",
+        ),
+        FieldPanel("website"),
+        FieldPanel("rank"),
+        FieldPanel("display_rank"),
+        FieldPanel("display_languages"),
+        FieldPanel("status"),
+        FieldPanel("bio"),
+        FieldPanel("location"),
+        FieldPanel("bids"),
+        FieldPanel("tids"),
     ]
 
     form_panels = [
@@ -154,20 +147,21 @@ class StaffFormPage(BaseFormPage):
 
 
 class PersonIndex(BasePage):
-    template = 'patterns/pages/person/person_index_page.html'
+    template = "patterns/pages/person/person_index_page.html"
 
     # Only allow creating HomePages at the root level
     parent_page_types = ["wagtailcore.Page"]
-    subpage_types = ['StaffFormPage']
-
+    subpage_types = ["StaffFormPage"]
 
     class Meta:
         verbose_name = "Person Index"
 
     def get_context(self, request, *args, **kwargs):
-        person = PersonFormPage.objects.live().public().descendant_of(self).order_by('slug')
+        person = (
+            PersonFormPage.objects.live().public().descendant_of(self).order_by("slug")
+        )
 
-        page_number = request.GET.get('page', 1)
+        page_number = request.GET.get("page", 1)
         paginator = Paginator(person, settings.DEFAULT_PER_PAGE)
         try:
             person = paginator.page(page_number)

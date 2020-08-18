@@ -42,16 +42,14 @@ from modelcluster.models import ClusterableModel
 
 
 class Comment(models.Model):
-    talk = ParentalKey("talk.Talk",
-                       on_delete=models.CASCADE,
-                       related_name="comment_talk")
-    owner = ParentalKey("user.SNEKUser",
-                        on_delete=models.CASCADE,
-                        related_name="comment_owner")
+    talk = ParentalKey(
+        "talk.Talk", on_delete=models.CASCADE, related_name="comment_talk"
+    )
+    owner = ParentalKey(
+        "user.SNEKUser", on_delete=models.CASCADE, related_name="comment_owner"
+    )
     datetime = models.DateTimeField(null=True, blank=True)
-    message = models.TextField(null=True,
-                               blank=True,
-                               help_text="Other information")
+    message = models.TextField(null=True, blank=True, help_text="Other information")
 
     main_content_panels = [
         FieldPanel("talk"),

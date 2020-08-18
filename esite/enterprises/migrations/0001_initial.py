@@ -11,238 +11,668 @@ class Migration(migrations.Migration):
     initial = True
 
     dependencies = [
-        ('images', '0002_auto_20200729_2232'),
-        ('wagtailcore', '0045_assign_unlock_grouppagepermission'),
-        ('user', '0002_initial_data'),
+        ("images", "0002_auto_20200729_2232"),
+        ("wagtailcore", "0045_assign_unlock_grouppagepermission"),
+        ("user", "0002_initial_data"),
         migrations.swappable_dependency(settings.AUTH_USER_MODEL),
     ]
 
     operations = [
         migrations.CreateModel(
-            name='CodeLanguageStatistic',
+            name="CodeLanguageStatistic",
             fields=[
-                ('id', models.AutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
-                ('name', models.CharField(default='Unkown', max_length=255, null=True)),
-                ('type', models.CharField(default='Unkown', max_length=255, null=True)),
-                ('color', models.CharField(default='Unkown', max_length=255, null=True)),
-                ('primary_extension', models.CharField(default='Unkown', max_length=255, null=True)),
-                ('insertions', models.IntegerField(default=0, null=True)),
-                ('deletions', models.IntegerField(default=0, null=True)),
+                (
+                    "id",
+                    models.AutoField(
+                        auto_created=True,
+                        primary_key=True,
+                        serialize=False,
+                        verbose_name="ID",
+                    ),
+                ),
+                ("name", models.CharField(default="Unkown", max_length=255, null=True)),
+                ("type", models.CharField(default="Unkown", max_length=255, null=True)),
+                (
+                    "color",
+                    models.CharField(default="Unkown", max_length=255, null=True),
+                ),
+                (
+                    "primary_extension",
+                    models.CharField(default="Unkown", max_length=255, null=True),
+                ),
+                ("insertions", models.IntegerField(default=0, null=True)),
+                ("deletions", models.IntegerField(default=0, null=True)),
             ],
         ),
         migrations.CreateModel(
-            name='CodeTransitionStatistic',
+            name="CodeTransitionStatistic",
             fields=[
-                ('id', models.AutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
-                ('insertions', models.IntegerField(default=0, null=True)),
-                ('deletions', models.IntegerField(default=0, null=True)),
-                ('datetime', models.DateTimeField(null=True)),
+                (
+                    "id",
+                    models.AutoField(
+                        auto_created=True,
+                        primary_key=True,
+                        serialize=False,
+                        verbose_name="ID",
+                    ),
+                ),
+                ("insertions", models.IntegerField(default=0, null=True)),
+                ("deletions", models.IntegerField(default=0, null=True)),
+                ("datetime", models.DateTimeField(null=True)),
             ],
         ),
         migrations.CreateModel(
-            name='ContributionFeed',
+            name="ContributionFeed",
             fields=[
-                ('id', models.AutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
-                ('type', models.CharField(max_length=255, null=True)),
-                ('cid', models.CharField(max_length=255, null=True)),
-                ('datetime', models.DateTimeField(null=True)),
-                ('message', models.CharField(max_length=255, null=True)),
-                ('codelanguages', modelcluster.fields.ParentalManyToManyField(blank=True, related_name='contributionfeed_codelanguages', to='enterprises.CodeLanguageStatistic')),
+                (
+                    "id",
+                    models.AutoField(
+                        auto_created=True,
+                        primary_key=True,
+                        serialize=False,
+                        verbose_name="ID",
+                    ),
+                ),
+                ("type", models.CharField(max_length=255, null=True)),
+                ("cid", models.CharField(max_length=255, null=True)),
+                ("datetime", models.DateTimeField(null=True)),
+                ("message", models.CharField(max_length=255, null=True)),
+                (
+                    "codelanguages",
+                    modelcluster.fields.ParentalManyToManyField(
+                        blank=True,
+                        related_name="contributionfeed_codelanguages",
+                        to="enterprises.CodeLanguageStatistic",
+                    ),
+                ),
             ],
+            options={"abstract": False,},
+        ),
+        migrations.CreateModel(
+            name="EnterpriseFormPage",
+            fields=[
+                (
+                    "page_ptr",
+                    models.OneToOneField(
+                        auto_created=True,
+                        on_delete=django.db.models.deletion.CASCADE,
+                        parent_link=True,
+                        primary_key=True,
+                        serialize=False,
+                        to="wagtailcore.Page",
+                    ),
+                ),
+                (
+                    "to_address",
+                    models.CharField(
+                        blank=True,
+                        help_text="Optional - form submissions will be emailed to these addresses. Separate multiple addresses by comma.",
+                        max_length=255,
+                        verbose_name="to address",
+                    ),
+                ),
+                (
+                    "from_address",
+                    models.CharField(
+                        blank=True, max_length=255, verbose_name="from address"
+                    ),
+                ),
+                (
+                    "subject",
+                    models.CharField(
+                        blank=True, max_length=255, verbose_name="subject"
+                    ),
+                ),
+                ("social_text", models.CharField(blank=True, max_length=255)),
+                (
+                    "listing_title",
+                    models.CharField(
+                        blank=True,
+                        help_text="Override the page title used when this page appears in listings",
+                        max_length=255,
+                    ),
+                ),
+                (
+                    "listing_summary",
+                    models.CharField(
+                        blank=True,
+                        help_text="The text summary used when this page appears in listings. It's also used as the description for search engines if the 'Search description' field above is not defined.",
+                        max_length=255,
+                    ),
+                ),
+                ("city", models.CharField(blank=True, max_length=255, null=True)),
+                ("zip_code", models.CharField(blank=True, max_length=255, null=True)),
+                ("address", models.CharField(blank=True, max_length=255, null=True)),
+                ("telephone", models.CharField(blank=True, max_length=255, null=True)),
+                ("telefax", models.CharField(blank=True, max_length=255, null=True)),
+                ("vat_number", models.CharField(blank=True, max_length=255, null=True)),
+                (
+                    "whatsapp_telephone",
+                    models.CharField(blank=True, max_length=255, null=True),
+                ),
+                (
+                    "whatsapp_contactline",
+                    models.CharField(blank=True, max_length=255, null=True),
+                ),
+                ("tax_id", models.CharField(blank=True, max_length=255, null=True)),
+                (
+                    "trade_register_number",
+                    models.CharField(blank=True, max_length=255, null=True),
+                ),
+                (
+                    "court_of_registry",
+                    models.CharField(blank=True, max_length=255, null=True),
+                ),
+                (
+                    "place_of_registry",
+                    models.CharField(blank=True, max_length=255, null=True),
+                ),
+                ("ownership", models.CharField(blank=True, max_length=255, null=True)),
+                ("email", models.EmailField(blank=True, max_length=254, null=True)),
+                (
+                    "employee_count",
+                    models.CharField(blank=True, max_length=255, null=True),
+                ),
+                ("opensource_url", models.URLField(blank=True, null=True)),
+                ("recruiting_url", models.URLField(blank=True, null=True)),
+                ("description", models.TextField(blank=True, null=True)),
+                (
+                    "settings_tab_name",
+                    models.CharField(blank=True, max_length=255, null=True),
+                ),
+                ("cache", models.TextField(blank=True, null=True)),
+                (
+                    "listing_image",
+                    models.ForeignKey(
+                        blank=True,
+                        help_text="Choose the image you wish to be displayed when this page appears in listings",
+                        null=True,
+                        on_delete=django.db.models.deletion.SET_NULL,
+                        related_name="+",
+                        to="images.SNEKImage",
+                    ),
+                ),
+                (
+                    "social_image",
+                    models.ForeignKey(
+                        blank=True,
+                        null=True,
+                        on_delete=django.db.models.deletion.SET_NULL,
+                        related_name="+",
+                        to="images.SNEKImage",
+                    ),
+                ),
+                (
+                    "user",
+                    modelcluster.fields.ParentalKey(
+                        on_delete=django.db.models.deletion.CASCADE,
+                        related_name="enterprisepage",
+                        to=settings.AUTH_USER_MODEL,
+                    ),
+                ),
+            ],
+            options={"verbose_name": "Enterprise Form Page",},
+            bases=("wagtailcore.page", models.Model),
+        ),
+        migrations.CreateModel(
+            name="Project",
+            fields=[
+                (
+                    "id",
+                    models.AutoField(
+                        auto_created=True,
+                        primary_key=True,
+                        serialize=False,
+                        verbose_name="ID",
+                    ),
+                ),
+                (
+                    "name",
+                    models.CharField(
+                        blank=True, default="Unkown", max_length=255, null=True
+                    ),
+                ),
+                (
+                    "url",
+                    models.URLField(
+                        blank=True,
+                        default="https://example.local",
+                        max_length=255,
+                        null=True,
+                    ),
+                ),
+                (
+                    "description",
+                    models.TextField(blank=True, default="Unkown", null=True),
+                ),
+                (
+                    "owner_name",
+                    models.CharField(
+                        blank=True, default="Unkown", max_length=255, null=True
+                    ),
+                ),
+                (
+                    "owner_username",
+                    models.CharField(
+                        blank=True, default="Unkown", max_length=255, null=True
+                    ),
+                ),
+                (
+                    "owner_email",
+                    models.EmailField(
+                        blank=True, default="test@snek.at", max_length=254, null=True
+                    ),
+                ),
+                (
+                    "codelanguages",
+                    modelcluster.fields.ParentalManyToManyField(
+                        blank=True,
+                        related_name="project_codelanguages",
+                        to="enterprises.CodeLanguageStatistic",
+                    ),
+                ),
+                (
+                    "codetransition",
+                    modelcluster.fields.ParentalManyToManyField(
+                        blank=True,
+                        related_name="project_codetransition",
+                        to="enterprises.CodeTransitionStatistic",
+                    ),
+                ),
+                (
+                    "contribution_feed",
+                    modelcluster.fields.ParentalManyToManyField(
+                        blank=True,
+                        related_name="project_feed",
+                        to="enterprises.ContributionFeed",
+                    ),
+                ),
+            ],
+            options={"abstract": False,},
+        ),
+        migrations.CreateModel(
+            name="Enterprise",
+            fields=[],
             options={
-                'abstract': False,
+                "ordering": ("date_joined",),
+                "proxy": True,
+                "indexes": [],
+                "constraints": [],
             },
+            bases=("user.snekuser",),
         ),
         migrations.CreateModel(
-            name='EnterpriseFormPage',
+            name="ProjectContributor",
             fields=[
-                ('page_ptr', models.OneToOneField(auto_created=True, on_delete=django.db.models.deletion.CASCADE, parent_link=True, primary_key=True, serialize=False, to='wagtailcore.Page')),
-                ('to_address', models.CharField(blank=True, help_text='Optional - form submissions will be emailed to these addresses. Separate multiple addresses by comma.', max_length=255, verbose_name='to address')),
-                ('from_address', models.CharField(blank=True, max_length=255, verbose_name='from address')),
-                ('subject', models.CharField(blank=True, max_length=255, verbose_name='subject')),
-                ('social_text', models.CharField(blank=True, max_length=255)),
-                ('listing_title', models.CharField(blank=True, help_text='Override the page title used when this page appears in listings', max_length=255)),
-                ('listing_summary', models.CharField(blank=True, help_text="The text summary used when this page appears in listings. It's also used as the description for search engines if the 'Search description' field above is not defined.", max_length=255)),
-                ('city', models.CharField(blank=True, max_length=255, null=True)),
-                ('zip_code', models.CharField(blank=True, max_length=255, null=True)),
-                ('address', models.CharField(blank=True, max_length=255, null=True)),
-                ('telephone', models.CharField(blank=True, max_length=255, null=True)),
-                ('telefax', models.CharField(blank=True, max_length=255, null=True)),
-                ('vat_number', models.CharField(blank=True, max_length=255, null=True)),
-                ('whatsapp_telephone', models.CharField(blank=True, max_length=255, null=True)),
-                ('whatsapp_contactline', models.CharField(blank=True, max_length=255, null=True)),
-                ('tax_id', models.CharField(blank=True, max_length=255, null=True)),
-                ('trade_register_number', models.CharField(blank=True, max_length=255, null=True)),
-                ('court_of_registry', models.CharField(blank=True, max_length=255, null=True)),
-                ('place_of_registry', models.CharField(blank=True, max_length=255, null=True)),
-                ('ownership', models.CharField(blank=True, max_length=255, null=True)),
-                ('email', models.EmailField(blank=True, max_length=254, null=True)),
-                ('employee_count', models.CharField(blank=True, max_length=255, null=True)),
-                ('opensource_url', models.URLField(blank=True, null=True)),
-                ('recruiting_url', models.URLField(blank=True, null=True)),
-                ('description', models.TextField(blank=True, null=True)),
-                ('settings_tab_name', models.CharField(blank=True, max_length=255, null=True)),
-                ('cache', models.TextField(blank=True, null=True)),
-                ('listing_image', models.ForeignKey(blank=True, help_text='Choose the image you wish to be displayed when this page appears in listings', null=True, on_delete=django.db.models.deletion.SET_NULL, related_name='+', to='images.SNEKImage')),
-                ('social_image', models.ForeignKey(blank=True, null=True, on_delete=django.db.models.deletion.SET_NULL, related_name='+', to='images.SNEKImage')),
-                ('user', modelcluster.fields.ParentalKey(on_delete=django.db.models.deletion.CASCADE, related_name='enterprisepage', to=settings.AUTH_USER_MODEL)),
+                (
+                    "id",
+                    models.AutoField(
+                        auto_created=True,
+                        primary_key=True,
+                        serialize=False,
+                        verbose_name="ID",
+                    ),
+                ),
+                ("name", models.CharField(default="Unkown", max_length=255, null=True)),
+                (
+                    "username",
+                    models.CharField(default="Unkown", max_length=255, null=True),
+                ),
+                ("active", models.BooleanField(default=True)),
+                ("avatar", models.ImageField(null=True, upload_to="")),
+                (
+                    "codelanguages",
+                    modelcluster.fields.ParentalManyToManyField(
+                        blank=True,
+                        related_name="projectcontributor_codelanguages",
+                        to="enterprises.CodeLanguageStatistic",
+                    ),
+                ),
+                (
+                    "codetransition",
+                    modelcluster.fields.ParentalManyToManyField(
+                        blank=True,
+                        related_name="projectcontributor_codetransition",
+                        to="enterprises.CodeTransitionStatistic",
+                    ),
+                ),
+                (
+                    "contribution_feed",
+                    modelcluster.fields.ParentalManyToManyField(
+                        blank=True,
+                        related_name="projectcontributor_feed",
+                        to="enterprises.ContributionFeed",
+                    ),
+                ),
+                (
+                    "project",
+                    modelcluster.fields.ParentalKey(
+                        null=True,
+                        on_delete=django.db.models.deletion.CASCADE,
+                        related_name="project_projectcontributor",
+                        to="enterprises.Project",
+                    ),
+                ),
             ],
-            options={
-                'verbose_name': 'Enterprise Form Page',
-            },
-            bases=('wagtailcore.page', models.Model),
-        ),
-        migrations.CreateModel(
-            name='Project',
-            fields=[
-                ('id', models.AutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
-                ('name', models.CharField(blank=True, default='Unkown', max_length=255, null=True)),
-                ('url', models.URLField(blank=True, default='https://example.local', max_length=255, null=True)),
-                ('description', models.TextField(blank=True, default='Unkown', null=True)),
-                ('owner_name', models.CharField(blank=True, default='Unkown', max_length=255, null=True)),
-                ('owner_username', models.CharField(blank=True, default='Unkown', max_length=255, null=True)),
-                ('owner_email', models.EmailField(blank=True, default='test@snek.at', max_length=254, null=True)),
-                ('codelanguages', modelcluster.fields.ParentalManyToManyField(blank=True, related_name='project_codelanguages', to='enterprises.CodeLanguageStatistic')),
-                ('codetransition', modelcluster.fields.ParentalManyToManyField(blank=True, related_name='project_codetransition', to='enterprises.CodeTransitionStatistic')),
-                ('contribution_feed', modelcluster.fields.ParentalManyToManyField(blank=True, related_name='project_feed', to='enterprises.ContributionFeed')),
-            ],
-            options={
-                'abstract': False,
-            },
-        ),
-        migrations.CreateModel(
-            name='Enterprise',
-            fields=[
-            ],
-            options={
-                'ordering': ('date_joined',),
-                'proxy': True,
-                'indexes': [],
-                'constraints': [],
-            },
-            bases=('user.snekuser',),
-        ),
-        migrations.CreateModel(
-            name='ProjectContributor',
-            fields=[
-                ('id', models.AutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
-                ('name', models.CharField(default='Unkown', max_length=255, null=True)),
-                ('username', models.CharField(default='Unkown', max_length=255, null=True)),
-                ('active', models.BooleanField(default=True)),
-                ('avatar', models.ImageField(null=True, upload_to='')),
-                ('codelanguages', modelcluster.fields.ParentalManyToManyField(blank=True, related_name='projectcontributor_codelanguages', to='enterprises.CodeLanguageStatistic')),
-                ('codetransition', modelcluster.fields.ParentalManyToManyField(blank=True, related_name='projectcontributor_codetransition', to='enterprises.CodeTransitionStatistic')),
-                ('contribution_feed', modelcluster.fields.ParentalManyToManyField(blank=True, related_name='projectcontributor_feed', to='enterprises.ContributionFeed')),
-                ('project', modelcluster.fields.ParentalKey(null=True, on_delete=django.db.models.deletion.CASCADE, related_name='project_projectcontributor', to='enterprises.Project')),
-            ],
-            options={
-                'abstract': False,
-            },
+            options={"abstract": False,},
         ),
         migrations.AddField(
-            model_name='project',
-            name='contributors',
-            field=modelcluster.fields.ParentalManyToManyField(blank=True, related_name='project_contributor', to='enterprises.ProjectContributor'),
+            model_name="project",
+            name="contributors",
+            field=modelcluster.fields.ParentalManyToManyField(
+                blank=True,
+                related_name="project_contributor",
+                to="enterprises.ProjectContributor",
+            ),
         ),
         migrations.AddField(
-            model_name='project',
-            name='page',
-            field=modelcluster.fields.ParentalKey(null=True, on_delete=django.db.models.deletion.SET_NULL, related_name='enterprise_projects', to='enterprises.EnterpriseFormPage'),
+            model_name="project",
+            name="page",
+            field=modelcluster.fields.ParentalKey(
+                null=True,
+                on_delete=django.db.models.deletion.SET_NULL,
+                related_name="enterprise_projects",
+                to="enterprises.EnterpriseFormPage",
+            ),
         ),
         migrations.CreateModel(
-            name='EnterpriseIndex',
+            name="EnterpriseIndex",
             fields=[
-                ('page_ptr', models.OneToOneField(auto_created=True, on_delete=django.db.models.deletion.CASCADE, parent_link=True, primary_key=True, serialize=False, to='wagtailcore.Page')),
-                ('social_text', models.CharField(blank=True, max_length=255)),
-                ('listing_title', models.CharField(blank=True, help_text='Override the page title used when this page appears in listings', max_length=255)),
-                ('listing_summary', models.CharField(blank=True, help_text="The text summary used when this page appears in listings. It's also used as the description for search engines if the 'Search description' field above is not defined.", max_length=255)),
-                ('listing_image', models.ForeignKey(blank=True, help_text='Choose the image you wish to be displayed when this page appears in listings', null=True, on_delete=django.db.models.deletion.SET_NULL, related_name='+', to='images.SNEKImage')),
-                ('social_image', models.ForeignKey(blank=True, null=True, on_delete=django.db.models.deletion.SET_NULL, related_name='+', to='images.SNEKImage')),
+                (
+                    "page_ptr",
+                    models.OneToOneField(
+                        auto_created=True,
+                        on_delete=django.db.models.deletion.CASCADE,
+                        parent_link=True,
+                        primary_key=True,
+                        serialize=False,
+                        to="wagtailcore.Page",
+                    ),
+                ),
+                ("social_text", models.CharField(blank=True, max_length=255)),
+                (
+                    "listing_title",
+                    models.CharField(
+                        blank=True,
+                        help_text="Override the page title used when this page appears in listings",
+                        max_length=255,
+                    ),
+                ),
+                (
+                    "listing_summary",
+                    models.CharField(
+                        blank=True,
+                        help_text="The text summary used when this page appears in listings. It's also used as the description for search engines if the 'Search description' field above is not defined.",
+                        max_length=255,
+                    ),
+                ),
+                (
+                    "listing_image",
+                    models.ForeignKey(
+                        blank=True,
+                        help_text="Choose the image you wish to be displayed when this page appears in listings",
+                        null=True,
+                        on_delete=django.db.models.deletion.SET_NULL,
+                        related_name="+",
+                        to="images.SNEKImage",
+                    ),
+                ),
+                (
+                    "social_image",
+                    models.ForeignKey(
+                        blank=True,
+                        null=True,
+                        on_delete=django.db.models.deletion.SET_NULL,
+                        related_name="+",
+                        to="images.SNEKImage",
+                    ),
+                ),
+            ],
+            options={"verbose_name": "Enterprise Index",},
+            bases=("wagtailcore.page", models.Model),
+        ),
+        migrations.CreateModel(
+            name="EnterpriseFormSubmission",
+            fields=[
+                (
+                    "id",
+                    models.AutoField(
+                        auto_created=True,
+                        primary_key=True,
+                        serialize=False,
+                        verbose_name="ID",
+                    ),
+                ),
+                ("form_data", models.TextField()),
+                (
+                    "submit_time",
+                    models.DateTimeField(auto_now_add=True, verbose_name="submit time"),
+                ),
+                (
+                    "page",
+                    models.ForeignKey(
+                        on_delete=django.db.models.deletion.CASCADE,
+                        to="wagtailcore.Page",
+                    ),
+                ),
+                (
+                    "user",
+                    models.ForeignKey(
+                        on_delete=django.db.models.deletion.CASCADE,
+                        to=settings.AUTH_USER_MODEL,
+                    ),
+                ),
             ],
             options={
-                'verbose_name': 'Enterprise Index',
-            },
-            bases=('wagtailcore.page', models.Model),
-        ),
-        migrations.CreateModel(
-            name='EnterpriseFormSubmission',
-            fields=[
-                ('id', models.AutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
-                ('form_data', models.TextField()),
-                ('submit_time', models.DateTimeField(auto_now_add=True, verbose_name='submit time')),
-                ('page', models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, to='wagtailcore.Page')),
-                ('user', models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, to=settings.AUTH_USER_MODEL)),
-            ],
-            options={
-                'verbose_name': 'form submission',
-                'verbose_name_plural': 'form submissions',
-                'abstract': False,
+                "verbose_name": "form submission",
+                "verbose_name_plural": "form submissions",
+                "abstract": False,
             },
         ),
         migrations.CreateModel(
-            name='EnterpriseFormField',
+            name="EnterpriseFormField",
             fields=[
-                ('id', models.AutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
-                ('sort_order', models.IntegerField(blank=True, editable=False, null=True)),
-                ('label', models.CharField(help_text='The label of the form field', max_length=255, verbose_name='label')),
-                ('field_type', models.CharField(choices=[('singleline', 'Single line text'), ('multiline', 'Multi-line text'), ('email', 'Email'), ('number', 'Number'), ('url', 'URL'), ('checkbox', 'Checkbox'), ('checkboxes', 'Checkboxes'), ('dropdown', 'Drop down'), ('multiselect', 'Multiple select'), ('radio', 'Radio buttons'), ('date', 'Date'), ('datetime', 'Date/time'), ('hidden', 'Hidden field')], max_length=16, verbose_name='field type')),
-                ('required', models.BooleanField(default=True, verbose_name='required')),
-                ('choices', models.TextField(blank=True, help_text='Comma separated list of choices. Only applicable in checkboxes, radio and dropdown.', verbose_name='choices')),
-                ('default_value', models.CharField(blank=True, help_text='Default value. Comma separated values supported for checkboxes.', max_length=255, verbose_name='default value')),
-                ('help_text', models.CharField(blank=True, max_length=255, verbose_name='help text')),
-                ('page', modelcluster.fields.ParentalKey(on_delete=django.db.models.deletion.CASCADE, related_name='form_fields', to='enterprises.EnterpriseFormPage')),
+                (
+                    "id",
+                    models.AutoField(
+                        auto_created=True,
+                        primary_key=True,
+                        serialize=False,
+                        verbose_name="ID",
+                    ),
+                ),
+                (
+                    "sort_order",
+                    models.IntegerField(blank=True, editable=False, null=True),
+                ),
+                (
+                    "label",
+                    models.CharField(
+                        help_text="The label of the form field",
+                        max_length=255,
+                        verbose_name="label",
+                    ),
+                ),
+                (
+                    "field_type",
+                    models.CharField(
+                        choices=[
+                            ("singleline", "Single line text"),
+                            ("multiline", "Multi-line text"),
+                            ("email", "Email"),
+                            ("number", "Number"),
+                            ("url", "URL"),
+                            ("checkbox", "Checkbox"),
+                            ("checkboxes", "Checkboxes"),
+                            ("dropdown", "Drop down"),
+                            ("multiselect", "Multiple select"),
+                            ("radio", "Radio buttons"),
+                            ("date", "Date"),
+                            ("datetime", "Date/time"),
+                            ("hidden", "Hidden field"),
+                        ],
+                        max_length=16,
+                        verbose_name="field type",
+                    ),
+                ),
+                (
+                    "required",
+                    models.BooleanField(default=True, verbose_name="required"),
+                ),
+                (
+                    "choices",
+                    models.TextField(
+                        blank=True,
+                        help_text="Comma separated list of choices. Only applicable in checkboxes, radio and dropdown.",
+                        verbose_name="choices",
+                    ),
+                ),
+                (
+                    "default_value",
+                    models.CharField(
+                        blank=True,
+                        help_text="Default value. Comma separated values supported for checkboxes.",
+                        max_length=255,
+                        verbose_name="default value",
+                    ),
+                ),
+                (
+                    "help_text",
+                    models.CharField(
+                        blank=True, max_length=255, verbose_name="help text"
+                    ),
+                ),
+                (
+                    "page",
+                    modelcluster.fields.ParentalKey(
+                        on_delete=django.db.models.deletion.CASCADE,
+                        related_name="form_fields",
+                        to="enterprises.EnterpriseFormPage",
+                    ),
+                ),
             ],
-            options={
-                'ordering': ['sort_order'],
-                'abstract': False,
-            },
+            options={"ordering": ["sort_order"], "abstract": False,},
         ),
         migrations.CreateModel(
-            name='Contributor',
+            name="Contributor",
             fields=[
-                ('id', models.AutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
-                ('name', models.CharField(default='Unkown', max_length=255, null=True)),
-                ('username', models.CharField(default='Unkown', max_length=255, null=True)),
-                ('active', models.BooleanField(default=True)),
-                ('avatar', models.ImageField(null=True, upload_to='')),
-                ('codelanguages', modelcluster.fields.ParentalManyToManyField(blank=True, related_name='contributor_codelanguages', to='enterprises.CodeLanguageStatistic')),
-                ('codetransition', modelcluster.fields.ParentalManyToManyField(blank=True, related_name='contributor_codetransition', to='enterprises.CodeTransitionStatistic')),
-                ('contribution_feed', modelcluster.fields.ParentalManyToManyField(blank=True, related_name='contributor_feed', to='enterprises.ContributionFeed')),
-                ('page', modelcluster.fields.ParentalKey(null=True, on_delete=django.db.models.deletion.SET_NULL, related_name='enterprise_contributors', to='enterprises.EnterpriseFormPage')),
+                (
+                    "id",
+                    models.AutoField(
+                        auto_created=True,
+                        primary_key=True,
+                        serialize=False,
+                        verbose_name="ID",
+                    ),
+                ),
+                ("name", models.CharField(default="Unkown", max_length=255, null=True)),
+                (
+                    "username",
+                    models.CharField(default="Unkown", max_length=255, null=True),
+                ),
+                ("active", models.BooleanField(default=True)),
+                ("avatar", models.ImageField(null=True, upload_to="")),
+                (
+                    "codelanguages",
+                    modelcluster.fields.ParentalManyToManyField(
+                        blank=True,
+                        related_name="contributor_codelanguages",
+                        to="enterprises.CodeLanguageStatistic",
+                    ),
+                ),
+                (
+                    "codetransition",
+                    modelcluster.fields.ParentalManyToManyField(
+                        blank=True,
+                        related_name="contributor_codetransition",
+                        to="enterprises.CodeTransitionStatistic",
+                    ),
+                ),
+                (
+                    "contribution_feed",
+                    modelcluster.fields.ParentalManyToManyField(
+                        blank=True,
+                        related_name="contributor_feed",
+                        to="enterprises.ContributionFeed",
+                    ),
+                ),
+                (
+                    "page",
+                    modelcluster.fields.ParentalKey(
+                        null=True,
+                        on_delete=django.db.models.deletion.SET_NULL,
+                        related_name="enterprise_contributors",
+                        to="enterprises.EnterpriseFormPage",
+                    ),
+                ),
             ],
-            options={
-                'abstract': False,
-            },
+            options={"abstract": False,},
         ),
         migrations.CreateModel(
-            name='ContributionFile',
+            name="ContributionFile",
             fields=[
-                ('id', models.AutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
-                ('insertions', models.IntegerField(null=True)),
-                ('deletions', models.IntegerField(null=True)),
-                ('path', models.CharField(max_length=255, null=True)),
-                ('raw_changes', models.TextField(max_length=255, null=True)),
-                ('feed', modelcluster.fields.ParentalKey(null=True, on_delete=django.db.models.deletion.SET_NULL, related_name='file_contribution_feed', to='enterprises.ContributionFeed')),
+                (
+                    "id",
+                    models.AutoField(
+                        auto_created=True,
+                        primary_key=True,
+                        serialize=False,
+                        verbose_name="ID",
+                    ),
+                ),
+                ("insertions", models.IntegerField(null=True)),
+                ("deletions", models.IntegerField(null=True)),
+                ("path", models.CharField(max_length=255, null=True)),
+                ("raw_changes", models.TextField(max_length=255, null=True)),
+                (
+                    "feed",
+                    modelcluster.fields.ParentalKey(
+                        null=True,
+                        on_delete=django.db.models.deletion.SET_NULL,
+                        related_name="file_contribution_feed",
+                        to="enterprises.ContributionFeed",
+                    ),
+                ),
             ],
         ),
         migrations.AddField(
-            model_name='contributionfeed',
-            name='files',
-            field=modelcluster.fields.ParentalManyToManyField(blank=True, null=True, related_name='files', to='enterprises.ContributionFile'),
+            model_name="contributionfeed",
+            name="files",
+            field=modelcluster.fields.ParentalManyToManyField(
+                blank=True,
+                null=True,
+                related_name="files",
+                to="enterprises.ContributionFile",
+            ),
         ),
         migrations.AddField(
-            model_name='contributionfeed',
-            name='page',
-            field=modelcluster.fields.ParentalKey(null=True, on_delete=django.db.models.deletion.SET_NULL, related_name='enterprise_contribution_feed', to='enterprises.EnterpriseFormPage'),
+            model_name="contributionfeed",
+            name="page",
+            field=modelcluster.fields.ParentalKey(
+                null=True,
+                on_delete=django.db.models.deletion.SET_NULL,
+                related_name="enterprise_contribution_feed",
+                to="enterprises.EnterpriseFormPage",
+            ),
         ),
         migrations.AddField(
-            model_name='codetransitionstatistic',
-            name='page',
-            field=modelcluster.fields.ParentalKey(null=True, on_delete=django.db.models.deletion.SET_NULL, related_name='enterprise_codetransition_statistic', to='enterprises.EnterpriseFormPage'),
+            model_name="codetransitionstatistic",
+            name="page",
+            field=modelcluster.fields.ParentalKey(
+                null=True,
+                on_delete=django.db.models.deletion.SET_NULL,
+                related_name="enterprise_codetransition_statistic",
+                to="enterprises.EnterpriseFormPage",
+            ),
         ),
         migrations.AddField(
-            model_name='codelanguagestatistic',
-            name='page',
-            field=modelcluster.fields.ParentalKey(null=True, on_delete=django.db.models.deletion.SET_NULL, related_name='enterprise_codelanguage_statistic', to='enterprises.EnterpriseFormPage'),
+            model_name="codelanguagestatistic",
+            name="page",
+            field=modelcluster.fields.ParentalKey(
+                null=True,
+                on_delete=django.db.models.deletion.SET_NULL,
+                related_name="enterprise_codelanguage_statistic",
+                to="enterprises.EnterpriseFormPage",
+            ),
         ),
     ]

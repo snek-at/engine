@@ -40,7 +40,7 @@ class RedemptionCode(models.Model):
     )
     is_active = models.BooleanField(null=False, blank=False, default=True)
 
-    #panels = [FieldPanel("hkey"), FieldPanel("bid"), FieldPanel("tid")]
+    # panels = [FieldPanel("hkey"), FieldPanel("bid"), FieldPanel("tid")]
 
     def __str__(self):
         return self.hkey

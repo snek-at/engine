@@ -11,19 +11,46 @@ class Migration(migrations.Migration):
     initial = True
 
     dependencies = [
-        ('talk', '0001_initial'),
+        ("talk", "0001_initial"),
         migrations.swappable_dependency(settings.AUTH_USER_MODEL),
     ]
 
     operations = [
         migrations.CreateModel(
-            name='Comment',
+            name="Comment",
             fields=[
-                ('id', models.AutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
-                ('datetime', models.DateTimeField(blank=True, null=True)),
-                ('message', models.TextField(blank=True, help_text='Other information', null=True)),
-                ('owner', modelcluster.fields.ParentalKey(on_delete=django.db.models.deletion.CASCADE, related_name='comment_owner', to=settings.AUTH_USER_MODEL)),
-                ('talk', modelcluster.fields.ParentalKey(on_delete=django.db.models.deletion.CASCADE, related_name='comment_talk', to='talk.Talk')),
+                (
+                    "id",
+                    models.AutoField(
+                        auto_created=True,
+                        primary_key=True,
+                        serialize=False,
+                        verbose_name="ID",
+                    ),
+                ),
+                ("datetime", models.DateTimeField(blank=True, null=True)),
+                (
+                    "message",
+                    models.TextField(
+                        blank=True, help_text="Other information", null=True
+                    ),
+                ),
+                (
+                    "owner",
+                    modelcluster.fields.ParentalKey(
+                        on_delete=django.db.models.deletion.CASCADE,
+                        related_name="comment_owner",
+                        to=settings.AUTH_USER_MODEL,
+                    ),
+                ),
+                (
+                    "talk",
+                    modelcluster.fields.ParentalKey(
+                        on_delete=django.db.models.deletion.CASCADE,
+                        related_name="comment_talk",
+                        to="talk.Talk",
+                    ),
+                ),
             ],
         ),
     ]

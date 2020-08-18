@@ -103,23 +103,21 @@ class Registration(get_user_model()):
 
     class Meta:
         proxy = True
-        ordering = ("date_joined", )
+        ordering = ("date_joined",)
 
 
 class GitlabServer(ClusterableModel):
-    form = ParentalKey("PersonRegistrationFormPage",
-                       on_delete=models.CASCADE,
-                       related_name="supported_gitlabs")
+    form = ParentalKey(
+        "PersonRegistrationFormPage",
+        on_delete=models.CASCADE,
+        related_name="supported_gitlabs",
+    )
 
     organisation = models.CharField(
-        null=True,
-        max_length=255,
-        help_text="The owner of gitlab server.",
+        null=True, max_length=255, help_text="The owner of gitlab server.",
     )
     domain = models.URLField(
-        null=True,
-        max_length=255,
-        help_text="The domain of supported gitlab server.",
+        null=True, max_length=255, help_text="The domain of supported gitlab server.",
     )
 
     graphql_fields = [
@@ -129,13 +127,15 @@ class GitlabServer(ClusterableModel):
 
 
 class PersonRegistrationFormField(AbstractFormField):
-    page = ParentalKey("PersonRegistrationFormPage",
-                       on_delete=models.CASCADE,
-                       related_name="form_fields")
+    page = ParentalKey(
+        "PersonRegistrationFormPage",
+        on_delete=models.CASCADE,
+        related_name="form_fields",
+    )
 
 
 class PersonRegistrationFormPage(BaseEmailFormPage):
-    template = 'patterns/pages/forms/form_page.html'
+    template = "patterns/pages/forms/form_page.html"
     # Only allow creating HomePages at the root level
     parent_page_types = ["home.HomePage"]
     subpage_types = []
@@ -144,20 +144,12 @@ class PersonRegistrationFormPage(BaseEmailFormPage):
         verbose_name = "Person Registration Form Page"
 
     # When creating a new Form page in Wagtail
-    registration_head = models.CharField(null=True,
-                                         blank=False,
-                                         max_length=255)
-    registration_newsletter_text = models.CharField(null=True,
-                                                    blank=False,
-                                                    max_length=255)
-    registration_privacy_text = RichTextField(
-        null=True,
-        blank=False,
+    registration_head = models.CharField(null=True, blank=False, max_length=255)
+    registration_newsletter_text = models.CharField(
+        null=True, blank=False, max_length=255
     )
-    registration_info_text = RichTextField(
-        null=True,
-        blank=False,
-    )
+    registration_privacy_text = RichTextField(null=True, blank=False,)
+    registration_info_text = RichTextField(null=True, blank=False,)
     registration_button = models.ForeignKey(
         "utils.Button",
         null=True,
@@ -166,14 +158,8 @@ class PersonRegistrationFormPage(BaseEmailFormPage):
         related_name="+",
     )
 
-    registration_step_text = RichTextField(
-        null=True,
-        blank=False,
-    )
-    thank_you_text = RichTextField(
-        null=True,
-        blank=False,
-    )
+    registration_step_text = RichTextField(null=True, blank=False,)
+    thank_you_text = RichTextField(null=True, blank=False,)
 
     graphql_fields = [
         GraphQLString("registration_head"),
@@ -183,8 +169,9 @@ class PersonRegistrationFormPage(BaseEmailFormPage):
         GraphQLSnippet("registration_button", snippet_model="utils.Button"),
         GraphQLString("registration_step_text"),
         GraphQLString("thank_you_text"),
-        GraphQLCollection(GraphQLForeignKey, "supported_gitlabs",
-                          "registration.GitlabServer"),
+        GraphQLCollection(
+            GraphQLForeignKey, "supported_gitlabs", "registration.GitlabServer"
+        ),
     ]
 
     content_panels = [
@@ -197,38 +184,39 @@ class PersonRegistrationFormPage(BaseEmailFormPage):
                 FieldPanel("registration_step_text", classname="full"),
                 SnippetChooserPanel("registration_button", classname="full"),
                 FieldPanel("thank_you_text", classname="full"),
-                InlinePanel("supported_gitlabs", label="Supported Gitlabs")
+                InlinePanel("supported_gitlabs", label="Supported Gitlabs"),
             ],
             heading="content",
         ),
         MultiFieldPanel(
             [
-                FieldRowPanel([
-                    FieldPanel("from_address", classname="col6"),
-                    FieldPanel("to_address", classname="col6"),
-                ]),
+                FieldRowPanel(
+                    [
+                        FieldPanel("from_address", classname="col6"),
+                        FieldPanel("to_address", classname="col6"),
+                    ]
+                ),
                 FieldPanel("subject"),
             ],
             heading="Email Settings",
         ),
         MultiFieldPanel(
-            [InlinePanel("form_fields", label="Form fields")],
-            heading="data",
+            [InlinePanel("form_fields", label="Form fields")], heading="data",
         ),
     ]
 
-    edit_handler = TabbedInterface([
-        ObjectList(
-            BaseEmailFormPage.content_panels + content_panels,
-            heading="Content",
-        ),
-        ObjectList(
-            BaseEmailFormPage.promote_panels +
-            BaseEmailFormPage.settings_panels,
-            heading="Settings",
-            classname="settings",
-        ),
-    ])
+    edit_handler = TabbedInterface(
+        [
+            ObjectList(
+                BaseEmailFormPage.content_panels + content_panels, heading="Content",
+            ),
+            ObjectList(
+                BaseEmailFormPage.promote_panels + BaseEmailFormPage.settings_panels,
+                heading="Settings",
+                classname="settings",
+            ),
+        ]
+    )
 
     def get_submission_class(self):
         return PersonRegistrationFormSubmission
@@ -259,10 +247,9 @@ class PersonRegistrationFormPage(BaseEmailFormPage):
     ):
 
         # enter the data here
-        user = get_user_model()(username=username,
-                                is_active=False,
-                                sources=sources,
-                                cache=cache)
+        user = get_user_model()(
+            username=username, is_active=False, sources=sources, cache=cache
+        )
 
         user.set_password(password)
 
@@ -286,7 +273,7 @@ class PersonRegistrationFormPage(BaseEmailFormPage):
         )
 
         if redemption_code:
-            redemption = RedemptionCode.objects.get(pk=f'{redemption_code}')
+            redemption = RedemptionCode.objects.get(pk=f"{redemption_code}")
             if redemption.is_active:
 
                 people_page["bids"] = redemption.bids
@@ -310,7 +297,8 @@ class PersonRegistrationFormPage(BaseEmailFormPage):
                 location="",
                 statusMessage="",
                 statusEmojiHTML="",
-            ))
+            )
+        )
 
         user.save()
 
@@ -342,8 +330,9 @@ class PersonRegistrationFormPage(BaseEmailFormPage):
 
         # html_message = f"{emailheader}\n\n{content}\n\n{emailfooter}"
 
-        send_mail(self.subject, f"{emailheader}\n\n{content}", addresses,
-                  self.from_address)
+        send_mail(
+            self.subject, f"{emailheader}\n\n{content}", addresses, self.from_address
+        )
 
     def process_form_submission(self, form):
 
@@ -367,8 +356,7 @@ class PersonRegistrationFormPage(BaseEmailFormPage):
             redemption_code=form.cleaned_data["gift_code"],
             sources=form.cleaned_data["sources"],
             cache=form.cleaned_data["platform_data"],
-            registration_data=json.dumps(form.cleaned_data,
-                                         cls=DjangoJSONEncoder),
+            registration_data=json.dumps(form.cleaned_data, cls=DjangoJSONEncoder),
         )
 
         self.get_submission_class().objects.create(
@@ -386,13 +374,15 @@ class PersonRegistrationFormSubmission(AbstractFormSubmission):
 
 
 class EnterpriseRegistrationFormField(AbstractFormField):
-    page = ParentalKey("EnterpriseRegistrationFormPage",
-                       on_delete=models.CASCADE,
-                       related_name="form_fields")
+    page = ParentalKey(
+        "EnterpriseRegistrationFormPage",
+        on_delete=models.CASCADE,
+        related_name="form_fields",
+    )
 
 
 class EnterpriseRegistrationFormPage(BaseEmailFormPage):
-    template = 'patterns/pages/forms/form_page.html'
+    template = "patterns/pages/forms/form_page.html"
     # Only allow creating HomePages at the root level
     parent_page_types = ["home.HomePage"]
     subpage_types = []
@@ -401,20 +391,12 @@ class EnterpriseRegistrationFormPage(BaseEmailFormPage):
         verbose_name = "Enterprise Registration Form Page"
 
     # When creating a new Form page in Wagtail
-    registration_head = models.CharField(null=True,
-                                         blank=False,
-                                         max_length=255)
-    registration_newsletter_text = models.CharField(null=True,
-                                                    blank=False,
-                                                    max_length=255)
-    registration_privacy_text = RichTextField(
-        null=True,
-        blank=False,
+    registration_head = models.CharField(null=True, blank=False, max_length=255)
+    registration_newsletter_text = models.CharField(
+        null=True, blank=False, max_length=255
     )
-    registration_info_text = RichTextField(
-        null=True,
-        blank=False,
-    )
+    registration_privacy_text = RichTextField(null=True, blank=False,)
+    registration_info_text = RichTextField(null=True, blank=False,)
     registration_button = models.ForeignKey(
         "utils.Button",
         null=True,
@@ -423,15 +405,9 @@ class EnterpriseRegistrationFormPage(BaseEmailFormPage):
         related_name="+",
     )
 
-    registration_step_text = RichTextField(
-        null=True,
-        blank=False,
-    )
+    registration_step_text = RichTextField(null=True, blank=False,)
 
-    thank_you_text = RichTextField(
-        null=True,
-        blank=False,
-    )
+    thank_you_text = RichTextField(null=True, blank=False,)
 
     graphql_fields = [
         GraphQLString("registration_head"),
@@ -441,8 +417,9 @@ class EnterpriseRegistrationFormPage(BaseEmailFormPage):
         GraphQLSnippet("registration_button", snippet_model="utils.Button"),
         GraphQLString("registration_step_text"),
         GraphQLString("thank_you_text"),
-        GraphQLCollection(GraphQLForeignKey, "supported_gitlabs",
-                          "registration.GitlabServer"),
+        GraphQLCollection(
+            GraphQLForeignKey, "supported_gitlabs", "registration.GitlabServer"
+        ),
     ]
 
     content_panels = [
@@ -460,32 +437,33 @@ class EnterpriseRegistrationFormPage(BaseEmailFormPage):
         ),
         MultiFieldPanel(
             [
-                FieldRowPanel([
-                    FieldPanel("from_address", classname="col6"),
-                    FieldPanel("to_address", classname="col6"),
-                ]),
+                FieldRowPanel(
+                    [
+                        FieldPanel("from_address", classname="col6"),
+                        FieldPanel("to_address", classname="col6"),
+                    ]
+                ),
                 FieldPanel("subject"),
             ],
             heading="Email Settings",
         ),
         MultiFieldPanel(
-            [InlinePanel("form_fields", label="Form fields")],
-            heading="data",
+            [InlinePanel("form_fields", label="Form fields")], heading="data",
         ),
     ]
 
-    edit_handler = TabbedInterface([
-        ObjectList(
-            BaseEmailFormPage.content_panels + content_panels,
-            heading="Content",
-        ),
-        ObjectList(
-            BaseEmailFormPage.promote_panels +
-            BaseEmailFormPage.settings_panels,
-            heading="Settings",
-            classname="settings",
-        ),
-    ])
+    edit_handler = TabbedInterface(
+        [
+            ObjectList(
+                BaseEmailFormPage.content_panels + content_panels, heading="Content",
+            ),
+            ObjectList(
+                BaseEmailFormPage.promote_panels + BaseEmailFormPage.settings_panels,
+                heading="Settings",
+                classname="settings",
+            ),
+        ]
+    )
 
     def get_submission_class(self):
         return EnterpriseRegistrationFormSubmission
@@ -517,9 +495,7 @@ class EnterpriseRegistrationFormPage(BaseEmailFormPage):
 
         # enter the data here
         user = get_user_model()(
-            username=enterprise_username,
-            is_enterprise=True,
-            is_active=False,
+            username=enterprise_username, is_enterprise=True, is_active=False,
         )
 
         user.set_password("ciscocisco")
@@ -597,8 +573,9 @@ class EnterpriseRegistrationFormPage(BaseEmailFormPage):
 
         # html_message = f"{emailheader}\n\n{content}\n\n{emailfooter}"
 
-        send_mail(self.subject, f"{emailheader}\n\n{content}", addresses,
-                  self.from_address)
+        send_mail(
+            self.subject, f"{emailheader}\n\n{content}", addresses, self.from_address
+        )
 
     def process_form_submission(self, form):
 
@@ -622,8 +599,7 @@ class EnterpriseRegistrationFormPage(BaseEmailFormPage):
             opensource_url=form.cleaned_data["opensource_url"],
             recruiting_url=form.cleaned_data["recruiting_url"],
             description=form.cleaned_data["description"],
-            registration_data=json.dumps(form.cleaned_data,
-                                         cls=DjangoJSONEncoder),
+            registration_data=json.dumps(form.cleaned_data, cls=DjangoJSONEncoder),
         )
 
         self.get_submission_class().objects.create(

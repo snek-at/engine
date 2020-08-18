@@ -28,4 +28,4 @@ class ProfileAdmin(ModelAdmin):
     )
 
 
-#modeladmin_register(ProfileAdmin)
+# modeladmin_register(ProfileAdmin)

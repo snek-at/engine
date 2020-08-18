@@ -9,18 +9,23 @@ class Migration(migrations.Migration):
 
     dependencies = [
         migrations.swappable_dependency(settings.AUTH_USER_MODEL),
-        ('taggit', '0003_taggeditem_add_unique_index'),
-        ('documents', '0002_customdocument_uploaded_by_user'),
+        ("taggit", "0003_taggeditem_add_unique_index"),
+        ("documents", "0002_customdocument_uploaded_by_user"),
     ]
 
     operations = [
-        migrations.RenameModel(
-            old_name='CustomDocument',
-            new_name='SNEKDocument',
-        ),
+        migrations.RenameModel(old_name="CustomDocument", new_name="SNEKDocument",),
         migrations.AlterField(
-            model_name='snekdocument',
-            name='uploaded_by_user',
-            field=models.ForeignKey(blank=True, editable=False, null=True, on_delete=django.db.models.deletion.SET_NULL, to=settings.AUTH_USER_MODEL, to_field='id', verbose_name='uploaded by user'),
+            model_name="snekdocument",
+            name="uploaded_by_user",
+            field=models.ForeignKey(
+                blank=True,
+                editable=False,
+                null=True,
+                on_delete=django.db.models.deletion.SET_NULL,
+                to=settings.AUTH_USER_MODEL,
+                to_field="id",
+                verbose_name="uploaded by user",
+            ),
         ),
     ]

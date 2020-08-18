@@ -65,8 +65,7 @@ import yaml
 class ProxyManager(BaseUserManager):
     def get_queryset(self):
         # filter the objects for activate enterprise datasets based on the User model
-        return super(ProxyManager,
-                     self).get_queryset().filter(is_enterprise=True)
+        return super(ProxyManager, self).get_queryset().filter(is_enterprise=True)
 
 
 class Enterprise(get_user_model()):
@@ -95,7 +94,7 @@ class Enterprise(get_user_model()):
 
     class Meta:
         proxy = True
-        ordering = ("date_joined", )
+        ordering = ("date_joined",)
 
 
 # > Models
@@ -110,10 +109,9 @@ class ContributionFeed(ClusterableModel):
     cid = models.CharField(null=True, max_length=255)
     datetime = models.DateTimeField(null=True)
     message = models.CharField(null=True, max_length=255)
-    files = ParentalManyToManyField("ContributionFile",
-                                    related_name="files",
-                                    null=True,
-                                    blank=True)
+    files = ParentalManyToManyField(
+        "ContributionFile", related_name="files", null=True, blank=True
+    )
     codelanguages = ParentalManyToManyField(
         "CodeLanguageStatistic",
         related_name="contributionfeed_codelanguages",
@@ -126,10 +124,10 @@ class ContributionFeed(ClusterableModel):
         GraphQLString("cid"),
         GraphQLString("datetime"),
         GraphQLString("message"),
-        GraphQLCollection(GraphQLForeignKey, "files",
-                          "enterprises.ContributionFile"),
-        GraphQLCollection(GraphQLForeignKey, "codelanguages",
-                          "enterprises.CodeLanguageStatistic"),
+        GraphQLCollection(GraphQLForeignKey, "files", "enterprises.ContributionFile"),
+        GraphQLCollection(
+            GraphQLForeignKey, "codelanguages", "enterprises.CodeLanguageStatistic"
+        ),
     ]
 
     def __str__(self):
@@ -172,9 +170,7 @@ class CodeLanguageStatistic(models.Model):
     name = models.CharField(null=True, max_length=255, default="Unkown")
     type = models.CharField(null=True, max_length=255, default="Unkown")
     color = models.CharField(null=True, max_length=255, default="Unkown")
-    primary_extension = models.CharField(null=True,
-                                         max_length=255,
-                                         default="Unkown")
+    primary_extension = models.CharField(null=True, max_length=255, default="Unkown")
     insertions = models.IntegerField(null=True, default=0)
     deletions = models.IntegerField(null=True, default=0)
 
@@ -219,11 +215,10 @@ class Contributor(ClusterableModel):
     active = models.BooleanField(default=True)
     avatar = models.ImageField(null=True)
     contribution_feed = ParentalManyToManyField(
-        "ContributionFeed", related_name="contributor_feed", blank=True)
+        "ContributionFeed", related_name="contributor_feed", blank=True
+    )
     codelanguages = ParentalManyToManyField(
-        "CodeLanguageStatistic",
-        related_name="contributor_codelanguages",
-        blank=True,
+        "CodeLanguageStatistic", related_name="contributor_codelanguages", blank=True,
     )
     codetransition = ParentalManyToManyField(
         "CodeTransitionStatistic",
@@ -232,20 +227,19 @@ class Contributor(ClusterableModel):
     )
 
     graphql_fields = [
-        GraphQLForeignKey("page",
-                          content_type="enterprises.EnterpriseFormPage"),
+        GraphQLForeignKey("page", content_type="enterprises.EnterpriseFormPage"),
         GraphQLString("name"),
         GraphQLString("username"),
         GraphQLBoolean("active"),
         GraphQLImage("avatar"),
-        GraphQLCollection(GraphQLForeignKey, "contribution_feed",
-                          "enterprises.ContributionFeed"),
-        GraphQLCollection(GraphQLForeignKey, "codelanguages",
-                          "enterprises.CodeLanguageStatistic"),
         GraphQLCollection(
-            GraphQLForeignKey,
-            "codetransition",
-            "enterprises.CodeTransitionStatistic",
+            GraphQLForeignKey, "contribution_feed", "enterprises.ContributionFeed"
+        ),
+        GraphQLCollection(
+            GraphQLForeignKey, "codelanguages", "enterprises.CodeLanguageStatistic"
+        ),
+        GraphQLCollection(
+            GraphQLForeignKey, "codetransition", "enterprises.CodeTransitionStatistic",
         ),
     ]
 
@@ -265,7 +259,8 @@ class ProjectContributor(ClusterableModel):
     active = models.BooleanField(default=True)
     avatar = models.ImageField(null=True)
     contribution_feed = ParentalManyToManyField(
-        "ContributionFeed", related_name="projectcontributor_feed", blank=True)
+        "ContributionFeed", related_name="projectcontributor_feed", blank=True
+    )
     codelanguages = ParentalManyToManyField(
         "CodeLanguageStatistic",
         related_name="projectcontributor_codelanguages",
@@ -278,20 +273,19 @@ class ProjectContributor(ClusterableModel):
     )
 
     graphql_fields = [
-        GraphQLForeignKey("project",
-                          content_type="enterprises.ProjectContributor"),
+        GraphQLForeignKey("project", content_type="enterprises.ProjectContributor"),
         GraphQLString("name"),
         GraphQLString("username"),
         GraphQLBoolean("active"),
         GraphQLImage("avatar"),
-        GraphQLCollection(GraphQLForeignKey, "contribution_feed",
-                          "enterprises.ContributionFeed"),
-        GraphQLCollection(GraphQLForeignKey, "codelanguages",
-                          "enterprises.CodeLanguageStatistic"),
         GraphQLCollection(
-            GraphQLForeignKey,
-            "codetransition",
-            "enterprises.CodeTransitionStatistic",
+            GraphQLForeignKey, "contribution_feed", "enterprises.ContributionFeed"
+        ),
+        GraphQLCollection(
+            GraphQLForeignKey, "codelanguages", "enterprises.CodeLanguageStatistic"
+        ),
+        GraphQLCollection(
+            GraphQLForeignKey, "codetransition", "enterprises.CodeTransitionStatistic",
         ),
     ]
 
@@ -307,40 +301,30 @@ class Project(ClusterableModel):
         null=True,
     )
 
-    name = models.CharField(null=True,
-                            blank=True,
-                            max_length=255,
-                            default="Unkown")
-    url = models.URLField(null=True,
-                          blank=True,
-                          max_length=255,
-                          default="https://example.local")
+    name = models.CharField(null=True, blank=True, max_length=255, default="Unkown")
+    url = models.URLField(
+        null=True, blank=True, max_length=255, default="https://example.local"
+    )
     description = models.TextField(null=True, blank=True, default="Unkown")
-    owner_name = models.CharField(null=True,
-                                  blank=True,
-                                  max_length=255,
-                                  default="Unkown")
-    owner_username = models.CharField(null=True,
-                                      blank=True,
-                                      max_length=255,
-                                      default="Unkown")
-    owner_email = models.EmailField(null=True,
-                                    blank=True,
-                                    default="test@snek.at")
-    contributors = ParentalManyToManyField("ProjectContributor",
-                                           related_name="project_contributor",
-                                           blank=True)
-    contribution_feed = ParentalManyToManyField("ContributionFeed",
-                                                related_name="project_feed",
-                                                blank=True)
+    owner_name = models.CharField(
+        null=True, blank=True, max_length=255, default="Unkown"
+    )
+    owner_username = models.CharField(
+        null=True, blank=True, max_length=255, default="Unkown"
+    )
+    owner_email = models.EmailField(null=True, blank=True, default="test@snek.at")
+    contributors = ParentalManyToManyField(
+        "ProjectContributor", related_name="project_contributor", blank=True
+    )
+    contribution_feed = ParentalManyToManyField(
+        "ContributionFeed", related_name="project_feed", blank=True
+    )
     codelanguages = ParentalManyToManyField(
-        "CodeLanguageStatistic",
-        related_name="project_codelanguages",
-        blank=True)
+        "CodeLanguageStatistic", related_name="project_codelanguages", blank=True
+    )
     codetransition = ParentalManyToManyField(
-        "CodeTransitionStatistic",
-        related_name="project_codetransition",
-        blank=True)
+        "CodeTransitionStatistic", related_name="project_codetransition", blank=True
+    )
 
     graphql_fields = [
         GraphQLForeignKey("page", content_type="enterprises.Project"),
@@ -350,30 +334,31 @@ class Project(ClusterableModel):
         GraphQLString("owner_name"),
         GraphQLString("owner_username"),
         GraphQLString("owner_email"),
-        GraphQLCollection(GraphQLForeignKey, "contribution_feed",
-                          "enterprises.ContributionFeed"),
-        GraphQLCollection(GraphQLForeignKey, "contributors",
-                          "enterprises.ProjectContributor"),
-        GraphQLCollection(GraphQLForeignKey, "codelanguages",
-                          "enterprises.CodeLanguageStatistic"),
         GraphQLCollection(
-            GraphQLForeignKey,
-            "codetransition",
-            "enterprises.CodeTransitionStatistic",
+            GraphQLForeignKey, "contribution_feed", "enterprises.ContributionFeed"
+        ),
+        GraphQLCollection(
+            GraphQLForeignKey, "contributors", "enterprises.ProjectContributor"
+        ),
+        GraphQLCollection(
+            GraphQLForeignKey, "codelanguages", "enterprises.CodeLanguageStatistic"
+        ),
+        GraphQLCollection(
+            GraphQLForeignKey, "codetransition", "enterprises.CodeTransitionStatistic",
         ),
     ]
 
 
 # > Pages
 class EnterpriseFormField(AbstractFormField):
-    page = ParentalKey("EnterpriseFormPage",
-                       on_delete=models.CASCADE,
-                       related_name="form_fields")
+    page = ParentalKey(
+        "EnterpriseFormPage", on_delete=models.CASCADE, related_name="form_fields"
+    )
 
 
 class EnterpriseFormPage(BaseEmailFormPage):
     # Only allow creating HomePages at the root level
-    template = 'patterns/pages/forms/form_page.html'
+    template = "patterns/pages/forms/form_page.html"
 
     parent_page_types = ["EnterpriseIndex"]
     subpage_types = []
@@ -396,27 +381,24 @@ class EnterpriseFormPage(BaseEmailFormPage):
         ),
     ]
     # Contributors
-    contributor_panel = [
-        InlinePanel("enterprise_contributors", heading="Contributors")
-    ]
+    contributor_panel = [InlinePanel("enterprise_contributors", heading="Contributors")]
 
     graphql_fields += [
-        GraphQLCollection(GraphQLForeignKey, "enterprise_contributors",
-                          "enterprises.Contributor")
+        GraphQLCollection(
+            GraphQLForeignKey, "enterprise_contributors", "enterprises.Contributor"
+        )
     ]
     # Projects
-    project_panel = [
-        InlinePanel("enterprise_projects", heading="Contributors")
-    ]
+    project_panel = [InlinePanel("enterprise_projects", heading="Contributors")]
 
     graphql_fields += [
-        GraphQLCollection(GraphQLForeignKey, "enterprise_projects",
-                          "enterprises.Project"),
+        GraphQLCollection(
+            GraphQLForeignKey, "enterprise_projects", "enterprises.Project"
+        ),
     ]
     # CodeLanguageStatistic
     codelangaugestatistic_panel = [
-        InlinePanel("enterprise_codelanguage_statistic",
-                    heading="Language Statistic")
+        InlinePanel("enterprise_codelanguage_statistic", heading="Language Statistic")
     ]
 
     graphql_fields += [
@@ -428,8 +410,7 @@ class EnterpriseFormPage(BaseEmailFormPage):
     ]
     # CodeTransitionStatistic
     codetransitionstatistic_panel = [
-        InlinePanel("enterprise_codetransition_statistic",
-                    heading="Language Statistic")
+        InlinePanel("enterprise_codetransition_statistic", heading="Language Statistic")
     ]
 
     graphql_fields += [
@@ -440,9 +421,9 @@ class EnterpriseFormPage(BaseEmailFormPage):
         ),
     ]
     # Users
-    user = ParentalKey("user.SNEKUser",
-                       on_delete=models.CASCADE,
-                       related_name="enterprisepage")
+    user = ParentalKey(
+        "user.SNEKUser", on_delete=models.CASCADE, related_name="enterprisepage"
+    )
 
     # Imprint
     city = models.CharField(null=True, blank=True, max_length=255)
@@ -451,16 +432,10 @@ class EnterpriseFormPage(BaseEmailFormPage):
     telephone = models.CharField(null=True, blank=True, max_length=255)
     telefax = models.CharField(null=True, blank=True, max_length=255)
     vat_number = models.CharField(null=True, blank=True, max_length=255)
-    whatsapp_telephone = models.CharField(null=True,
-                                          blank=True,
-                                          max_length=255)
-    whatsapp_contactline = models.CharField(null=True,
-                                            blank=True,
-                                            max_length=255)
+    whatsapp_telephone = models.CharField(null=True, blank=True, max_length=255)
+    whatsapp_contactline = models.CharField(null=True, blank=True, max_length=255)
     tax_id = models.CharField(null=True, blank=True, max_length=255)
-    trade_register_number = models.CharField(null=True,
-                                             blank=True,
-                                             max_length=255)
+    trade_register_number = models.CharField(null=True, blank=True, max_length=255)
     court_of_registry = models.CharField(null=True, blank=True, max_length=255)
     place_of_registry = models.CharField(null=True, blank=True, max_length=255)
     ownership = models.CharField(null=True, blank=True, max_length=255)
@@ -471,7 +446,7 @@ class EnterpriseFormPage(BaseEmailFormPage):
     description = models.TextField(null=True, blank=True)
 
     imprint_panels = [
-        FieldPanel('user'),
+        FieldPanel("user"),
         MultiFieldPanel(
             [
                 FieldPanel("city"),
@@ -535,17 +510,18 @@ class EnterpriseFormPage(BaseEmailFormPage):
     form_panels = [
         MultiFieldPanel(
             [
-                FieldRowPanel([
-                    FieldPanel("from_address", classname="col6"),
-                    FieldPanel("to_address", classname="col6"),
-                ]),
+                FieldRowPanel(
+                    [
+                        FieldPanel("from_address", classname="col6"),
+                        FieldPanel("to_address", classname="col6"),
+                    ]
+                ),
                 FieldPanel("subject"),
             ],
             heading="Email Settings",
         ),
         MultiFieldPanel(
-            [InlinePanel("form_fields", label="Form fields")],
-            heading="data",
+            [InlinePanel("form_fields", label="Form fields")], heading="data",
         ),
     ]
 
@@ -553,43 +529,52 @@ class EnterpriseFormPage(BaseEmailFormPage):
         GraphQLString("cache"),
     ]
 
-    edit_handler = TabbedInterface([
-        # ObjectList(Page.content_panels + overview_panels, heading="Overview"),
-        ObjectList(Page.content_panels, heading="Overview"),
-        ObjectList(codelangaugestatistic_panel, heading="Language Statistic"),
-        ObjectList(codetransitionstatistic_panel,
-                   heading="Transition Statistic"),
-        ObjectList(contributor_panel, heading="Contributors"),
-        ObjectList(project_panel, heading="Projects"),
-        ObjectList(imprint_panels, heading="Imprint"),
-        ObjectList(form_panels, heading="Form"),
-        ObjectList(
-            BasePage.promote_panels + BasePage.settings_panels + cache_panels,
-            heading="Settings",
-            classname="settings",
-        ),
-    ])
+    edit_handler = TabbedInterface(
+        [
+            # ObjectList(Page.content_panels + overview_panels, heading="Overview"),
+            ObjectList(Page.content_panels, heading="Overview"),
+            ObjectList(codelangaugestatistic_panel, heading="Language Statistic"),
+            ObjectList(codetransitionstatistic_panel, heading="Transition Statistic"),
+            ObjectList(contributor_panel, heading="Contributors"),
+            ObjectList(project_panel, heading="Projects"),
+            ObjectList(imprint_panels, heading="Imprint"),
+            ObjectList(form_panels, heading="Form"),
+            ObjectList(
+                BasePage.promote_panels + BasePage.settings_panels + cache_panels,
+                heading="Settings",
+                classname="settings",
+            ),
+        ]
+    )
 
     def get_submission_class(self):
         return EnterpriseFormSubmission
 
     # Create a new user
-    def create_enterprise_user(self, enterprise_username, enterprise_imprint,
-                               enterprise_contributors, enterprise_projects,
-                               enterprise_codelanguage_statistic,
-                               enterprise_codetransition_statistic, form_data):
+    def create_enterprise_user(
+        self,
+        enterprise_username,
+        enterprise_imprint,
+        enterprise_contributors,
+        enterprise_projects,
+        enterprise_codelanguage_statistic,
+        enterprise_codetransition_statistic,
+        form_data,
+    ):
         # enter the data here
 
         enterprise_page = EnterpriseFormPage.objects.filter(slug=f"e-anexia")
 
         # print(enterprise_page.__dict__)
 
-        #print(enterprise_imprint)
+        # print(enterprise_imprint)
         obj_enterprise_imprint = ast.literal_eval(enterprise_imprint)
         arr_enterprise_codelanguage_statistic = ast.literal_eval(
-            enterprise_codelanguage_statistic)
+            enterprise_codelanguage_statistic
+        )
         arr_enterprise_codetransition_statistic = ast.literal_eval(
-            enterprise_codetransition_statistic)
+            enterprise_codetransition_statistic
+        )
         arr_enterprise_contributors = ast.literal_eval(enterprise_contributors)
         arr_enterprise_projects = ast.literal_eval(enterprise_projects)
 
@@ -727,7 +712,7 @@ class EnterpriseFormPage(BaseEmailFormPage):
 
         # enterprise_page.code_transition_statistic.update()
 
-        #enterprise_page.save_revision().publish()
+        # enterprise_page.save_revision().publish()
 
         user = enterprise_page.first().user
 
@@ -755,21 +740,23 @@ class EnterpriseFormPage(BaseEmailFormPage):
 
         # html_message = f"{emailheader}\n\n{content}\n\n{emailfooter}"
 
-        send_mail(self.subject, f"{emailheader}\n\n{content}", addresses,
-                  self.from_address)
+        send_mail(
+            self.subject, f"{emailheader}\n\n{content}", addresses, self.from_address
+        )
 
     def process_form_submission(self, form):
 
         user = self.create_enterprise_user(
             enterprise_username=form.cleaned_data["enterprise_username"],
             enterprise_imprint=form.cleaned_data["enterprise_imprint"],
-            enterprise_contributors=form.
-            cleaned_data["enterprise_contributors"],
+            enterprise_contributors=form.cleaned_data["enterprise_contributors"],
             enterprise_projects=form.cleaned_data["enterprise_projects"],
-            enterprise_codelanguage_statistic=form.
-            cleaned_data["enterprise_codelanguage_statistic"],
-            enterprise_codetransition_statistic=form.
-            cleaned_data["enterprise_codetransition_statistic"],
+            enterprise_codelanguage_statistic=form.cleaned_data[
+                "enterprise_codelanguage_statistic"
+            ],
+            enterprise_codetransition_statistic=form.cleaned_data[
+                "enterprise_codetransition_statistic"
+            ],
             form_data=json.dumps(form.cleaned_data, cls=DjangoJSONEncoder),
         )
 
@@ -788,7 +775,7 @@ class EnterpriseFormSubmission(AbstractFormSubmission):
 
 
 class EnterpriseIndex(BasePage):
-    template = 'patterns/pages/enterprises/enterprise_index_page.html'
+    template = "patterns/pages/enterprises/enterprise_index_page.html"
 
     # Only allow creating HomePages at the root level
     parent_page_types = ["home.HomePage"]
@@ -798,10 +785,14 @@ class EnterpriseIndex(BasePage):
         verbose_name = "Enterprise Index"
 
     def get_context(self, request, *args, **kwargs):
-        enterprises = EnterpriseFormPage.objects.live().public().descendant_of(
-            self).order_by('slug')
+        enterprises = (
+            EnterpriseFormPage.objects.live()
+            .public()
+            .descendant_of(self)
+            .order_by("slug")
+        )
 
-        page_number = request.GET.get('page', 1)
+        page_number = request.GET.get("page", 1)
         paginator = Paginator(enterprises, settings.DEFAULT_PER_PAGE)
         try:
             enterprises = paginator.page(page_number)

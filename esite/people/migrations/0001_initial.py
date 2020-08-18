@@ -11,98 +11,282 @@ class Migration(migrations.Migration):
     initial = True
 
     dependencies = [
-        ('images', '0002_auto_20200729_2232'),
-        ('wagtailcore', '0045_assign_unlock_grouppagepermission'),
-        ('user', '0002_initial_data'),
+        ("images", "0002_auto_20200729_2232"),
+        ("wagtailcore", "0045_assign_unlock_grouppagepermission"),
+        ("user", "0002_initial_data"),
         migrations.swappable_dependency(settings.AUTH_USER_MODEL),
     ]
 
     operations = [
         migrations.CreateModel(
-            name='PersonFormPage',
+            name="PersonFormPage",
             fields=[
-                ('page_ptr', models.OneToOneField(auto_created=True, on_delete=django.db.models.deletion.CASCADE, parent_link=True, primary_key=True, serialize=False, to='wagtailcore.Page')),
-                ('social_text', models.CharField(blank=True, max_length=255)),
-                ('listing_title', models.CharField(blank=True, help_text='Override the page title used when this page appears in listings', max_length=255)),
-                ('listing_summary', models.CharField(blank=True, help_text="The text summary used when this page appears in listings. It's also used as the description for search engines if the 'Search description' field above is not defined.", max_length=255)),
-                ('first_name', models.CharField(max_length=255)),
-                ('last_name', models.CharField(max_length=255)),
-                ('email', models.EmailField(blank=True, max_length=254)),
-                ('display_email', models.BooleanField(blank=True, default=False)),
-                ('workplace', models.CharField(blank=True, max_length=255)),
-                ('display_workplace', models.BooleanField(blank=True, default=False)),
-                ('job_title', models.CharField(blank=True, max_length=255)),
-                ('website', models.CharField(blank=True, max_length=255)),
-                ('location', models.CharField(blank=True, max_length=255)),
-                ('rank', models.CharField(blank=True, max_length=1)),
-                ('display_rank', models.BooleanField(blank=True, default=False)),
-                ('display_languages', models.BooleanField(blank=True, default=False)),
-                ('status', models.TextField(blank=True)),
-                ('bio', models.TextField(blank=True)),
-                ('bids', models.TextField(blank=True, null=True)),
-                ('tids', models.TextField(blank=True, null=True)),
-                ('listing_image', models.ForeignKey(blank=True, help_text='Choose the image you wish to be displayed when this page appears in listings', null=True, on_delete=django.db.models.deletion.SET_NULL, related_name='+', to='images.SNEKImage')),
-                ('photo', models.ForeignKey(blank=True, null=True, on_delete=django.db.models.deletion.SET_NULL, related_name='+', to='images.SNEKImage')),
-                ('social_image', models.ForeignKey(blank=True, null=True, on_delete=django.db.models.deletion.SET_NULL, related_name='+', to='images.SNEKImage')),
-                ('user', modelcluster.fields.ParentalKey(on_delete=django.db.models.deletion.CASCADE, related_name='personpage', to=settings.AUTH_USER_MODEL)),
+                (
+                    "page_ptr",
+                    models.OneToOneField(
+                        auto_created=True,
+                        on_delete=django.db.models.deletion.CASCADE,
+                        parent_link=True,
+                        primary_key=True,
+                        serialize=False,
+                        to="wagtailcore.Page",
+                    ),
+                ),
+                ("social_text", models.CharField(blank=True, max_length=255)),
+                (
+                    "listing_title",
+                    models.CharField(
+                        blank=True,
+                        help_text="Override the page title used when this page appears in listings",
+                        max_length=255,
+                    ),
+                ),
+                (
+                    "listing_summary",
+                    models.CharField(
+                        blank=True,
+                        help_text="The text summary used when this page appears in listings. It's also used as the description for search engines if the 'Search description' field above is not defined.",
+                        max_length=255,
+                    ),
+                ),
+                ("first_name", models.CharField(max_length=255)),
+                ("last_name", models.CharField(max_length=255)),
+                ("email", models.EmailField(blank=True, max_length=254)),
+                ("display_email", models.BooleanField(blank=True, default=False)),
+                ("workplace", models.CharField(blank=True, max_length=255)),
+                ("display_workplace", models.BooleanField(blank=True, default=False)),
+                ("job_title", models.CharField(blank=True, max_length=255)),
+                ("website", models.CharField(blank=True, max_length=255)),
+                ("location", models.CharField(blank=True, max_length=255)),
+                ("rank", models.CharField(blank=True, max_length=1)),
+                ("display_rank", models.BooleanField(blank=True, default=False)),
+                ("display_languages", models.BooleanField(blank=True, default=False)),
+                ("status", models.TextField(blank=True)),
+                ("bio", models.TextField(blank=True)),
+                ("bids", models.TextField(blank=True, null=True)),
+                ("tids", models.TextField(blank=True, null=True)),
+                (
+                    "listing_image",
+                    models.ForeignKey(
+                        blank=True,
+                        help_text="Choose the image you wish to be displayed when this page appears in listings",
+                        null=True,
+                        on_delete=django.db.models.deletion.SET_NULL,
+                        related_name="+",
+                        to="images.SNEKImage",
+                    ),
+                ),
+                (
+                    "photo",
+                    models.ForeignKey(
+                        blank=True,
+                        null=True,
+                        on_delete=django.db.models.deletion.SET_NULL,
+                        related_name="+",
+                        to="images.SNEKImage",
+                    ),
+                ),
+                (
+                    "social_image",
+                    models.ForeignKey(
+                        blank=True,
+                        null=True,
+                        on_delete=django.db.models.deletion.SET_NULL,
+                        related_name="+",
+                        to="images.SNEKImage",
+                    ),
+                ),
+                (
+                    "user",
+                    modelcluster.fields.ParentalKey(
+                        on_delete=django.db.models.deletion.CASCADE,
+                        related_name="personpage",
+                        to=settings.AUTH_USER_MODEL,
+                    ),
+                ),
             ],
-            options={
-                'verbose_name': 'Person Form Page',
-            },
-            bases=('wagtailcore.page', models.Model),
+            options={"verbose_name": "Person Form Page",},
+            bases=("wagtailcore.page", models.Model),
         ),
         migrations.CreateModel(
-            name='Person',
-            fields=[
-            ],
+            name="Person",
+            fields=[],
             options={
-                'ordering': ('date_joined',),
-                'proxy': True,
-                'indexes': [],
-                'constraints': [],
+                "ordering": ("date_joined",),
+                "proxy": True,
+                "indexes": [],
+                "constraints": [],
             },
-            bases=('user.snekuser',),
+            bases=("user.snekuser",),
         ),
         migrations.CreateModel(
-            name='SocialMediaProfile',
+            name="SocialMediaProfile",
             fields=[
-                ('id', models.AutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
-                ('service', models.CharField(choices=[('twitter', 'Twitter'), ('linkedin', 'LinkedIn')], max_length=200)),
-                ('username', models.CharField(max_length=255)),
-                ('person_page', modelcluster.fields.ParentalKey(on_delete=django.db.models.deletion.CASCADE, related_name='social_media_profile', to='people.PersonFormPage')),
+                (
+                    "id",
+                    models.AutoField(
+                        auto_created=True,
+                        primary_key=True,
+                        serialize=False,
+                        verbose_name="ID",
+                    ),
+                ),
+                (
+                    "service",
+                    models.CharField(
+                        choices=[("twitter", "Twitter"), ("linkedin", "LinkedIn")],
+                        max_length=200,
+                    ),
+                ),
+                ("username", models.CharField(max_length=255)),
+                (
+                    "person_page",
+                    modelcluster.fields.ParentalKey(
+                        on_delete=django.db.models.deletion.CASCADE,
+                        related_name="social_media_profile",
+                        to="people.PersonFormPage",
+                    ),
+                ),
             ],
         ),
         migrations.CreateModel(
-            name='PersonIndex',
+            name="PersonIndex",
             fields=[
-                ('page_ptr', models.OneToOneField(auto_created=True, on_delete=django.db.models.deletion.CASCADE, parent_link=True, primary_key=True, serialize=False, to='wagtailcore.Page')),
-                ('social_text', models.CharField(blank=True, max_length=255)),
-                ('listing_title', models.CharField(blank=True, help_text='Override the page title used when this page appears in listings', max_length=255)),
-                ('listing_summary', models.CharField(blank=True, help_text="The text summary used when this page appears in listings. It's also used as the description for search engines if the 'Search description' field above is not defined.", max_length=255)),
-                ('listing_image', models.ForeignKey(blank=True, help_text='Choose the image you wish to be displayed when this page appears in listings', null=True, on_delete=django.db.models.deletion.SET_NULL, related_name='+', to='images.SNEKImage')),
-                ('social_image', models.ForeignKey(blank=True, null=True, on_delete=django.db.models.deletion.SET_NULL, related_name='+', to='images.SNEKImage')),
+                (
+                    "page_ptr",
+                    models.OneToOneField(
+                        auto_created=True,
+                        on_delete=django.db.models.deletion.CASCADE,
+                        parent_link=True,
+                        primary_key=True,
+                        serialize=False,
+                        to="wagtailcore.Page",
+                    ),
+                ),
+                ("social_text", models.CharField(blank=True, max_length=255)),
+                (
+                    "listing_title",
+                    models.CharField(
+                        blank=True,
+                        help_text="Override the page title used when this page appears in listings",
+                        max_length=255,
+                    ),
+                ),
+                (
+                    "listing_summary",
+                    models.CharField(
+                        blank=True,
+                        help_text="The text summary used when this page appears in listings. It's also used as the description for search engines if the 'Search description' field above is not defined.",
+                        max_length=255,
+                    ),
+                ),
+                (
+                    "listing_image",
+                    models.ForeignKey(
+                        blank=True,
+                        help_text="Choose the image you wish to be displayed when this page appears in listings",
+                        null=True,
+                        on_delete=django.db.models.deletion.SET_NULL,
+                        related_name="+",
+                        to="images.SNEKImage",
+                    ),
+                ),
+                (
+                    "social_image",
+                    models.ForeignKey(
+                        blank=True,
+                        null=True,
+                        on_delete=django.db.models.deletion.SET_NULL,
+                        related_name="+",
+                        to="images.SNEKImage",
+                    ),
+                ),
             ],
-            options={
-                'verbose_name': 'Person Index',
-            },
-            bases=('wagtailcore.page', models.Model),
+            options={"verbose_name": "Person Index",},
+            bases=("wagtailcore.page", models.Model),
         ),
         migrations.CreateModel(
-            name='PersonFormField',
+            name="PersonFormField",
             fields=[
-                ('id', models.AutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
-                ('sort_order', models.IntegerField(blank=True, editable=False, null=True)),
-                ('label', models.CharField(help_text='The label of the form field', max_length=255, verbose_name='label')),
-                ('field_type', models.CharField(choices=[('singleline', 'Single line text'), ('multiline', 'Multi-line text'), ('email', 'Email'), ('number', 'Number'), ('url', 'URL'), ('checkbox', 'Checkbox'), ('checkboxes', 'Checkboxes'), ('dropdown', 'Drop down'), ('multiselect', 'Multiple select'), ('radio', 'Radio buttons'), ('date', 'Date'), ('datetime', 'Date/time'), ('hidden', 'Hidden field')], max_length=16, verbose_name='field type')),
-                ('required', models.BooleanField(default=True, verbose_name='required')),
-                ('choices', models.TextField(blank=True, help_text='Comma separated list of choices. Only applicable in checkboxes, radio and dropdown.', verbose_name='choices')),
-                ('default_value', models.CharField(blank=True, help_text='Default value. Comma separated values supported for checkboxes.', max_length=255, verbose_name='default value')),
-                ('help_text', models.CharField(blank=True, max_length=255, verbose_name='help text')),
-                ('page', modelcluster.fields.ParentalKey(on_delete=django.db.models.deletion.CASCADE, related_name='form_fields', to='people.PersonFormPage')),
+                (
+                    "id",
+                    models.AutoField(
+                        auto_created=True,
+                        primary_key=True,
+                        serialize=False,
+                        verbose_name="ID",
+                    ),
+                ),
+                (
+                    "sort_order",
+                    models.IntegerField(blank=True, editable=False, null=True),
+                ),
+                (
+                    "label",
+                    models.CharField(
+                        help_text="The label of the form field",
+                        max_length=255,
+                        verbose_name="label",
+                    ),
+                ),
+                (
+                    "field_type",
+                    models.CharField(
+                        choices=[
+                            ("singleline", "Single line text"),
+                            ("multiline", "Multi-line text"),
+                            ("email", "Email"),
+                            ("number", "Number"),
+                            ("url", "URL"),
+                            ("checkbox", "Checkbox"),
+                            ("checkboxes", "Checkboxes"),
+                            ("dropdown", "Drop down"),
+                            ("multiselect", "Multiple select"),
+                            ("radio", "Radio buttons"),
+                            ("date", "Date"),
+                            ("datetime", "Date/time"),
+                            ("hidden", "Hidden field"),
+                        ],
+                        max_length=16,
+                        verbose_name="field type",
+                    ),
+                ),
+                (
+                    "required",
+                    models.BooleanField(default=True, verbose_name="required"),
+                ),
+                (
+                    "choices",
+                    models.TextField(
+                        blank=True,
+                        help_text="Comma separated list of choices. Only applicable in checkboxes, radio and dropdown.",
+                        verbose_name="choices",
+                    ),
+                ),
+                (
+                    "default_value",
+                    models.CharField(
+                        blank=True,
+                        help_text="Default value. Comma separated values supported for checkboxes.",
+                        max_length=255,
+                        verbose_name="default value",
+                    ),
+                ),
+                (
+                    "help_text",
+                    models.CharField(
+                        blank=True, max_length=255, verbose_name="help text"
+                    ),
+                ),
+                (
+                    "page",
+                    modelcluster.fields.ParentalKey(
+                        on_delete=django.db.models.deletion.CASCADE,
+                        related_name="form_fields",
+                        to="people.PersonFormPage",
+                    ),
+                ),
             ],
-            options={
-                'ordering': ['sort_order'],
-                'abstract': False,
-            },
+            options={"ordering": ["sort_order"], "abstract": False,},
         ),
     ]

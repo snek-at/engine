@@ -65,12 +65,11 @@ from esite.utils.models import BasePage
 # > Homepage
 class HomePage(BasePage):
 
-    template = 'patterns/pages/home/home_page.html'
+    template = "patterns/pages/home/home_page.html"
 
     # Only allow creating HomePages at the root level
     parent_page_types = ["wagtailcore.Page"]
-    #subpage_types = []
-
+    # subpage_types = []
 
     class Meta:
         verbose_name = "Home Page"
@@ -149,18 +148,18 @@ class HomePage(BasePage):
     hero_button_text = models.CharField(null=True, blank=True, max_length=55)
 
     hero_button_link = models.ForeignKey(
-        'wagtailcore.Page',
+        "wagtailcore.Page",
         on_delete=models.SET_NULL,
         blank=True,
         null=True,
-        related_name='+',
+        related_name="+",
     )
 
     featured_image = models.ForeignKey(
-        'images.SNEKImage',
+        "images.SNEKImage",
         null=True,
         blank=False,
-        related_name='+',
+        related_name="+",
         on_delete=models.SET_NULL,
     )
 
@@ -170,57 +169,58 @@ class HomePage(BasePage):
 
     articles_title = models.CharField(null=True, blank=True, max_length=150)
     articles_link = models.ForeignKey(
-        'wagtailcore.Page',
+        "wagtailcore.Page",
         on_delete=models.SET_NULL,
         blank=True,
         null=True,
-        related_name='+',
+        related_name="+",
     )
     articles_linktext = models.CharField(null=True, blank=True, max_length=80)
 
     featured_pages_title = models.CharField(null=True, blank=True, max_length=150)
     pages_link = models.ForeignKey(
-        'wagtailcore.Page',
+        "wagtailcore.Page",
         on_delete=models.SET_NULL,
         blank=True,
         null=True,
-        related_name='+',
+        related_name="+",
     )
     pages_linktext = models.CharField(null=True, blank=True, max_length=80)
 
     news_title = models.CharField(null=True, blank=True, max_length=150)
     news_link = models.ForeignKey(
-        'wagtailcore.Page',
+        "wagtailcore.Page",
         on_delete=models.SET_NULL,
         blank=True,
         null=True,
-        related_name='+',
+        related_name="+",
     )
     news_linktext = models.CharField(null=True, blank=True, max_length=80)
 
     def get_context(self, request, *args, **kwargs):
         context = super().get_context(request, *args, **kwargs)
-        context['articles_title'] = self.articles_title
-        context['articles_link'] = self.articles_link
-        context['articles_linktext'] = self.articles_linktext
-        context['featured_pages_title'] = self.featured_pages_title
-        context['pages_link'] = self.pages_link
-        context['pages_linktext'] = self.pages_linktext
-        context['news_title'] = self.news_title
-        context['news_link'] = self.news_link
-        context['news_linktext'] = self.news_linktext
+        context["articles_title"] = self.articles_title
+        context["articles_link"] = self.articles_link
+        context["articles_linktext"] = self.articles_linktext
+        context["featured_pages_title"] = self.featured_pages_title
+        context["pages_link"] = self.pages_link
+        context["pages_linktext"] = self.pages_linktext
+        context["news_title"] = self.news_title
+        context["news_link"] = self.news_link
+        context["news_linktext"] = self.news_linktext
 
         return context
 
     content_panels = BasePage.content_panels + [
         MultiFieldPanel(
             [
-                FieldPanel('hero_title'),
-                FieldPanel('hero_introduction'),
-                FieldPanel('hero_button_text'),
-                PageChooserPanel('hero_button_link'),
-                ImageChooserPanel('featured_image'),
-            ], heading="Hero Section",
+                FieldPanel("hero_title"),
+                FieldPanel("hero_introduction"),
+                FieldPanel("hero_button_text"),
+                PageChooserPanel("hero_button_link"),
+                ImageChooserPanel("featured_image"),
+            ],
+            heading="Hero Section",
         ),
         # InlinePanel(
         #     'featured_pages',
@@ -230,13 +230,14 @@ class HomePage(BasePage):
         # ),
         MultiFieldPanel(
             [
-                FieldPanel('articles_title'),
-                PageChooserPanel('articles_link'),
-                FieldPanel('featured_pages_title'),
-                PageChooserPanel('pages_link'),
-                FieldPanel('news_title'),
-                PageChooserPanel('news_link'),
-            ], heading="Front page sections",
+                FieldPanel("articles_title"),
+                PageChooserPanel("articles_link"),
+                FieldPanel("featured_pages_title"),
+                PageChooserPanel("pages_link"),
+                FieldPanel("news_title"),
+                PageChooserPanel("news_link"),
+            ],
+            heading="Front page sections",
         ),
     ]
 

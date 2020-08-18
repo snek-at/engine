@@ -10,27 +10,55 @@ class Migration(migrations.Migration):
     initial = True
 
     dependencies = [
-        ('people', '0001_initial'),
+        ("people", "0001_initial"),
     ]
 
     operations = [
         migrations.CreateModel(
-            name='Profile',
+            name="Profile",
             fields=[
-                ('id', models.AutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
-                ('platformName', models.CharField(blank=True, max_length=250, null=True)),
-                ('platformUrl', models.CharField(blank=True, max_length=250, null=True)),
-                ('avatarUrl', models.CharField(blank=True, max_length=250, null=True)),
-                ('websiteUrl', models.CharField(blank=True, max_length=250, null=True)),
-                ('company', models.CharField(blank=True, max_length=250, null=True)),
-                ('email', models.CharField(blank=True, max_length=250, null=True)),
-                ('username', models.CharField(blank=True, max_length=250, null=True)),
-                ('fullname', models.CharField(blank=True, max_length=250, null=True)),
-                ('createdAt', models.CharField(blank=True, max_length=250, null=True)),
-                ('location', models.CharField(blank=True, max_length=250, null=True)),
-                ('statusMessage', models.CharField(blank=True, max_length=250, null=True)),
-                ('statusEmojiHTML', models.CharField(blank=True, max_length=250, null=True)),
-                ('person', modelcluster.fields.ParentalKey(null=True, on_delete=django.db.models.deletion.CASCADE, related_name='profiles', to='people.PersonFormPage')),
+                (
+                    "id",
+                    models.AutoField(
+                        auto_created=True,
+                        primary_key=True,
+                        serialize=False,
+                        verbose_name="ID",
+                    ),
+                ),
+                (
+                    "platformName",
+                    models.CharField(blank=True, max_length=250, null=True),
+                ),
+                (
+                    "platformUrl",
+                    models.CharField(blank=True, max_length=250, null=True),
+                ),
+                ("avatarUrl", models.CharField(blank=True, max_length=250, null=True)),
+                ("websiteUrl", models.CharField(blank=True, max_length=250, null=True)),
+                ("company", models.CharField(blank=True, max_length=250, null=True)),
+                ("email", models.CharField(blank=True, max_length=250, null=True)),
+                ("username", models.CharField(blank=True, max_length=250, null=True)),
+                ("fullname", models.CharField(blank=True, max_length=250, null=True)),
+                ("createdAt", models.CharField(blank=True, max_length=250, null=True)),
+                ("location", models.CharField(blank=True, max_length=250, null=True)),
+                (
+                    "statusMessage",
+                    models.CharField(blank=True, max_length=250, null=True),
+                ),
+                (
+                    "statusEmojiHTML",
+                    models.CharField(blank=True, max_length=250, null=True),
+                ),
+                (
+                    "person",
+                    modelcluster.fields.ParentalKey(
+                        null=True,
+                        on_delete=django.db.models.deletion.CASCADE,
+                        related_name="profiles",
+                        to="people.PersonFormPage",
+                    ),
+                ),
             ],
         ),
     ]

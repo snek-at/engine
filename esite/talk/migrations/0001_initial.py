@@ -16,19 +16,58 @@ class Migration(migrations.Migration):
 
     operations = [
         migrations.CreateModel(
-            name='Talk',
+            name="Talk",
             fields=[
-                ('id', models.AutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
-                ('title', models.CharField(blank=True, max_length=32, null=True)),
-                ('description', models.TextField(blank=True, help_text='Other information', null=True)),
-                ('path', models.CharField(blank=True, max_length=256, null=True)),
-                ('url', models.URLField(blank=True, help_text='Important! Format https://www.domain.tld/xyz', null=True)),
-                ('displayUrl', models.URLField(blank=True, help_text='Important! Format https://www.domain.tld/xyz', null=True)),
-                ('downloadUrl', models.URLField(blank=True, help_text='Important! Format https://www.domain.tld/xyz', null=True)),
-                ('owner', modelcluster.fields.ParentalKey(on_delete=django.db.models.deletion.CASCADE, related_name='talk_owner', to=settings.AUTH_USER_MODEL)),
+                (
+                    "id",
+                    models.AutoField(
+                        auto_created=True,
+                        primary_key=True,
+                        serialize=False,
+                        verbose_name="ID",
+                    ),
+                ),
+                ("title", models.CharField(blank=True, max_length=32, null=True)),
+                (
+                    "description",
+                    models.TextField(
+                        blank=True, help_text="Other information", null=True
+                    ),
+                ),
+                ("path", models.CharField(blank=True, max_length=256, null=True)),
+                (
+                    "url",
+                    models.URLField(
+                        blank=True,
+                        help_text="Important! Format https://www.domain.tld/xyz",
+                        null=True,
+                    ),
+                ),
+                (
+                    "displayUrl",
+                    models.URLField(
+                        blank=True,
+                        help_text="Important! Format https://www.domain.tld/xyz",
+                        null=True,
+                    ),
+                ),
+                (
+                    "downloadUrl",
+                    models.URLField(
+                        blank=True,
+                        help_text="Important! Format https://www.domain.tld/xyz",
+                        null=True,
+                    ),
+                ),
+                (
+                    "owner",
+                    modelcluster.fields.ParentalKey(
+                        on_delete=django.db.models.deletion.CASCADE,
+                        related_name="talk_owner",
+                        to=settings.AUTH_USER_MODEL,
+                    ),
+                ),
             ],
-            options={
-                'abstract': False,
-            },
+            options={"abstract": False,},
         ),
     ]

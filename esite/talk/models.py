@@ -42,38 +42,32 @@ from modelcluster.models import ClusterableModel
 
 
 class Talk(ClusterableModel):
-    #talk_id = models.CharField(primary_key=True, max_length=36)
-    owner = ParentalKey("user.SNEKUser",
-                        on_delete=models.CASCADE,
-                        related_name="talk_owner")
+    # talk_id = models.CharField(primary_key=True, max_length=36)
+    owner = ParentalKey(
+        "user.SNEKUser", on_delete=models.CASCADE, related_name="talk_owner"
+    )
     title = models.CharField(null=True, blank=True, max_length=32)
-    description = models.TextField(null=True,
-                                   blank=True,
-                                   help_text="Other information")
+    description = models.TextField(null=True, blank=True, help_text="Other information")
     path = models.CharField(null=True, blank=True, max_length=256)
     url = models.URLField(
-        null=True,
-        blank=True,
-        help_text="Important! Format https://www.domain.tld/xyz")
+        null=True, blank=True, help_text="Important! Format https://www.domain.tld/xyz"
+    )
     displayUrl = models.URLField(
-        null=True,
-        blank=True,
-        help_text="Important! Format https://www.domain.tld/xyz")
+        null=True, blank=True, help_text="Important! Format https://www.domain.tld/xyz"
+    )
     downloadUrl = models.URLField(
-        null=True,
-        blank=True,
-        help_text="Important! Format https://www.domain.tld/xyz")
+        null=True, blank=True, help_text="Important! Format https://www.domain.tld/xyz"
+    )
 
     graphql_fields = [
-        #GraphQLString("talk_id"),
+        # GraphQLString("talk_id"),
         GraphQLString("title"),
         GraphQLString("description"),
         GraphQLString("path"),
         GraphQLString("url"),
         GraphQLString("displayUrl"),
         GraphQLString("downloadUrl"),
-        GraphQLCollection(GraphQLForeignKey, "comment_talk",
-                          "comment.Comment"),
+        GraphQLCollection(GraphQLForeignKey, "comment_talk", "comment.Comment"),
     ]
 
     main_content_panels = [
@@ -85,9 +79,9 @@ class Talk(ClusterableModel):
         FieldPanel("url"),
         FieldPanel("displayUrl"),
         FieldPanel("downloadUrl"),
-        InlinePanel('comment_talk', label='Comments'),
+        InlinePanel("comment_talk", label="Comments"),
     ]
 
-    edit_handler = TabbedInterface([
-        ObjectList(main_content_panels, heading="Content"),
-    ])
+    edit_handler = TabbedInterface(
+        [ObjectList(main_content_panels, heading="Content"),]
+    )

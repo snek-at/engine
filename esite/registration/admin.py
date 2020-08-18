@@ -14,8 +14,8 @@ class RegistrationAdmin(ModelAdmin):
     exclude_from_explorer = False
 
     # Listed in the registration overview
-    list_display = ("username", )
-    search_fields = ("username", )
+    list_display = ("username",)
+    search_fields = ("username",)
 
 
 # modeladmin_register(RegistrationAdmin)

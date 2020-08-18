@@ -38,25 +38,22 @@ from esite.bifrost.models import (
 )
 from modelcluster.models import ClusterableModel
 
-#from esite.utils.models import BasePage
+# from esite.utils.models import BasePage
 
 
 # Extend AbstractUser Model from django.contrib.auth.models
 class SNEKUser(AbstractUser, ClusterableModel):
     username = models.CharField(
-        'username',
+        "username",
         null=True,
         blank=False,
         error_messages={"unique": "A user with that username already exists."},
-        help_text=
-        "Required. 36 characters or fewer. Letters, digits and @/./+/-/_ only.",
+        help_text="Required. 36 characters or fewer. Letters, digits and @/./+/-/_ only.",
         max_length=36,
         unique=True,
         validators=[django.contrib.auth.validators.UnicodeUsernameValidator()],
     )
-    is_enterprise = models.BooleanField('enterprise',
-                                        blank=False,
-                                        default=False)
+    is_enterprise = models.BooleanField("enterprise", blank=False, default=False)
     sources = models.TextField(null=True, blank=False)
     cache = models.TextField(null=True, blank=False)
 
@@ -105,13 +102,12 @@ class SNEKUser(AbstractUser, ClusterableModel):
         GraphQLBoolean("is_active"),
         GraphQLString("sources"),
         GraphQLString("cache"),
-        GraphQLCollection(GraphQLForeignKey, "personpage",
-                          "people.PersonFormPage"),
-        GraphQLCollection(GraphQLForeignKey, "enterprisepage",
-                          "enterprises.EnterpriseFormPage"),
+        GraphQLCollection(GraphQLForeignKey, "personpage", "people.PersonFormPage"),
+        GraphQLCollection(
+            GraphQLForeignKey, "enterprisepage", "enterprises.EnterpriseFormPage"
+        ),
         GraphQLCollection(GraphQLForeignKey, "talk_owner", "talk.Talk"),
-        GraphQLCollection(GraphQLForeignKey, "comment_owner",
-                          "comment.Comment"),
+        GraphQLCollection(GraphQLForeignKey, "comment_owner", "comment.Comment"),
     ]
 
     def __str__(self):

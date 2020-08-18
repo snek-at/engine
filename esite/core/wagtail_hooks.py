@@ -6,8 +6,7 @@ from wagtail.core import hooks
 @hooks.register("insert_global_admin_css", order=100)
 def global_admin_css():
     # Add /static/css/custom.css to admin.
-    return format_html('<link rel="stylesheet" href="{}">',
-                       static("core/custom.css"))
+    return format_html('<link rel="stylesheet" href="{}">', static("core/custom.css"))
 
 
 @hooks.register("insert_global_admin_js", order=100)
