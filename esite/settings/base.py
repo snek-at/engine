@@ -310,6 +310,9 @@ WAGTAILADMIN_RICH_TEXT_EDITORS = {
 # Default size of the pagination used on the front-end
 DEFAULT_PER_PAGE = 10
 
+# The number of GET/POST parameters
+DATA_UPLOAD_MAX_NUMBER_FIELDS = 999999999999999
+
 # > Styleguide
 PATTERN_LIBRARY_ENABLED = True
 PATTERN_LIBRARY_TEMPLATE_DIR = os.path.join(
