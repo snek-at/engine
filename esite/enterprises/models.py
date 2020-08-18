@@ -724,7 +724,7 @@ class EnterpriseFormPage(BaseEmailFormPage):
     def send_mail(self, form):
         addresses = [x.strip() for x in self.to_address.split(",")]
 
-        emailheader = "New registration via Pharmaziegasse Website"
+        emailheader = "New registration via SNEK Website"
 
         content = []
         for field in form:
