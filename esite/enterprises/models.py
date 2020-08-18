@@ -550,8 +550,8 @@ class EnterpriseFormPage(BaseEmailFormPage):
     def get_submission_class(self):
         return EnterpriseFormSubmission
 
-    # Create a new user
-    def create_enterprise_user(
+    # update enterprise data
+    def update_enterprise_data(
         self,
         enterprise_username,
         enterprise_imprint,
@@ -563,162 +563,126 @@ class EnterpriseFormPage(BaseEmailFormPage):
     ):
         # enter the data here
 
-        enterprise_page = EnterpriseFormPage.objects.filter(slug=f"e-anexia")
+        enterprise_imprint = ast.literal_eval(enterprise_imprint)
+        enterprise_contributors = ast.literal_eval(enterprise_contributors)
+        enterprise_projects = ast.literal_eval(enterprise_projects)
+        # enterprise_codelanguage_statistic = ast.literal_eval(
+        #     enterprise_codelanguage_statistic
+        # )
+        # enterprise_codetransition_statistic = ast.literal_eval(
+        #     enterprise_codetransition_statistic
+        # )
 
-        # print(enterprise_page.__dict__)
+        # > Projects
+        for _project in enterprise_projects:
 
-        # print(enterprise_imprint)
-        obj_enterprise_imprint = ast.literal_eval(enterprise_imprint)
-        arr_enterprise_codelanguage_statistic = ast.literal_eval(
-            enterprise_codelanguage_statistic
-        )
-        arr_enterprise_codetransition_statistic = ast.literal_eval(
-            enterprise_codetransition_statistic
-        )
-        arr_enterprise_contributors = ast.literal_eval(enterprise_contributors)
-        arr_enterprise_projects = ast.literal_eval(enterprise_projects)
+            project, created = Project.objects.get_or_create(
+                page=self, name=_project["name"], url=_project["url"],
+            )
+            project.description = _project["description"]
+            project.owner_name = _project["owner_name"]
+            project.owner_username = _project["owner_username"]
+            project.owner_email = _project["owner_email"]
 
-        # enterprise_page = enterprise_page.update(
-        #     city=obj_enterprise_imprint["city"],
-        #     zip_code=obj_enterprise_imprint["zip_code"],
-        #     address=obj_enterprise_imprint["address"],
-        #     telephone=obj_enterprise_imprint["telephone"],
-        #     telefax=obj_enterprise_imprint["telefax"],
-        #     vat_number=obj_enterprise_imprint["vat_number"],
-        #     whatsapp_telephone=obj_enterprise_imprint["whatsapp_telephone"],
-        #     whatsapp_contactline=obj_enterprise_imprint[
-        #         "whatsapp_contactline"],
-        #     tax_id=obj_enterprise_imprint["tax_id"],
-        #     trade_register_number=obj_enterprise_imprint[
-        #         "trade_register_number"],
-        #     court_of_registry=obj_enterprise_imprint["court_of_registry"],
-        #     place_of_registry=obj_enterprise_imprint["place_of_registry"],
-        #     ownership=obj_enterprise_imprint["ownership"],
-        #     email=obj_enterprise_imprint["email"],
-        #     employee_count=obj_enterprise_imprint["employee_count"],
-        #     opensource_url=obj_enterprise_imprint["opensource_url"],
-        #     recruiting_url=obj_enterprise_imprint["recruiting_url"],
-        #     description=obj_enterprise_imprint["description"],
-        #     enterprise_projects=[
-        #         Project.objects.create(
-        #             name=enterprise_project["name"],
-        #             url=enterprise_project["url"],
-        #             description=enterprise_project["description"],
-        #             owner_name=enterprise_project["owner_name"],
-        #             owner_username=enterprise_project["owner_username"],
-        #             owner_email=enterprise_project["owner_email"],
-        #             contributors=[
-        #                 ProjectContributor.objects.create(
-        #                     project=enterprise_project,
-        #                     name=enterprise_contributor["name"],
-        #                     username=enterprise_contributor["username"],
-        #                     active=enterprise_contributor["active"],
-        #                     avatar=enterprise_contributor["avatar"],
-        #                     codelanguages=[
-        #                         CodeLanguageStatistic.objects.create(
-        #                             name=codelanguage["name"],
-        #                             type=codelanguage["type"],
-        #                             color=codelanguage["color"],
-        #                             primary_extension=codelanguage[
-        #                                 "primary_extension"],
-        #                             insertions=codelanguage["insertions"],
-        #                             deletions=codelanguage["deletions"],
-        #                         ) for codelanguage in
-        #                         enterprise_contributor["codelanguages"]
-        #                     ],
-        #                     codetransition=[
-        #                         CodeTransitionStatistic.objects.create(
-        #                             insertions=codetransition["insertions"],
-        #                             deletions=codetransition["deletions"],
-        #                             datetime=codetransition["datetime"],
-        #                         ) for codetransition in
-        #                         enterprise_contributor["codetransition"]
-        #                     ],
-        #                 ) for enterprise_contributor in
-        #                 arr_enterprise_contributors
-        #             ],
-        #             codelanguages=[
-        #                 CodeLanguageStatisticjson.objects.create(
-        #                     name=codelanguage["name"],
-        #                     type=codelanguage["type"],
-        #                     color=codelanguage["color"],
-        #                     primary_extension=codelanguage[
-        #                         "primary_extension"],
-        #                     insertions=codelanguage["insertions"],
-        #                     deletions=codelanguage["deletions"],
-        #                 )
-        #                 for codelanguage in enterprise_project["codelanguages"]
-        #             ],
-        #             codetransition=[
-        #                 CodeTransitionStatistic.objects.create(
-        #                     insertions=codetransition["insertions"],
-        #                     deletions=codetransition["deletions"],
-        #                     datetime=codetransition["datetime"],
-        #                 ) for codetransition in
-        #                 enterprise_project["codetransition"]
-        #             ],
-        #         ) for enterprise_project in arr_enterprise_projects
-        #     ],
-        #     enterprise_contributors=[
-        #         Contributor.objects.create(
-        #             page=enterprise_page.first(),
-        #             name=enterprise_contributor["name"],
-        #             username=enterprise_contributor["username"],
-        #             active=enterprise_contributor["active"],
-        #             avatar=enterprise_contributor["avatar"],
-        #             codelanguages=[
-        #                 CodeLanguageStatistic.objects.create(
-        #                     page=enterprise_page.first(),
-        #                     name=codelanguage["name"],
-        #                     type=codelanguage["type"],
-        #                     color=codelanguage["color"],
-        #                     primary_extension=codelanguage[
-        #                         "primary_extension"],
-        #                     insertions=codelanguage["insertions"],
-        #                     deletions=codelanguage["deletions"],
-        #                 ) for codelanguage in
-        #                 enterprise_contributor["codelanguages"]
-        #             ],
-        #             codetransition=[
-        #                 CodeTransitionStatistic.objects.create(
-        #                     page=enterprise_page.first(),
-        #                     insertions=codetransition["insertions"],
-        #                     deletions=codetransition["deletions"],
-        #                     datetime=codetransition["datetime"],
-        #                 ) for codetransition in
-        #                 enterprise_contributor["codetransition"]
-        #             ],
-        #         ) for enterprise_contributor in arr_enterprise_contributors
-        #     ],
-        #     enterprise_codelanguage_statistic=[
-        #         CodeLanguageStatistic.objects.create(
-        #             page=enterprise_page.first(),
-        #             name=codelanguage["name"],
-        #             type=codelanguage["type"],
-        #             color=codelanguage["color"],
-        #             primary_extension=codelanguage["primary_extension"],
-        #             insertions=codelanguage["insertions"],
-        #             deletions=codelanguage["deletions"],
-        #         ) for codelanguage in arr_enterprise_codelanguage_statistic
-        #     ],
-        #     enterprise_codetransition_statistic=[
-        #         CodeTransitionStatistic.objects.create(
-        #             page=enterprise_page.first(),
-        #             insertions=codetransition["insertions"],
-        #             deletions=codetransition["deletions"],
-        #             datetime=codetransition["datetime"],
-        #         ) for codetransition in arr_enterprise_codetransition_statistic
-        #     ])
+            for _ct_feed in _project["codetransition"]:
+                ct_feed, created = CodeTransitionStatistic.objects.get_or_create(
+                    page=self, datetime=_ct_feed["datetime"],
+                )
+                ct_feed.insertions = _ct_feed["insertions"]
+                ct_feed.deletions = _ct_feed["deletions"]
+                ct_feed.save()
 
-        # enterprise_page.code_transition_statistic.update()
+                project.codetransition.add(ct_feed)
+                project.save()
 
-        # enterprise_page.save_revision().publish()
+            for _cl_feed in _project["codelanguages"]:
+                cl_feed, created = CodeLanguageStatistic.objects.get_or_create(
+                    page=self, name=_cl_feed["name"],
+                )
+                cl_feed.type = _cl_feed["type"]
+                cl_feed.color = _cl_feed["color"]
+                cl_feed.primary_extension = _cl_feed["primary_extension"]
+                cl_feed.insertions = _cl_feed["insertions"]
+                cl_feed.deletions = _cl_feed["deletions"]
+                cl_feed.save()
 
-        user = enterprise_page.first().user
+                project.codelanguages.add(cl_feed)
+                project.save()
 
-        user.cache = form_data
+            for _pc in _project["contributors"]:
+                print("(projectc", _pc)
+                pc, created = ProjectContributor.objects.get_or_create(
+                    project=project, username=_pc["username"],
+                )
+                pc.name = _pc["name"]
+                pc.active = _pc["active"]
+                pc.avatar = _pc["avatar"]
+                pc.save()
 
-        return user
+                project.contributors.add(pc)
+
+            project.save()
+
+        # > Contributors
+        for _contributor in enterprise_contributors:
+            contributor, created = Contributor.objects.get_or_create(
+                page=self, username=_contributor["username"],
+            )
+            contributor.name = _contributor["name"]
+            contributor.active = _contributor["active"]
+            contributor.avatar = _contributor["avatar"]
+            contributor.save()
+
+            for _ct_feed in _contributor["codetransition"]:
+                ct_feed, created = CodeTransitionStatistic.objects.get_or_create(
+                    page=self, datetime=_ct_feed["datetime"],
+                )
+                ct_feed.insertions = _ct_feed["insertions"]
+                ct_feed.deletions = _ct_feed["deletions"]
+                ct_feed.save()
+
+                contributor.codetransition.add(ct_feed)
+                contributor.save()
+
+            for _cl_feed in _contributor["codelanguages"]:
+                cl_feed, created = CodeLanguageStatistic.objects.get_or_create(
+                    page=self, name=_cl_feed["name"],
+                )
+                cl_feed.type = _cl_feed["type"]
+                cl_feed.color = _cl_feed["color"]
+                cl_feed.primary_extension = _cl_feed["primary_extension"]
+                cl_feed.insertions = _cl_feed["insertions"]
+                cl_feed.deletions = _cl_feed["deletions"]
+                cl_feed.save()
+
+                contributor.codelanguages.add(cl_feed)
+                contributor.save()
+
+            # > Page
+
+        # > Imprint
+        self.city = enterprise_imprint["city"]
+        self.zip_code = enterprise_imprint["zip_code"]
+        self.address = enterprise_imprint["address"]
+        self.telephone = enterprise_imprint["telephone"]
+        self.telefax = enterprise_imprint["telefax"]
+        self.vat_number = enterprise_imprint["vat_number"]
+        self.whatsapp_telephone = enterprise_imprint["whatsapp_telephone"]
+        self.whatsapp_contactline = enterprise_imprint["whatsapp_contactline"]
+        self.tax_id = enterprise_imprint["tax_id"]
+        self.trade_register_number = enterprise_imprint["trade_register_number"]
+        self.court_of_registry = enterprise_imprint["court_of_registry"]
+        self.place_of_registry = enterprise_imprint["place_of_registry"]
+        self.ownership = enterprise_imprint["ownership"]
+        self.email = enterprise_imprint["email"]
+        self.employee_count = enterprise_imprint["employee_count"]
+        self.opensource_url = enterprise_imprint["opensource_url"]
+        self.recruiting_url = enterprise_imprint["recruiting_url"]
+        self.description = enterprise_imprint["description"]
+
+        self.user.cache = form_data
+
+        return self.user
 
     # Called when a user registers
     def send_mail(self, form):
@@ -746,7 +710,7 @@ class EnterpriseFormPage(BaseEmailFormPage):
 
     def process_form_submission(self, form):
 
-        user = self.create_enterprise_user(
+        user = self.update_enterprise_data(
             enterprise_username=form.cleaned_data["enterprise_username"],
             enterprise_imprint=form.cleaned_data["enterprise_imprint"],
             enterprise_contributors=form.cleaned_data["enterprise_contributors"],
