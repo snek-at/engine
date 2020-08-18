@@ -389,7 +389,7 @@ class EnterpriseFormPage(BaseEmailFormPage):
         )
     ]
     # Projects
-    project_panel = [InlinePanel("enterprise_projects", heading="Contributors")]
+    project_panel = [InlinePanel("enterprise_projects", heading="Projects")]
 
     graphql_fields += [
         GraphQLCollection(
