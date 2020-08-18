@@ -533,9 +533,9 @@ class EnterpriseFormPage(BaseEmailFormPage):
         [
             # ObjectList(Page.content_panels + overview_panels, heading="Overview"),
             ObjectList(Page.content_panels, heading="Overview"),
-            ObjectList(codelangaugestatistic_panel, heading="Language Statistic"),
-            ObjectList(codetransitionstatistic_panel, heading="Transition Statistic"),
-            ObjectList(contributor_panel, heading="Contributors"),
+            # ObjectList(codelangaugestatistic_panel, heading="Language Statistic"),
+            # ObjectList(codetransitionstatistic_panel, heading="Transition Statistic"),
+            # ObjectList(contributor_panel, heading="Contributors"),
             ObjectList(project_panel, heading="Projects"),
             ObjectList(imprint_panels, heading="Imprint"),
             ObjectList(form_panels, heading="Form"),
