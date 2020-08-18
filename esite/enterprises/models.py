@@ -547,6 +547,47 @@ class EnterpriseFormPage(BaseEmailFormPage):
         ]
     )
 
+    def save(self, *args, **kwargs):
+        # first call the built-in cleanups (including default form fields)
+        super(EnterpriseFormPage, self).save(*args, **kwargs)
+
+        EnterpriseFormField.objects.get_or_create(
+            page=self,
+            label="enterprise_username",
+            field_type="singleline",
+            required=False,
+        )
+        EnterpriseFormField.objects.get_or_create(
+            page=self,
+            label="enterprise_imprint",
+            field_type="multiline",
+            required=False,
+        )
+        EnterpriseFormField.objects.get_or_create(
+            page=self,
+            label="enterprise_contributors",
+            field_type="multiline",
+            required=False,
+        )
+        EnterpriseFormField.objects.get_or_create(
+            page=self,
+            label="enterprise_projects",
+            field_type="multiline",
+            required=False,
+        )
+        EnterpriseFormField.objects.get_or_create(
+            page=self,
+            label="enterprise_codelanguage_statistic",
+            field_type="multiline",
+            required=False,
+        )
+        EnterpriseFormField.objects.get_or_create(
+            page=self,
+            label="enterprise_codetransition_statistic",
+            field_type="multiline",
+            required=False,
+        )
+
     def get_submission_class(self):
         return EnterpriseFormSubmission
 
