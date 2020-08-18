@@ -1,32 +1,28 @@
 {
-  "editor.rulers": [80, 120],
-  "editor.fontFamily": "Fira Code, Consolas, 'Courier New', monospace",
-  "editor.fontLigatures": true,
-  "editor.formatOnSave": true,
-  "editor.formatOnType": true,
-  "editor.snippetSuggestions": "top",
-  "python.linting.enabled": true,
-  "terminal.integrated.fontFamily": "Consolas",
-  "workbench.colorTheme": "Dracula Soft",
-  "cSpell.ignoreWords": [],
-  "cSpell.enabledLanguageIds": [
-    "html",
-    "go",
-    "javascript",
-    "javascriptreact",
-    "markdown",
-    "php",
-    "plaintext",
-    "text",
-    "typescript",
-    "typescriptreact",
-    "yml",
-    "python"
-  ],
-  "cSpell.showStatus": true,
-  "cSpell.ignorePaths": [
-    "linux-venv",
-    "windows-venv"
-  ],
-  "python.formatting.provider": "yapf"
+    "editor.rulers": [80, 120],
+    "editor.fontLigatures": true,
+    "editor.formatOnSave": true,
+    "editor.formatOnType": true,
+    "editor.snippetSuggestions": "top",
+    "python.linting.enabled": true,
+    "terminal.integrated.fontFamily": "monospace",
+    "workbench.colorTheme": "Dracula Soft",
+    "cSpell.ignoreWords": [],
+    "cSpell.enabledLanguageIds": [
+        "html",
+        "go",
+        "javascript",
+        "javascriptreact",
+        "markdown",
+        "php",
+        "plaintext",
+        "text",
+        "typescript",
+        "typescriptreact",
+        "yml",
+        "python"
+    ],
+    "cSpell.showStatus": true,
+    "cSpell.ignorePaths": ["linux-venv", "windows-venv"],
+    "python.formatting.provider": "black"
 }
