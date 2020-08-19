@@ -36,7 +36,7 @@ def create_schema():
     import esite.user.schema
     from .jwtauth.schema import ObtainJSONWebToken
     from esite.caching.schema import CacheUser, CacheUserByName
-    from esite.people.schema import Follow, Unfollow
+    from esite.people.schema import Follow, Unfollow, Like, Unlike
 
     class Query(
         esite.user.schema.Query,
@@ -65,6 +65,8 @@ def create_schema():
             "cache_user_by_name": CacheUserByName.Field(),
             "follow_person": Follow.Field(),
             "unfollow_person": Unfollow.Field(),
+            "like_person": Like.Field(),
+            "unlike_person": Unlike.Field(),
         }
         dict_params.update(
             (camel_case_to_spaces(n).replace(" ", "_"), mut.Field())

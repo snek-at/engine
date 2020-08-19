@@ -78,9 +78,71 @@ class Unfollow(graphene.Mutation):
         return Follow(total_followers=destination_person_page.follows.count())
 
 
+class Like(graphene.Mutation):
+    total_likes = graphene.Int()
+
+    class Arguments:
+        token = graphene.String(required=True)
+        person = graphene.String(required=True)
+        person_to_like = graphene.String(required=True)
+
+    @login_required
+    def mutate(self, info, token, person, person_to_like):
+        user = info.context.user
+
+        origin_person_page = PersonFormPage.objects.get(slug=f"p-{person}")
+
+        if origin_person_page.user == user or user.is_superuser:
+            """
+            Allowed to like
+            """
+            destination_person_page = PersonFormPage.objects.get(
+                slug=f"p-{person_to_like}"
+            )
+
+            destination_person_page.likes.add(origin_person_page)
+
+        else:
+            raise GraphQLError("Permission denied")
+
+        return Like(total_likes=destination_person_page.likes.count())
+
+
+class Unlike(graphene.Mutation):
+    total_likes = graphene.Int()
+
+    class Arguments:
+        token = graphene.String(required=True)
+        person = graphene.String(required=True)
+        person_to_unlike = graphene.String(required=True)
+
+    @login_required
+    def mutate(self, info, token, person, person_to_unlike):
+        user = info.context.user
+
+        origin_person_page = PersonFormPage.objects.get(slug=f"p-{person}")
+
+        if origin_person_page.user == user or user.is_superuser:
+            """
+            Allowed to unlike
+            """
+            destination_person_page = PersonFormPage.objects.get(
+                slug=f"p-{person_to_unlike}"
+            )
+
+            destination_person_page.likes.remove(origin_person_page)
+
+        else:
+            raise GraphQLError("Permission denied")
+
+        return Unlike(total_likes=destination_person_page.likes.count())
+
+
 class Mutation(graphene.ObjectType):
     follow = Follow.Field()
     unfollow = Unfollow.Field()
+    like = Like.Field()
+    unlike = Unlike.Field()
 
 
 class Query(graphene.ObjectType):

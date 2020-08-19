@@ -157,6 +157,7 @@ class PersonFormPage(BaseFormPage):
     tids = models.TextField(null=True, blank=True)
 
     follows = models.ManyToManyField("PersonFormPage", related_name="followed_by")
+    likes = models.ManyToManyField("PersonFormPage", related_name="liked_by")
 
     content_panels = BasePage.content_panels + [
         FieldPanel("user"),
