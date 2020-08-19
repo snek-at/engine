@@ -191,9 +191,14 @@ class PersonFormPage(BaseFormPage):
         ),
     ]
 
+    social_panel = [
+        MultiFieldPanel([FieldPanel("follows")], heading="data",),
+    ]
+
     edit_handler = TabbedInterface(
         [
             ObjectList(content_panels, heading="Content"),
+            ObjectList(social_panel, heading="Social"),
             ObjectList(form_panels, heading="Form"),
             ObjectList(
                 BasePage.promote_panels + BasePage.settings_panels,
@@ -211,7 +216,10 @@ class PersonFormPage(BaseFormPage):
         GraphQLStreamfield("bio"),
         GraphQLString("bids"),
         GraphQLString("tids"),
-        GraphQLCollection(GraphQLForeignKey, "form_fields", "people.PersonFormField"),
+        GraphQLCollection(GraphQLForeignKey, "follows", "people.PersonFormPage"),
+        GraphQLCollection(GraphQLForeignKey, "followed_by", "people.PersonFormPage"),
+        GraphQLCollection(GraphQLForeignKey, "likes", "people.PersonFormPage"),
+        GraphQLCollection(GraphQLForeignKey, "liked_by", "people.PersonFormPage"),
         GraphQLCollection(GraphQLForeignKey, "profiles", "profile.Profile"),
     ]
 
