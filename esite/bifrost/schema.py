@@ -34,11 +34,16 @@ def create_schema():
     from .types.redirects import RedirectsQuery
 
     import esite.user.schema
+    import esite.achievement.schema
     from .jwtauth.schema import ObtainJSONWebToken
     from esite.caching.schema import CacheUser, CacheUserByName
+    from esite.people.schema import Follow, Unfollow, Like, Unlike
 
     class Query(
+        # Custom queries start
         esite.user.schema.Query,
+        esite.achievement.schema.Query,
+        # Custom queries end
         graphene.ObjectType,
         PagesQuery(),
         ImagesQuery(),
@@ -62,6 +67,10 @@ def create_schema():
             "revoke_token": graphql_jwt.Revoke.Field(),
             "cache_user": CacheUser.Field(),
             "cache_user_by_name": CacheUserByName.Field(),
+            "follow_person": Follow.Field(),
+            "unfollow_person": Unfollow.Field(),
+            "like_person": Like.Field(),
+            "unlike_person": Unlike.Field(),
         }
         dict_params.update(
             (camel_case_to_spaces(n).replace(" ", "_"), mut.Field())
