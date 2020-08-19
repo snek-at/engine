@@ -89,6 +89,7 @@ class Meta_Link(blocks.StructBlock):
 
     # > Meta
     location = blocks.CharBlock(null=True, blank=True, max_length=255)
+    description = blocks.TextBlock(null=True, blank=True)
 
 
 # > Profilepage
