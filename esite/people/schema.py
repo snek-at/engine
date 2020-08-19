@@ -64,7 +64,7 @@ class Unfollow(graphene.Mutation):
 
         if origin_person_page.user == user or user.is_superuser:
             """
-            Allowed to set new follower for the page
+            Allowed to unfollow
             """
             destination_person_page = PersonFormPage.objects.get(
                 slug=f"p-{person_to_unfollow}"
