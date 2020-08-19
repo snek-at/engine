@@ -192,7 +192,8 @@ class PersonFormPage(BaseFormPage):
     ]
 
     social_panel = [
-        MultiFieldPanel([FieldPanel("follows")], heading="data",),
+        MultiFieldPanel([FieldPanel("follows")], heading="Followings",),
+        # MultiFieldPanel([FieldPanel("achievements")], heading="Achievements",),
     ]
 
     edit_handler = TabbedInterface(
@@ -220,6 +221,7 @@ class PersonFormPage(BaseFormPage):
         GraphQLCollection(GraphQLForeignKey, "followed_by", "people.PersonFormPage"),
         GraphQLCollection(GraphQLForeignKey, "likes", "people.PersonFormPage"),
         GraphQLCollection(GraphQLForeignKey, "liked_by", "people.PersonFormPage"),
+        GraphQLCollection(GraphQLForeignKey, "achievements", "achievement.Achievement"),
         GraphQLCollection(GraphQLForeignKey, "profiles", "profile.Profile"),
     ]
 

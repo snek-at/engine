@@ -37,6 +37,10 @@ class SNEKImage(AbstractImage):
     ]
 
 
+class SNEKAchievementImage(AbstractImage):
+    pass
+
+
 class Rendition(AbstractRendition):
     image = models.ForeignKey(
         "SNEKImage", related_name="renditions", on_delete=models.CASCADE

@@ -34,12 +34,16 @@ def create_schema():
     from .types.redirects import RedirectsQuery
 
     import esite.user.schema
+    import esite.achievement.schema
     from .jwtauth.schema import ObtainJSONWebToken
     from esite.caching.schema import CacheUser, CacheUserByName
     from esite.people.schema import Follow, Unfollow, Like, Unlike
 
     class Query(
+        # Custom queries start
         esite.user.schema.Query,
+        esite.achievement.schema.Query,
+        # Custom queries end
         graphene.ObjectType,
         PagesQuery(),
         ImagesQuery(),
