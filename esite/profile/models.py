@@ -76,6 +76,21 @@ class _S_Calendar(blocks.StructBlock):
     ]
 
 
+@register_streamfield_block
+class Meta_Link(blocks.StructBlock):
+    LINK_TYPES = (
+        ("instagram_video", "Instagram Post Video"),
+        ("instagram_photo", "Instagram Post Photo"),
+        ("other", "Other"),
+    )
+
+    url = blocks.URLBlock(null=True, blank=True, max_length=255)
+    link_type = blocks.ChoiceBlock(choices=LINK_TYPES, default="other")
+
+    # > Meta
+    location = blocks.CharBlock(null=True, blank=True, max_length=255)
+
+
 # > Profilepage
 class Profile(models.Model):
     person = ParentalKey("people.PersonFormPage", null=True, related_name="profiles")
@@ -92,6 +107,8 @@ class Profile(models.Model):
     statusMessage = models.CharField(null=True, blank=True, max_length=250)
     statusEmojiHTML = models.CharField(null=True, blank=True, max_length=250)
 
+    link_collection = StreamField([("link", Meta_Link())], null=True, blank=True)
+
     graphql_fields = [
         GraphQLString("platformName"),
         GraphQLString("platformUrl"),
@@ -105,33 +122,35 @@ class Profile(models.Model):
         GraphQLString("location"),
         GraphQLString("statusMessage"),
         GraphQLString("statusEmojiHTML"),
+        GraphQLStreamfield("link_collection"),
     ]
 
-    # content_panels = [
-    #     MultiFieldPanel(
-    #         [
-    #             FieldPanel("platformName"),
-    #             FieldPanel("platformUrl"),
-    #             FieldPanel("avatarUrl"),
-    #             FieldPanel("websiteUrl"),
-    #             FieldPanel("company"),
-    #             FieldPanel("email"),
-    #             FieldPanel("username"),
-    #             FieldPanel("fullname"),
-    #             FieldPanel("createdAt"),
-    #             FieldPanel("location"),
-    #             FieldPanel("statusMessage"),
-    #             FieldPanel("statusEmojiHTML"),
-    #             FieldPanel("bids"),
-    #             FieldPanel("tids"),
-    #         ],
-    #     ),
-    # ]
+    content_panels = [
+        FieldPanel("person"),
+        MultiFieldPanel(
+            [
+                FieldPanel("platformName"),
+                FieldPanel("platformUrl"),
+                FieldPanel("avatarUrl"),
+                FieldPanel("websiteUrl"),
+                FieldPanel("company"),
+                FieldPanel("email"),
+                FieldPanel("username"),
+                FieldPanel("fullname"),
+                FieldPanel("createdAt"),
+                FieldPanel("location"),
+                FieldPanel("statusMessage"),
+                FieldPanel("statusEmojiHTML"),
+                StreamFieldPanel("link_collection"),
+            ],
+        ),
+    ]
 
-    # edit_handler = TabbedInterface(
-    #     [
-    #         ObjectList(
-    #             content_panels, heading="Content"
-    #         ),
-    #     ]
-    # )
+    # data_panels = [MultiFieldPanel([StreamFieldPanel("link_collection"),])]
+
+    edit_handler = TabbedInterface(
+        [
+            ObjectList(content_panels, heading="Content"),
+            # ObjectList(data_panels, heading="Data"),
+        ]
+    )
