@@ -36,6 +36,7 @@ def create_schema():
     import esite.user.schema
     from .jwtauth.schema import ObtainJSONWebToken
     from esite.caching.schema import CacheUser, CacheUserByName
+    from esite.people.schema import Follow, Unfollow
 
     class Query(
         esite.user.schema.Query,
@@ -62,6 +63,8 @@ def create_schema():
             "revoke_token": graphql_jwt.Revoke.Field(),
             "cache_user": CacheUser.Field(),
             "cache_user_by_name": CacheUserByName.Field(),
+            "follow_person": Follow.Field(),
+            "unfollow_person": Unfollow.Field(),
         }
         dict_params.update(
             (camel_case_to_spaces(n).replace(" ", "_"), mut.Field())

@@ -156,6 +156,8 @@ class PersonFormPage(BaseFormPage):
     bids = models.TextField(null=True, blank=True)
     tids = models.TextField(null=True, blank=True)
 
+    follows = models.ManyToManyField("PersonFormPage", related_name="followed_by")
+
     content_panels = BasePage.content_panels + [
         FieldPanel("user"),
         MultiFieldPanel(
