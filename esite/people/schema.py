@@ -40,12 +40,13 @@ class Follow(graphene.Mutation):
                 slug=f"p-{person_to_follow}"
             )
 
-            destination_person_page.follows.add(origin_person_page)
+            origin_person_page.follows.add(destination_person_page)
+            origin_person_page.save()
 
         else:
             raise GraphQLError("Permission denied")
 
-        return Follow(total_followers=destination_person_page.follows.count())
+        return Follow(total_followers=origin_person_page.follows.count())
 
 
 class Unfollow(graphene.Mutation):
@@ -70,12 +71,13 @@ class Unfollow(graphene.Mutation):
                 slug=f"p-{person_to_unfollow}"
             )
 
-            destination_person_page.follows.remove(origin_person_page)
+            origin_person_page.follows.remove(destination_person_page)
+            origin_person_page.save()
 
         else:
             raise GraphQLError("Permission denied")
 
-        return Follow(total_followers=destination_person_page.follows.count())
+        return Follow(total_followers=origin_person_page.follows.count())
 
 
 class Like(graphene.Mutation):
@@ -100,12 +102,13 @@ class Like(graphene.Mutation):
                 slug=f"p-{person_to_like}"
             )
 
-            destination_person_page.likes.add(origin_person_page)
+            origin_person_page.likes.add(destination_person_page)
+            origin_person_page.save()
 
         else:
             raise GraphQLError("Permission denied")
 
-        return Like(total_likes=destination_person_page.likes.count())
+        return Like(total_likes=origin_person_page.likes.count())
 
 
 class Unlike(graphene.Mutation):
@@ -130,12 +133,13 @@ class Unlike(graphene.Mutation):
                 slug=f"p-{person_to_unlike}"
             )
 
-            destination_person_page.likes.remove(origin_person_page)
+            origin_person_page.likes.remove(destination_person_page)
+            origin_person_page.save()
 
         else:
             raise GraphQLError("Permission denied")
 
-        return Unlike(total_likes=destination_person_page.likes.count())
+        return Unlike(total_likes=origin_person_page.likes.count())
 
 
 class Mutation(graphene.ObjectType):
