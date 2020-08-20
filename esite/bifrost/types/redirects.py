@@ -1,7 +1,8 @@
-import graphene
-
 from django.conf import settings
+
 from wagtail.contrib.redirects.models import Redirect
+
+import graphene
 
 from .pages import PageInterface
 

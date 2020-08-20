@@ -3,25 +3,20 @@ from django.db import models
 from django.utils.decorators import method_decorator
 
 from wagtail.admin.edit_handlers import FieldPanel, MultiFieldPanel, PageChooserPanel
+from wagtail.contrib.forms.models import (
+    AbstractEmailForm,
+    AbstractForm,
+    AbstractFormField,
+    AbstractFormSubmission,
+)
 from wagtail.contrib.settings.models import BaseSetting, register_setting
 from wagtail.core.fields import RichTextField
 from wagtail.core.models import Orderable, Page
 from wagtail.images.edit_handlers import ImageChooserPanel
 from wagtail.snippets.models import register_snippet
 
-from wagtail.contrib.forms.models import (
-    AbstractForm,
-    AbstractFormField,
-    AbstractEmailForm,
-    AbstractFormSubmission,
-)
-
+from esite.bifrost.models import GraphQLPage, GraphQLString
 from esite.utils.cache import get_default_cache_control_decorator
-
-from esite.bifrost.models import (
-    GraphQLString,
-    GraphQLPage,
-)
 
 
 class LinkFields(models.Model):

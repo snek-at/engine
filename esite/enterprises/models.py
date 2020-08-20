@@ -1,64 +1,57 @@
-import uuid
 import ast
 import json
 import os
+import uuid
+
 from django.conf import settings
-from django.core.paginator import EmptyPage, PageNotAnInteger, Paginator
 from django.contrib.auth import get_user_model
 from django.contrib.auth.models import AbstractUser, BaseUserManager
+from django.core.paginator import EmptyPage, PageNotAnInteger, Paginator
 from django.core.serializers.json import DjangoJSONEncoder
 from django.db import models
-from wagtail.core import blocks
-from wagtail.core.models import Page
+
+from modelcluster.fields import ParentalKey, ParentalManyToManyField
+from modelcluster.models import ClusterableModel
 from wagtail.admin.edit_handlers import (
     FieldPanel,
     FieldRowPanel,
     InlinePanel,
     MultiFieldPanel,
+    ObjectList,
+    StreamFieldPanel,
+    TabbedInterface,
 )
 from wagtail.admin.mail import send_mail
-from wagtail.core.fields import StreamField, RichTextField
-from wagtail.snippets.edit_handlers import SnippetChooserPanel
-from wagtail.admin.edit_handlers import (
-    TabbedInterface,
-    ObjectList,
-    InlinePanel,
-    StreamFieldPanel,
-    MultiFieldPanel,
-    FieldPanel,
-)
 from wagtail.contrib.forms.models import (
     AbstractEmailForm,
-    AbstractFormField,
-    AbstractFormSubmission,
-)
-from wagtail.contrib.forms.models import (
     AbstractForm,
     AbstractFormField,
-    AbstractEmailForm,
     AbstractFormSubmission,
 )
-from modelcluster.fields import ParentalKey, ParentalManyToManyField
-from modelcluster.models import ClusterableModel
-from esite.utils.models import BasePage, BaseEmailFormPage
+from wagtail.core import blocks, fields
+from wagtail.core.fields import RichTextField, StreamField
+from wagtail.core.models import Page
+from wagtail.images.blocks import ImageChooserBlock
+from wagtail.snippets.edit_handlers import SnippetChooserPanel
+
+import yaml
+
 from esite.bifrost.helpers import register_streamfield_block
 from esite.bifrost.models import (
-    GraphQLInt,
     GraphQLBoolean,
-    GraphQLString,
-    GraphQLFloat,
-    GraphQLImage,
-    GraphQLDocument,
-    GraphQLSnippet,
-    GraphQLEmbed,
-    GraphQLStreamfield,
     GraphQLCollection,
+    GraphQLDocument,
+    GraphQLEmbed,
+    GraphQLFloat,
     GraphQLForeignKey,
+    GraphQLImage,
+    GraphQLInt,
+    GraphQLSnippet,
+    GraphQLStreamfield,
+    GraphQLString,
 )
 from esite.colorfield.blocks import ColorBlock
-from wagtail.images.blocks import ImageChooserBlock
-from wagtail.core import fields
-import yaml
+from esite.utils.models import BaseEmailFormPage, BasePage
 
 
 # Model manager to use in Proxy model

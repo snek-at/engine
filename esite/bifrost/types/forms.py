@@ -2,7 +2,7 @@
 import graphene
 
 # graphene_django
-from graphene_django.converter import String, Boolean
+from graphene_django.converter import Boolean, String
 
 
 class FormField(graphene.ObjectType):

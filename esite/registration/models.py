@@ -1,68 +1,54 @@
 import json
 import uuid
+
 from django.contrib.auth import get_user_model
 from django.contrib.auth.models import AbstractUser, BaseUserManager
 from django.core.serializers.json import DjangoJSONEncoder
 from django.db import models
+
 from modelcluster.fields import ParentalKey
+from modelcluster.models import ClusterableModel
 from wagtail.admin.edit_handlers import (
     FieldPanel,
     FieldRowPanel,
     InlinePanel,
     MultiFieldPanel,
-)
-from wagtail.core import blocks
-from wagtail.core.models import Page
-from wagtail.core.fields import StreamField, RichTextField
-from wagtail.snippets.edit_handlers import SnippetChooserPanel
-from wagtail.admin.edit_handlers import (
-    TabbedInterface,
     ObjectList,
-    InlinePanel,
     StreamFieldPanel,
-    MultiFieldPanel,
-    FieldPanel,
-)
-from wagtail.contrib.forms.models import (
-    AbstractForm,
-    AbstractFormField,
-    AbstractEmailForm,
-    AbstractFormSubmission,
+    TabbedInterface,
 )
 from wagtail.admin.mail import send_mail
-
-from esite.bifrost.models import (
-    GraphQLInt,
-    GraphQLBoolean,
-    GraphQLString,
-    GraphQLFloat,
-    GraphQLImage,
-    GraphQLDocument,
-    GraphQLSnippet,
-    GraphQLEmbed,
-    GraphQLStreamfield,
-    GraphQLForeignKey,
+from wagtail.contrib.forms.models import (
+    AbstractEmailForm,
+    AbstractForm,
+    AbstractFormField,
+    AbstractFormSubmission,
 )
+from wagtail.core import blocks
+from wagtail.core.fields import RichTextField, StreamField
+from wagtail.core.models import Page
+from wagtail.snippets.edit_handlers import SnippetChooserPanel
+
 from esite.bifrost.helpers import register_streamfield_block
-
 from esite.bifrost.models import (
-    GraphQLForeignKey,
-    GraphQLField,
-    GraphQLStreamfield,
-    GraphQLImage,
-    GraphQLString,
-    GraphQLCollection,
-    GraphQLEmbed,
-    GraphQLSnippet,
     GraphQLBoolean,
+    GraphQLCollection,
+    GraphQLDocument,
+    GraphQLEmbed,
+    GraphQLField,
+    GraphQLFloat,
+    GraphQLForeignKey,
+    GraphQLImage,
+    GraphQLInt,
     GraphQLSnippet,
+    GraphQLStreamfield,
+    GraphQLString,
 )
-from modelcluster.models import ClusterableModel
-from esite.utils.models import BasePage, BaseEmailFormPage
-from esite.people.models import PersonFormPage
 from esite.enterprises.models import EnterpriseFormPage
-from esite.redemption.models import RedemptionCode
+from esite.people.models import PersonFormPage
 from esite.profile.models import Profile
+from esite.redemption.models import RedemptionCode
+from esite.utils.models import BaseEmailFormPage, BasePage
 
 # Create your registration related models here.
 

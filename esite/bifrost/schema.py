@@ -1,10 +1,11 @@
-import graphene
-import graphql_jwt
 from django.conf import settings
-from graphql.validation.rules import NoUnusedFragments, specified_rules
 
 # django
 from django.utils.text import camel_case_to_spaces
+
+import graphene
+import graphql_jwt
+from graphql.validation.rules import NoUnusedFragments, specified_rules
 
 # HACK: Remove NoUnusedFragments validator
 # Due to the way previews work on the frontend, we need to pass all

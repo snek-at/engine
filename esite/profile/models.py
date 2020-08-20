@@ -1,54 +1,44 @@
-from django.http import HttpResponse
-from django.db import models
 import django.contrib.auth.validators
-from django.core.validators import RegexValidator
 from django.contrib.auth import get_user_model
+from django.core.validators import RegexValidator
+from django.db import models
+from django.http import HttpResponse
 
-from wagtail.core.fields import RichTextField, StreamField, StreamBlock
-from wagtail.core.models import Page
-from wagtail.core import blocks
-from wagtail.admin.edit_handlers import (
-    PageChooserPanel,
-    TabbedInterface,
-    ObjectList,
-    InlinePanel,
-    StreamFieldPanel,
-    MultiFieldPanel,
-    FieldPanel,
-)
-from wagtail.images.blocks import ImageChooserBlock
-from wagtail.snippets.models import register_snippet
-from wagtail.snippets.edit_handlers import SnippetChooserPanel
-from wagtail.snippets.blocks import SnippetChooserBlock
-from wagtail.contrib.settings.models import BaseSetting, register_setting
-from wagtail.images.edit_handlers import ImageChooserPanel
-from wagtail.contrib.forms.models import AbstractForm, AbstractFormField
 from modelcluster.fields import ParentalKey, ParentalManyToManyField
-
-from esite.colorfield.fields import ColorField, ColorAlphaField
-from esite.colorfield.blocks import ColorBlock, ColorAlphaBlock, GradientColorBlock
+from wagtail.admin.edit_handlers import (
+    FieldPanel,
+    InlinePanel,
+    MultiFieldPanel,
+    ObjectList,
+    PageChooserPanel,
+    StreamFieldPanel,
+    TabbedInterface,
+)
+from wagtail.contrib.forms.models import AbstractForm, AbstractFormField
+from wagtail.contrib.settings.models import BaseSetting, register_setting
+from wagtail.core import blocks
+from wagtail.core.fields import RichTextField, StreamBlock, StreamField
+from wagtail.core.models import Page
+from wagtail.images.blocks import ImageChooserBlock
+from wagtail.images.edit_handlers import ImageChooserPanel
+from wagtail.snippets.blocks import SnippetChooserBlock
+from wagtail.snippets.edit_handlers import SnippetChooserPanel
+from wagtail.snippets.models import register_snippet
 
 from esite.bifrost.helpers import register_streamfield_block
-
 from esite.bifrost.models import (
-    GraphQLForeignKey,
-    GraphQLField,
-    GraphQLStreamfield,
-    GraphQLImage,
-    GraphQLString,
+    GraphQLBoolean,
     GraphQLCollection,
     GraphQLEmbed,
-    GraphQLSnippet,
-    GraphQLBoolean,
-    GraphQLSnippet,
-)
-
-from esite.bifrost.models import (
     GraphQLField,
-    GraphQLString,
+    GraphQLForeignKey,
+    GraphQLImage,
+    GraphQLSnippet,
     GraphQLStreamfield,
+    GraphQLString,
 )
-
+from esite.colorfield.blocks import ColorAlphaBlock, ColorBlock, GradientColorBlock
+from esite.colorfield.fields import ColorAlphaField, ColorField
 from esite.utils.models import BasePage
 
 # Create your homepage related models here.

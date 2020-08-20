@@ -1,55 +1,45 @@
 from django.conf import settings
-from django.core.paginator import EmptyPage, PageNotAnInteger, Paginator
-from django.db import models
 from django.contrib.auth import get_user_model
 from django.contrib.auth.models import AbstractUser, BaseUserManager
+from django.core.paginator import EmptyPage, PageNotAnInteger, Paginator
+from django.db import models
+
 from modelcluster.fields import ParentalKey
-from wagtail.admin.edit_handlers import (
-    FieldPanel,
-    InlinePanel,
-    MultiFieldPanel,
-    StreamFieldPanel,
-)
-from wagtail.core.fields import StreamField
-from wagtail.images.edit_handlers import ImageChooserPanel
-from wagtail.images import get_image_model
-from esite.bifrost.models import (
-    GraphQLInt,
-    GraphQLBoolean,
-    GraphQLString,
-    GraphQLFloat,
-    GraphQLImage,
-    GraphQLDocument,
-    GraphQLSnippet,
-    GraphQLEmbed,
-    GraphQLStreamfield,
-    GraphQLCollection,
-    GraphQLForeignKey,
-)
-from wagtail.admin.edit_handlers import (
-    TabbedInterface,
-    ObjectList,
-    InlinePanel,
-    StreamFieldPanel,
-    MultiFieldPanel,
-    FieldPanel,
-)
 from wagtail.admin.edit_handlers import (
     FieldPanel,
     FieldRowPanel,
     InlinePanel,
     MultiFieldPanel,
+    ObjectList,
+    StreamFieldPanel,
+    TabbedInterface,
 )
 from wagtail.contrib.forms.models import (
+    AbstractEmailForm,
     AbstractForm,
     AbstractFormField,
-    AbstractEmailForm,
     AbstractFormSubmission,
 )
-from modelcluster.fields import ParentalKey
+from wagtail.core.fields import StreamField
+from wagtail.images import get_image_model
+from wagtail.images.edit_handlers import ImageChooserPanel
+
+from esite.bifrost.models import (
+    GraphQLBoolean,
+    GraphQLCollection,
+    GraphQLDocument,
+    GraphQLEmbed,
+    GraphQLFloat,
+    GraphQLForeignKey,
+    GraphQLImage,
+    GraphQLInt,
+    GraphQLSnippet,
+    GraphQLStreamfield,
+    GraphQLString,
+)
 
 # from esite.utils.blocks import StoryBlock
-from esite.utils.models import BasePage, BaseFormPage
+from esite.utils.models import BaseFormPage, BasePage
 
 
 class SocialMediaProfile(models.Model):

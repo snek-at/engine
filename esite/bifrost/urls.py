@@ -1,10 +1,10 @@
 from django.conf import settings
-from django.shortcuts import render
 from django.conf.urls import url
+from django.shortcuts import render
 from django.views.decorators.csrf import csrf_exempt
 
-from graphene_django.views import GraphQLView
 from channels.routing import route_class
+from graphene_django.views import GraphQLView
 from graphql_ws.django_channels import GraphQLSubscriptionConsumer
 
 

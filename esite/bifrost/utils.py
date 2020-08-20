@@ -1,9 +1,11 @@
-import os
 import base64
+import os
+
 from django.conf import settings
+
+from wagtail.search.backends import get_search_backend
 from wagtail.search.index import class_is_indexed
 from wagtail.search.models import Query
-from wagtail.search.backends import get_search_backend
 
 
 def resolve_queryset(

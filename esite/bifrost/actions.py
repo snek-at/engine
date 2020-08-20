@@ -1,39 +1,38 @@
-import graphene
-from graphene.types.generic import GenericScalar
 import inspect
-from typing import Type
-from types import MethodType
 from collections.abc import Iterable
+from types import MethodType
+from typing import Type
 
-from django.db import models
 from django.conf import settings
+from django.db import models
 from django.utils.text import camel_case_to_spaces
-from wagtail.contrib.settings.models import BaseSetting
+
 from wagtail.contrib.forms.models import AbstractForm
+from wagtail.contrib.settings.models import BaseSetting
 from wagtail.core.models import Page as WagtailPage
 from wagtail.documents.models import AbstractDocument
-from wagtail.images.models import AbstractImage, AbstractRendition
 from wagtail.images.blocks import ImageChooserBlock
+from wagtail.images.models import AbstractImage, AbstractRendition
 from wagtail.snippets.models import get_snippet_models
-from graphene_django.types import DjangoObjectType
 
-from .registry import registry
-from .types.pages import PageInterface, Page
-from .types.documents import DocumentObjectType
-from .types.streamfield import generate_streamfield_union
-from .types.images import ImageObjectType
-from .helpers import streamfield_types
+import graphene
+from graphene.types.generic import GenericScalar
+from graphene_django.types import DjangoObjectType
 
 # graphql_jwt
 from graphql_jwt.decorators import login_required
-from .settings import url_prefix_for_site
+
+from .helpers import streamfield_types
 from .permissions import with_page_permissions
+from .registry import registry
+from .settings import url_prefix_for_site
+from .types.documents import DocumentObjectType
 
 # app types
-from .types.forms import (
-    FormError,
-    FormField,
-)
+from .types.forms import FormError, FormField
+from .types.images import ImageObjectType
+from .types.pages import Page, PageInterface
+from .types.streamfield import generate_streamfield_union
 
 
 def import_apps():

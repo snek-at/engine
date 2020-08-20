@@ -1,14 +1,15 @@
 from django.contrib.auth import get_user_model
+
 from wagtail.contrib.modeladmin.options import (
     ModelAdmin,
     ModelAdminGroup,
     modeladmin_register,
 )
 
-from esite.people.admin import PersonAdmin
 from esite.enterprises.admin import EnterpriseAdmin
-from esite.registration.admin import RegistrationAdmin
+from esite.people.admin import PersonAdmin
 from esite.profile.admin import ProfileAdmin
+from esite.registration.admin import RegistrationAdmin
 
 # Register your user related models here.
 

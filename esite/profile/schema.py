@@ -1,5 +1,7 @@
 from django.contrib.auth import get_user_model
 
+from wagtail.core.models import Page
+
 import graphene
 from graphene_django import DjangoObjectType
 from graphql import GraphQLError
@@ -10,13 +12,10 @@ from graphql_jwt.decorators import (
     superuser_required,
 )
 
-from wagtail.core.models import Page
-
-from esite.user.models import User
-
 # from esite.profile.models import ProfilePage
 from esite.enterprises.models import Enterprise
 from esite.registration.schema import UserType
+from esite.user.models import User
 
 # Create your registration related graphql schemes here.
 

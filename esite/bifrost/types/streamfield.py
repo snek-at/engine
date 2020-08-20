@@ -1,15 +1,18 @@
-import graphene
-import wagtail
 import inspect
+
+from django.conf import settings
+
+import wagtail
 import wagtail.documents.blocks
 import wagtail.embeds.blocks
 import wagtail.images.blocks
 import wagtail.snippets.blocks
-from django.conf import settings
+from wagtail.core import blocks
+from wagtail.core.fields import StreamField
+
+import graphene
 from graphene.types import Scalar
 from graphene_django.converter import convert_django_field
-from wagtail.core.fields import StreamField
-from wagtail.core import blocks
 
 from ..registry import registry
 

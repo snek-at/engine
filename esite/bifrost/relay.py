@@ -4,7 +4,6 @@ import graphene
 # app
 from .settings import RELAY
 
-
 if RELAY:
 
     class RelayMixin:

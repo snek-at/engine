@@ -4,9 +4,9 @@ from wagtail.contrib.modeladmin.options import (
     modeladmin_register,
 )
 
-# Register your registration related models here.
-
 from .models import RedemptionCode
+
+# Register your registration related models here.
 
 
 class RedemptionAdmin(ModelAdmin):

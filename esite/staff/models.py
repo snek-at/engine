@@ -5,40 +5,28 @@ from django.db import models
 from modelcluster.fields import ParentalKey
 from wagtail.admin.edit_handlers import (
     FieldPanel,
-    InlinePanel,
-    MultiFieldPanel,
-    StreamFieldPanel,
-)
-from wagtail.core.fields import StreamField
-from wagtail.images.edit_handlers import ImageChooserPanel
-from wagtail.images import get_image_model
-from esite.bifrost.models import GraphQLImage, GraphQLStreamfield, GraphQLString
-from wagtail.admin.edit_handlers import (
-    TabbedInterface,
-    ObjectList,
-    InlinePanel,
-    StreamFieldPanel,
-    MultiFieldPanel,
-    FieldPanel,
-)
-from wagtail.admin.edit_handlers import (
-    FieldPanel,
     FieldRowPanel,
     InlinePanel,
     MultiFieldPanel,
+    ObjectList,
+    StreamFieldPanel,
+    TabbedInterface,
 )
 from wagtail.contrib.forms.models import (
+    AbstractEmailForm,
     AbstractForm,
     AbstractFormField,
-    AbstractEmailForm,
     AbstractFormSubmission,
 )
-from modelcluster.fields import ParentalKey
+from wagtail.core.fields import StreamField
+from wagtail.images import get_image_model
+from wagtail.images.edit_handlers import ImageChooserPanel
 
+from esite.bifrost.models import GraphQLImage, GraphQLStreamfield, GraphQLString
+from esite.people.models import PersonFormPage
 
 # from esite.utils.blocks import StoryBlock
-from esite.utils.models import BasePage, BaseFormPage
-from esite.people.models import PersonFormPage
+from esite.utils.models import BaseFormPage, BasePage
 
 
 class SocialMediaProfile(models.Model):

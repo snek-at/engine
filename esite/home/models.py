@@ -1,35 +1,30 @@
-from django.http import HttpResponse
 from django.db import models
-from wagtail.core.fields import RichTextField, StreamField
-from wagtail.core.models import Page
-from wagtail.core import blocks
-from wagtail.admin.edit_handlers import (
-    PageChooserPanel,
-    TabbedInterface,
-    ObjectList,
-    InlinePanel,
-    StreamFieldPanel,
-    MultiFieldPanel,
-    FieldPanel,
-)
-from wagtail.images.blocks import ImageChooserBlock
-from wagtail.snippets.models import register_snippet
-from wagtail.snippets.edit_handlers import SnippetChooserPanel
-from wagtail.snippets.blocks import SnippetChooserBlock
-from wagtail.contrib.settings.models import BaseSetting, register_setting
-from wagtail.images.edit_handlers import ImageChooserPanel
-from wagtail.contrib.forms.models import AbstractForm, AbstractFormField
+from django.http import HttpResponse
+
 from modelcluster.fields import ParentalKey
-
-from esite.colorfield.fields import ColorField, ColorAlphaField
-from esite.colorfield.blocks import ColorBlock, ColorAlphaBlock, GradientColorBlock
-
-from esite.bifrost.models import (
-    GraphQLField,
-    GraphQLString,
-    GraphQLStreamfield,
+from wagtail.admin.edit_handlers import (
+    FieldPanel,
+    InlinePanel,
+    MultiFieldPanel,
+    ObjectList,
+    PageChooserPanel,
+    StreamFieldPanel,
+    TabbedInterface,
 )
-from wagtail.core.models import Orderable
+from wagtail.contrib.forms.models import AbstractForm, AbstractFormField
+from wagtail.contrib.settings.models import BaseSetting, register_setting
+from wagtail.core import blocks
+from wagtail.core.fields import RichTextField, StreamField
+from wagtail.core.models import Orderable, Page
+from wagtail.images.blocks import ImageChooserBlock
+from wagtail.images.edit_handlers import ImageChooserPanel
+from wagtail.snippets.blocks import SnippetChooserBlock
+from wagtail.snippets.edit_handlers import SnippetChooserPanel
+from wagtail.snippets.models import register_snippet
+
+from esite.bifrost.models import GraphQLField, GraphQLStreamfield, GraphQLString
+from esite.colorfield.blocks import ColorAlphaBlock, ColorBlock, GradientColorBlock
+from esite.colorfield.fields import ColorAlphaField, ColorField
 from esite.utils.models import BasePage
 
 # Create your homepage related models here.

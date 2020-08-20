@@ -1,10 +1,11 @@
 from django.db import models
 from django.shortcuts import render
-from wagtail.core.blocks import FieldBlock
 from django.template.loader import render_to_string
 
-from .forms import ColorField, ColorAlphaField, GradientColorField
-from .widgets import ColorWidget, ColorAlphaWidget, GradientColorWidget
+from wagtail.core.blocks import FieldBlock
+
+from .forms import ColorAlphaField, ColorField, GradientColorField
+from .widgets import ColorAlphaWidget, ColorWidget, GradientColorWidget
 
 
 class ColorBlock(FieldBlock):

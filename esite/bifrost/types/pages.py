@@ -1,15 +1,17 @@
-import graphene
 from django.contrib.contenttypes.models import ContentType
+from django.dispatch import receiver
+
 from wagtail.core.models import Page as WagtailPage
-from wagtail_headless_preview.signals import preview_update
+
+import graphene
 from graphene_django.types import DjangoObjectType
 from graphql.error import GraphQLLocatedError
 from graphql.execution.base import ResolveInfo
-from rx.subjects import Subject
-from django.dispatch import receiver
 
 # graphql_jwt
 from graphql_jwt.decorators import login_required
+from rx.subjects import Subject
+from wagtail_headless_preview.signals import preview_update
 
 from ..registry import registry
 from ..utils import resolve_queryset

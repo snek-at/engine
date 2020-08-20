@@ -1,5 +1,6 @@
-import graphene
 from django.apps import apps
+
+import graphene
 
 from .registry import registry
 

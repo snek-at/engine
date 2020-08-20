@@ -1,7 +1,8 @@
 from wagtail.documents import get_document_model
 from wagtail.documents.models import Document as WagtailDocument
-from graphene_django.types import DjangoObjectType
+
 import graphene
+from graphene_django.types import DjangoObjectType
 
 # graphql_jwt
 from graphql_jwt.decorators import login_required

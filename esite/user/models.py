@@ -1,42 +1,38 @@
 import json
 import uuid
+
 import django.contrib.auth.validators
 from django.contrib.auth import get_user_model
 from django.contrib.auth.models import AbstractUser
-from django.core.serializers.json import DjangoJSONEncoder
 from django.core.mail import send_mail
+from django.core.serializers.json import DjangoJSONEncoder
 from django.db import models
+
+from modelcluster.models import ClusterableModel
 from wagtail.admin.edit_handlers import (
     FieldPanel,
     FieldRowPanel,
     InlinePanel,
     MultiFieldPanel,
-)
-from wagtail.core.fields import StreamField, RichTextField
-from wagtail.snippets.edit_handlers import SnippetChooserPanel
-from wagtail.admin.edit_handlers import (
-    TabbedInterface,
     ObjectList,
-    InlinePanel,
     StreamFieldPanel,
-    MultiFieldPanel,
-    FieldPanel,
+    TabbedInterface,
 )
-from esite.bifrost.helpers import register_streamfield_block
+from wagtail.core.fields import RichTextField, StreamField
+from wagtail.snippets.edit_handlers import SnippetChooserPanel
 
+from esite.bifrost.helpers import register_streamfield_block
 from esite.bifrost.models import (
-    GraphQLForeignKey,
-    GraphQLField,
-    GraphQLStreamfield,
-    GraphQLImage,
-    GraphQLString,
+    GraphQLBoolean,
     GraphQLCollection,
     GraphQLEmbed,
+    GraphQLField,
+    GraphQLForeignKey,
+    GraphQLImage,
     GraphQLSnippet,
-    GraphQLBoolean,
-    GraphQLSnippet,
+    GraphQLStreamfield,
+    GraphQLString,
 )
-from modelcluster.models import ClusterableModel
 
 # from esite.utils.models import BasePage
 

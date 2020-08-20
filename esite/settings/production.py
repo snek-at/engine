@@ -19,7 +19,6 @@ import django_cache_url
 
 from .base import *
 
-
 # > Debug Switch
 # SECURITY WARNING: don't run with debug turned on in production!
 # IMPORTANT: Specified in the environment or set to default (off).

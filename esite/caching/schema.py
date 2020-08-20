@@ -1,5 +1,7 @@
 from django.contrib.auth import get_user_model
 
+from wagtail.core.models import Page
+
 import graphene
 from graphene_django import DjangoObjectType
 from graphql import GraphQLError
@@ -9,8 +11,6 @@ from graphql_jwt.decorators import (
     staff_member_required,
     superuser_required,
 )
-
-from wagtail.core.models import Page
 
 from esite.enterprises.models import Enterprise
 from esite.registration.schema import UserType

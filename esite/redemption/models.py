@@ -1,13 +1,10 @@
-from django.http import HttpResponse
-from django.db import models
 from django.core.validators import RegexValidator
+from django.db import models
+from django.http import HttpResponse
+
 from wagtail.admin.edit_handlers import FieldPanel
 
-from esite.bifrost.models import (
-    GraphQLField,
-    GraphQLString,
-    GraphQLStreamfield,
-)
+from esite.bifrost.models import GraphQLField, GraphQLStreamfield, GraphQLString
 
 # Create your homepage related models here.
 

@@ -1,12 +1,12 @@
 # python
 from typing import List
 
-# graphql
-from graphql import ResolveInfo
-
 # graphene_django
 import graphene
 from graphene_django import DjangoObjectType
+
+# graphql
+from graphql import ResolveInfo
 
 # wagtailmenus
 from wagtailmenus.models import FlatMenu, FlatMenuItem, MainMenu, MainMenuItem
