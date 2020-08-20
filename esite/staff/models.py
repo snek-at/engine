@@ -38,6 +38,7 @@ from modelcluster.fields import ParentalKey
 
 # from esite.utils.blocks import StoryBlock
 from esite.utils.models import BasePage, BaseFormPage
+from esite.people.models import PersonFormPage
 
 
 class SocialMediaProfile(models.Model):
