@@ -5,6 +5,7 @@ from django.core.paginator import EmptyPage, PageNotAnInteger, Paginator
 from django.db import models
 
 from modelcluster.fields import ParentalKey
+from modelcluster.models import ClusterableModel
 from wagtail.admin.edit_handlers import (
     FieldPanel,
     FieldRowPanel,
@@ -61,44 +62,29 @@ class SocialMediaProfile(models.Model):
             self.username = self.username[1:]
 
 
-# Model manager to use in Proxy model
-class ProxyManager(BaseUserManager):
-    def get_queryset(self):
-        # filter the objects for activate enterprise datasets based on the User model
-        return (
-            super(ProxyManager, self)
-            .get_queryset()
-            .filter(is_enterprise=False, is_staff=False)
-        )
-
-
-class Person(get_user_model()):
-    # call the model manager on user objects
-    objects = ProxyManager()
-
+class Person(ClusterableModel):
+    user = ParentalKey(
+        "user.SNEKUser", on_delete=models.CASCADE, related_name="person"
+    )
+    sources = models.TextField(null=True, blank=False)
+    cache = models.TextField(null=True, blank=False)
     # Panels/fields to fill in the Add enterprise form
-    # panels = [
-    #     FieldPanel("is_enterprise"),
-    #     FieldPanel("date_joined"),
-    #     # FieldPanel('title'),
-    #     # FieldPanel('first_name'),
-    #     # FieldPanel('last_name'),
-    #     # FieldPanel('email'),
-    #     # FieldPanel('telephone'),
-    #     # FieldPanel('address'),
-    #     # FieldPanel('zipCode'),
-    #     # FieldPanel('city'),
-    #     # FieldPanel('country'),
-    #     # FieldPanel('newsletter'),
-    #     # FieldPanel('cache'),
-    # ]
+    panels = [
+        FieldPanel("user"),
+        FieldPanel("sources"),
+        FieldPanel("cache"),
+        InlinePanel("person_page", label="Person Page"),
+    ]
+
+    graphql_fields = [
+        GraphQLString("user"),
+        GraphQLString("sources"),
+        GraphQLString("cache"),
+        GraphQLCollection(GraphQLForeignKey, "person_page", "people.PersonFormPage"),
+    ]
 
     def __str__(self):
-        return self.username
-
-    class Meta:
-        proxy = True
-        ordering = ("date_joined",)
+        return user.username
 
 
 class PersonFormField(AbstractFormField):
@@ -118,8 +104,8 @@ class PersonFormPage(BaseFormPage):
     class Meta:
         verbose_name = "Person Form Page"
 
-    user = ParentalKey(
-        "user.SNEKUser", on_delete=models.CASCADE, related_name="personpage"
+    person = ParentalKey(
+        "Person", on_delete=models.CASCADE, related_name="person_page"
     )
 
     first_name = models.CharField(max_length=255)
@@ -146,11 +132,11 @@ class PersonFormPage(BaseFormPage):
     bids = models.TextField(null=True, blank=True)
     tids = models.TextField(null=True, blank=True)
 
-    follows = models.ManyToManyField("PersonFormPage", related_name="followed_by")
-    likes = models.ManyToManyField("PersonFormPage", related_name="liked_by")
+    follows = models.ManyToManyField("PersonFormPage", null=True, related_name="followed_by")
+    likes = models.ManyToManyField("PersonFormPage", null=True, related_name="liked_by")
 
     content_panels = BasePage.content_panels + [
-        FieldPanel("user"),
+        FieldPanel("person"),
         MultiFieldPanel(
             [FieldPanel("first_name"), FieldPanel("last_name"),], heading="Name"
         ),

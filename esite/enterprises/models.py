@@ -55,40 +55,65 @@ from esite.utils.models import BaseEmailFormPage, BasePage
 
 
 # Model manager to use in Proxy model
-class ProxyManager(BaseUserManager):
-    def get_queryset(self):
-        # filter the objects for activate enterprise datasets based on the User model
-        return super(ProxyManager, self).get_queryset().filter(is_enterprise=True)
+# class ProxyManager(BaseUserManager):
+#     def get_queryset(self):
+#         # filter the objects for activate enterprise datasets based on the User model
+#         return super(ProxyManager, self).get_queryset().filter(is_enterprise=True)
 
 
-class Enterprise(get_user_model()):
-    # call the model manager on user objects
-    objects = ProxyManager()
+# class Enterprise(get_user_model()):
+#     # call the model manager on user objects
+#     objects = ProxyManager()
+
+#     # Panels/fields to fill in the Add enterprise form
+#     # panels = [
+#     #     FieldPanel("is_enterprise"),
+#     #     FieldPanel("date_joined"),
+#     #     # FieldPanel('title'),
+#     #     # FieldPanel('first_name'),
+#     #     # FieldPanel('last_name'),
+#     #     # FieldPanel('email'),
+#     #     # FieldPanel('telephone'),
+#     #     # FieldPanel('address'),
+#     #     # FieldPanel('zipCode'),
+#     #     # FieldPanel('city'),
+#     #     # FieldPanel('country'),
+#     #     # FieldPanel('newsletter'),
+#     #     # FieldPanel('cache'),
+#     # ]
+
+#     def __str__(self):
+#         return self.username
+
+#     class Meta:
+#         proxy = True
+#         ordering = ("date_joined",)
+
+class Enterprise(ClusterableModel):
+    user = ParentalKey(
+        "user.SNEKUser", on_delete=models.CASCADE, related_name="enterprise"
+    )
+    sources = models.TextField(null=True, blank=False)
+    cache = models.TextField(null=True, blank=False)
 
     # Panels/fields to fill in the Add enterprise form
-    # panels = [
-    #     FieldPanel("is_enterprise"),
-    #     FieldPanel("date_joined"),
-    #     # FieldPanel('title'),
-    #     # FieldPanel('first_name'),
-    #     # FieldPanel('last_name'),
-    #     # FieldPanel('email'),
-    #     # FieldPanel('telephone'),
-    #     # FieldPanel('address'),
-    #     # FieldPanel('zipCode'),
-    #     # FieldPanel('city'),
-    #     # FieldPanel('country'),
-    #     # FieldPanel('newsletter'),
-    #     # FieldPanel('cache'),
-    # ]
+    panels = [
+        FieldPanel("user"),
+        FieldPanel("sources"),
+        FieldPanel("cache"),
+        InlinePanel("enterprise_page", label="Enterprise Page"),
+        #InlinePanel("comment_owner", label="Talk Owner"),
+    ]
+
+    graphql_fields = [
+        GraphQLString("user"),
+        GraphQLString("sources"),
+        GraphQLString("cache"),
+        GraphQLCollection(GraphQLForeignKey, "enterprise_page", "enterprises.EnterpriseFormPage"),
+    ]
 
     def __str__(self):
-        return self.username
-
-    class Meta:
-        proxy = True
-        ordering = ("date_joined",)
-
+        return user.username
 
 # > Models
 class ContributionFeed(ClusterableModel):
@@ -414,8 +439,8 @@ class EnterpriseFormPage(BaseEmailFormPage):
         ),
     ]
     # Users
-    user = ParentalKey(
-        "user.SNEKUser", on_delete=models.CASCADE, related_name="enterprisepage"
+    enterprise = ParentalKey(
+        "Enterprise", on_delete=models.CASCADE, related_name="enterprise_page"
     )
 
     # Imprint
@@ -439,7 +464,7 @@ class EnterpriseFormPage(BaseEmailFormPage):
     description = models.TextField(null=True, blank=True)
 
     imprint_panels = [
-        FieldPanel("user"),
+        FieldPanel("enterprise"),
         MultiFieldPanel(
             [
                 FieldPanel("city"),

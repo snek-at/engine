@@ -49,16 +49,14 @@ class SNEKUser(AbstractUser, ClusterableModel):
         unique=True,
         validators=[django.contrib.auth.validators.UnicodeUsernameValidator()],
     )
-    is_enterprise = models.BooleanField("enterprise", blank=False, default=False)
-    sources = models.TextField(null=True, blank=False)
-    cache = models.TextField(null=True, blank=False)
+    #is_enterprise = models.BooleanField("enterprise", blank=False, default=False)
 
     # Custom save function
     def save(self, *args, **kwargs):
         if not self.username:
             self.username = str(uuid.uuid4())
 
-        if not self.is_staff or self.is_enterprise:
+        if not self.is_staff:
             if not self.is_active:
                 self.is_active = True
 
@@ -82,12 +80,9 @@ class SNEKUser(AbstractUser, ClusterableModel):
         FieldPanel("email"),
         FieldPanel("is_staff"),
         FieldPanel("is_active"),
-        FieldPanel("is_enterprise"),
-        FieldPanel("sources"),
-        FieldPanel("cache"),
-        InlinePanel("personpage", label="Person Page"),
-        InlinePanel("enterprisepage", label="Enterprise Page"),
-        InlinePanel("comment_owner", label="Talk Owner"),
+        #FieldPanel("is_enterprise"),
+        #FieldPanel("sources"),
+        #FieldPanel("cache"),
     ]
 
     graphql_fields = [
@@ -96,14 +91,13 @@ class SNEKUser(AbstractUser, ClusterableModel):
         GraphQLString("last_name"),
         GraphQLString("email"),
         GraphQLBoolean("is_active"),
-        GraphQLString("sources"),
-        GraphQLString("cache"),
-        GraphQLCollection(GraphQLForeignKey, "personpage", "people.PersonFormPage"),
-        GraphQLCollection(
-            GraphQLForeignKey, "enterprisepage", "enterprises.EnterpriseFormPage"
-        ),
-        GraphQLCollection(GraphQLForeignKey, "talk_owner", "talk.Talk"),
-        GraphQLCollection(GraphQLForeignKey, "comment_owner", "comment.Comment"),
+        #GraphQLBoolean("is_enterprise"),
+        #GraphQLString("sources"),
+        #GraphQLString("cache"),
+        GraphQLCollection(GraphQLForeignKey, "person", "people.Person"),
+        GraphQLCollection(GraphQLForeignKey, "enterprise", "enterprises.Enterprise"),
+        #GraphQLCollection(GraphQLForeignKey, "talk_owner", "talk.Talk"),
+        #GraphQLCollection(GraphQLForeignKey, "comment_owner", "comment.Comment"),
     ]
 
     def __str__(self):

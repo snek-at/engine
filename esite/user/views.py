@@ -17,7 +17,6 @@ class UserForm(forms.ModelForm):
             "last_name",
             "email",
             "is_staff",
-            "is_enterprise",
         ]
 
 
