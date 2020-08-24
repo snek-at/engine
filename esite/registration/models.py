@@ -227,15 +227,13 @@ class PersonRegistrationFormPage(BaseEmailFormPage):
         bio,
         password,
         redemption_code,
-        sources,
-        cache,
-        registration_data,
     ):
 
         # enter the data here
         user = get_user_model()(username=username, is_active=False)
 
         user.set_password(password)
+        user.save()
 
         parent_page = Page.objects.get(url_path="/home/people/").specific
 
@@ -245,49 +243,27 @@ class PersonRegistrationFormPage(BaseEmailFormPage):
             first_name=first_name,
             last_name=last_name,
             email=email,
-            display_email=False,
-            workplace="SNEK",
-            display_workplace=False,
-            job_title="CTO",
-            website="https://erebos.xyz",
-            location="@snek",
+            display_email=display_email,
+            workplace=workplace,
+            display_workplace=display_workplace,
+            job_title=job_title,
+            website=website,
+            location=location,
             rank="A",
-            status="I am a SNEK",
-            bio="I am a Reptilian",
-            # > Temp
-            cache=cache,
-            sources=sources,
+            status=status,
+            bio=bio,
         )
 
-        if redemption_code:
-            redemption = RedemptionCode.objects.get(pk=f"{redemption_code}")
-            if redemption.is_active:
+        # if redemption_code:
+        #     redemption = RedemptionCode.objects.get(pk=f"{redemption_code}")
+        #     if redemption.is_active:
 
-                people_page["bids"] = redemption.bids
-                people_page["tids"] = redemption.tids
+        #         people_page["bids"] = redemption.bids
+        #         people_page["tids"] = redemption.tids
 
-                redemption.is_active = False
+        #         redemption.is_active = False
 
-            redemption.save()
-
-        people_page.profiles.add(
-            Profile(
-                platformName="fff",
-                platformUrl="",
-                avatarUrl="",
-                websiteUrl="",
-                company="",
-                email="",
-                username="",
-                fullname="",
-                createdAt="",
-                location="",
-                statusMessage="",
-                statusEmojiHTML="",
-            )
-        )
-
-        user.save()
+        #     redemption.save()
 
         people_page.user = user
         people_page.person = Person.objects.create(
@@ -304,7 +280,7 @@ class PersonRegistrationFormPage(BaseEmailFormPage):
     def send_mail(self, form):
         addresses = [x.strip() for x in self.to_address.split(",")]
 
-        emailheader = "New registration via Pharmaziegasse Website"
+        emailheader = "New registration via SNEK Website"
 
         content = []
         for field in form:
@@ -344,9 +320,6 @@ class PersonRegistrationFormPage(BaseEmailFormPage):
             bio=form.cleaned_data["bio"],
             password=form.cleaned_data["password"],
             redemption_code=form.cleaned_data["gift_code"],
-            sources=form.cleaned_data["sources"],
-            cache=form.cleaned_data["platform_data"],
-            registration_data=json.dumps(form.cleaned_data, cls=DjangoJSONEncoder),
         )
 
         self.get_submission_class().objects.create(
