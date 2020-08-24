@@ -40,6 +40,7 @@ from esite.bifrost.models import (
 )
 
 # from esite.utils.blocks import StoryBlock
+from esite.profile.models import Profile
 from esite.utils.models import BaseFormPage, BasePage
 
 
@@ -64,19 +65,19 @@ class SocialMediaProfile(models.Model):
 
 class Person(ClusterableModel):
     user = ParentalKey("user.SNEKUser", on_delete=models.CASCADE, related_name="person")
-    sources = models.TextField(null=True, blank=False)
-    cache = models.TextField(null=True, blank=False)
+    # sources = models.TextField(null=True, blank=False)
+    # cache = models.TextField(null=True, blank=False)
     # Panels/fields to fill in the Add enterprise form
     panels = [
         FieldPanel("user"),
-        FieldPanel("sources"),
-        FieldPanel("cache"),
+        # FieldPanel("sources"),
+        # FieldPanel("cache"),
     ]
 
     graphql_fields = [
         GraphQLString("user"),
-        GraphQLString("sources"),
-        GraphQLString("cache"),
+        # GraphQLString("sources"),
+        # GraphQLString("cache"),
     ]
 
     def __str__(self):
@@ -218,7 +219,6 @@ class PersonFormPage(BaseFormPage):
         GraphQLCollection(GraphQLForeignKey, "likes", "people.PersonFormPage"),
         GraphQLCollection(GraphQLForeignKey, "liked_by", "people.PersonFormPage"),
         GraphQLCollection(GraphQLForeignKey, "achievements", "achievement.Achievement"),
-        GraphQLCollection(GraphQLForeignKey, "profiles", "profile.Profile"),
     ]
 
     def get_submission_class(self):
