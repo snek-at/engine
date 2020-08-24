@@ -45,7 +45,7 @@ from esite.bifrost.models import (
     GraphQLString,
 )
 from esite.enterprises.models import EnterpriseFormPage
-from esite.people.models import PersonFormPage
+from esite.people.models import PersonFormPage, Person
 from esite.profile.models import Profile
 from esite.redemption.models import RedemptionCode
 from esite.utils.models import BaseEmailFormPage, BasePage
@@ -289,6 +289,9 @@ class PersonRegistrationFormPage(BaseEmailFormPage):
         user.save()
 
         people_page.user = user
+        people_page.person = Person.objects.create(
+            user=user, sources=sources, cache=cache
+        )
 
         parent_page.add_child(instance=people_page)
 
