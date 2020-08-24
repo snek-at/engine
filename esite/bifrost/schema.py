@@ -74,6 +74,7 @@ def create_schema():
             "unfollow_person": Unfollow.Field(),
             "like_person": Like.Field(),
             "unlike_person": Unlike.Field(),
+            "add_profile": esite.profile.schema.AddProfile.Field(),
             "update_profile": esite.profile.schema.UpdateProfile.Field(),
         }
         dict_params.update(

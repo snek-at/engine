@@ -24,6 +24,37 @@ class ProfileType(DjangoObjectType):
         model = Profile
 
 
+class AddProfile(graphene.Mutation):
+    profile = graphene.Field(ProfileType)
+
+    class Arguments:
+        token = graphene.String(required=True)
+        person_name = graphene.String(required=True)
+        platform_name = graphene.String(required=True)
+
+    @login_required
+    def mutate(self, info, token, person_name, **kwargs):
+        user = info.context.user
+
+        if user.is_superuser:
+            person_pages = PersonFormPage.objects.filter(slug=f"p-{person_name}")
+        else:
+            person_pages = Profile.objects.filter(
+                slug=f"p-{person_name}", person__user=user
+            )
+
+        person_page = person_pages.first()
+
+        if not person_page:
+            raise GraphQLError("person_name not valid on user")
+
+        profile = Profile.objects.create(**kwargs)
+        person_page.profiles.add(profile)
+        person_page.save_revision().publish()
+
+        return AddProfile(profile=profile)
+
+
 class UpdateProfile(graphene.Mutation):
     profile = graphene.Field(ProfileType)
 
@@ -55,6 +86,7 @@ class UpdateProfile(graphene.Mutation):
 
 
 class Mutation(graphene.ObjectType):
+    add_profile = AddProfile.Field()
     update_profile = UpdateProfile.Field()
 
 
