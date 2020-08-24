@@ -66,30 +66,12 @@ class _S_Calendar(blocks.StructBlock):
     ]
 
 
-@register_streamfield_block
-class Meta_Link(blocks.StructBlock):
-    LINK_TYPES = (
-        ("instagram_video", "Instagram Post Video"),
-        ("instagram_photo", "Instagram Post Photo"),
-        ("other", "Other"),
-    )
-
-    url = blocks.URLBlock(null=True, blank=True, max_length=255)
-    link_type = blocks.ChoiceBlock(choices=LINK_TYPES, default="other")
-
-    # > Meta
-    location = blocks.CharBlock(null=True, blank=True, max_length=255)
-    description = blocks.TextBlock(null=True, blank=True)
-
-
 # > Profilepage
 class Profile(models.Model):
     person_page = ParentalKey(
         "people.PersonFormPage", null=True, related_name="profiles"
     )
     platform_name = models.CharField(null=True, blank=True, max_length=250)
-
-    link_collection = StreamField([("link", Meta_Link())], null=True, blank=True)
 
     graphql_fields = [
         GraphQLString("id"),
@@ -99,9 +81,7 @@ class Profile(models.Model):
 
     content_panels = [
         FieldPanel("person_page"),
-        MultiFieldPanel(
-            [FieldPanel("platform_name"), StreamFieldPanel("link_collection"),],
-        ),
+        MultiFieldPanel([FieldPanel("platform_name"),],),
     ]
 
     # data_panels = [MultiFieldPanel([StreamFieldPanel("link_collection"),])]

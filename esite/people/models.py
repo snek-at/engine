@@ -6,6 +6,7 @@ from django.db import models
 
 from modelcluster.fields import ParentalKey
 from modelcluster.models import ClusterableModel
+from wagtail.core import blocks
 from wagtail.admin.edit_handlers import (
     FieldPanel,
     FieldRowPanel,
@@ -25,6 +26,7 @@ from wagtail.core.fields import StreamField
 from wagtail.images import get_image_model
 from wagtail.images.edit_handlers import ImageChooserPanel
 
+from esite.bifrost.helpers import register_streamfield_block
 from esite.bifrost.models import (
     GraphQLBoolean,
     GraphQLCollection,
@@ -42,6 +44,22 @@ from esite.bifrost.models import (
 # from esite.utils.blocks import StoryBlock
 from esite.profile.models import Profile
 from esite.utils.models import BaseFormPage, BasePage
+
+
+@register_streamfield_block
+class Meta_Link(blocks.StructBlock):
+    LINK_TYPES = (
+        ("instagram_video", "Instagram Post Video"),
+        ("instagram_photo", "Instagram Post Photo"),
+        ("other", "Other"),
+    )
+
+    url = blocks.URLBlock(null=True, blank=True, max_length=255)
+    link_type = blocks.ChoiceBlock(choices=LINK_TYPES, default="other")
+
+    # > Meta
+    location = blocks.CharBlock(null=True, blank=True, max_length=255)
+    description = blocks.TextBlock(null=True, blank=True)
 
 
 class SocialMediaProfile(models.Model):
@@ -145,6 +163,8 @@ class PersonFormPage(BaseFormPage):
         "PersonFormPage", null=True, blank=True, related_name="liked_by"
     )
 
+    link_collection = StreamField([("link", Meta_Link())], null=True, blank=True)
+
     content_panels = BasePage.content_panels + [
         FieldPanel("person"),
         MultiFieldPanel(
@@ -169,6 +189,7 @@ class PersonFormPage(BaseFormPage):
         FieldPanel("location"),
         FieldPanel("bids"),
         FieldPanel("tids"),
+        StreamFieldPanel("link_collection"),
         # > Temporary
         FieldPanel("cache"),
         FieldPanel("sources"),
