@@ -194,7 +194,10 @@ class PersonFormPage(BaseFormPage):
     )
 
     graphql_fields = [
-        GraphQLString("name"),
+        GraphQLString("title", required=True),
+        GraphQLString("first_name"),
+        GraphQLString("last_name"),
+        GraphQLString("email"),
         GraphQLString("job_title"),
         GraphQLString("status"),
         GraphQLImage("photo"),
