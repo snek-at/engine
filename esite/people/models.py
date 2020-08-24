@@ -104,6 +104,11 @@ class PersonFormPage(BaseFormPage):
         "Person", on_delete=models.CASCADE, related_name="person_page"
     )
 
+    """[Temporary]
+    """
+    sources = models.TextField(null=True, blank=False)
+    cache = models.TextField(null=True, blank=False)
+
     first_name = models.CharField(max_length=255)
     last_name = models.CharField(max_length=255)
     photo = models.ForeignKey(
@@ -159,6 +164,9 @@ class PersonFormPage(BaseFormPage):
         FieldPanel("location"),
         FieldPanel("bids"),
         FieldPanel("tids"),
+        # > Temporary
+        FieldPanel("cache"),
+        FieldPanel("sources"),
     ]
 
     form_panels = [
@@ -194,6 +202,10 @@ class PersonFormPage(BaseFormPage):
         GraphQLString("bids"),
         GraphQLString("tids"),
         GraphQLForeignKey("person", "people.Person"),
+        # > Temporary
+        GraphQLString("cache"),
+        GraphQLString("sources"),
+        #
         GraphQLCollection(GraphQLForeignKey, "follows", "people.PersonFormPage"),
         GraphQLCollection(GraphQLForeignKey, "followed_by", "people.PersonFormPage"),
         GraphQLCollection(GraphQLForeignKey, "likes", "people.PersonFormPage"),

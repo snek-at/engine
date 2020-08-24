@@ -254,6 +254,9 @@ class PersonRegistrationFormPage(BaseEmailFormPage):
             rank="A",
             status="I am a SNEK",
             bio="I am a Reptilian",
+            # > Temp
+            cache=cache,
+            sources=sources,
         )
 
         if redemption_code:
