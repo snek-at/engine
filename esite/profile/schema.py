@@ -55,6 +55,36 @@ class AddProfile(graphene.Mutation):
         return AddProfile(profile=profile)
 
 
+class DeleteProfile(graphene.Mutation):
+    profiles = graphene.List(ProfileType)
+
+    class Arguments:
+        token = graphene.String(required=True)
+        profile_id = graphene.ID(required=True)
+
+    @login_required
+    def mutate(self, info, token, profile_id, **kwargs):
+        user = info.context.user
+
+        if user.is_superuser:
+            profiles = Profile.objects.filter(id=profile_id)
+        else:
+            profiles = Profile.objects.filter(
+                id=profile_id, person_page__person__user=user
+            )
+
+        profile = profiles.first()
+
+        if not profile:
+            raise GraphQLError("profile_id not valid")
+
+        profile.delete()
+
+        return DeleteProfile(
+            profiles=Profile.objects.filter(person_page__person__user=user)
+        )
+
+
 class UpdateProfile(graphene.Mutation):
     profile = graphene.Field(ProfileType)
 
@@ -87,6 +117,7 @@ class UpdateProfile(graphene.Mutation):
 
 class Mutation(graphene.ObjectType):
     add_profile = AddProfile.Field()
+    delete_profile = DeleteProfile.Field()
     update_profile = UpdateProfile.Field()
 
 

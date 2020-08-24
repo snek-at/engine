@@ -75,6 +75,7 @@ def create_schema():
             "like_person": Like.Field(),
             "unlike_person": Unlike.Field(),
             "add_profile": esite.profile.schema.AddProfile.Field(),
+            "delete_profile": esite.profile.schema.DeleteProfile.Field(),
             "update_profile": esite.profile.schema.UpdateProfile.Field(),
         }
         dict_params.update(
