@@ -90,6 +90,10 @@ class PersonFormField(AbstractFormField):
     )
 
 
+class PersonFormSubmission(AbstractFormSubmission):
+    user = models.ForeignKey(get_user_model(), on_delete=models.CASCADE)
+
+
 class PersonFormPage(BaseFormPage):
     template = "patterns/pages/people/person_page.html"
 
@@ -216,6 +220,24 @@ class PersonFormPage(BaseFormPage):
         GraphQLCollection(GraphQLForeignKey, "liked_by", "people.PersonFormPage"),
         GraphQLCollection(GraphQLForeignKey, "achievements", "achievement.Achievement"),
     ]
+
+    def get_submission_class(self):
+        return PersonFormSubmission
+
+    def store_merged_profiles(self, **kwargs):
+        print("Merged profile data", **kwargs)
+        self.person.save()
+
+    def process_form_submission(self, form):
+        self.store_merged_profiles(
+            # platformName=form.cleaned_data["platform_name"]
+        )
+
+        self.get_submission_class().objects.create(
+            form_data=json.dumps(form.cleaned_data, cls=DjangoJSONEncoder),
+            page=self,
+            user=user,
+        )
 
 
 class PersonIndex(BasePage):
