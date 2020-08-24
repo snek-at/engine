@@ -87,56 +87,20 @@ class Profile(models.Model):
     person_page = ParentalKey(
         "people.PersonFormPage", null=True, related_name="profiles"
     )
-    platformName = models.CharField(null=True, blank=True, max_length=250)
-    platformUrl = models.CharField(null=True, blank=True, max_length=250)
-    avatarUrl = models.CharField(null=True, blank=True, max_length=250)
-    websiteUrl = models.CharField(null=True, blank=True, max_length=250)
-    company = models.CharField(null=True, blank=True, max_length=250)
-    email = models.CharField(null=True, blank=True, max_length=250)
-    username = models.CharField(null=True, blank=True, max_length=250)
-    fullname = models.CharField(null=True, blank=True, max_length=250)
-    createdAt = models.CharField(null=True, blank=True, max_length=250)
-    location = models.CharField(null=True, blank=True, max_length=250)
-    statusMessage = models.CharField(null=True, blank=True, max_length=250)
-    statusEmojiHTML = models.CharField(null=True, blank=True, max_length=250)
+    platform_name = models.CharField(null=True, blank=True, max_length=250)
 
     link_collection = StreamField([("link", Meta_Link())], null=True, blank=True)
 
     graphql_fields = [
         GraphQLString("id"),
-        GraphQLString("platformName"),
-        GraphQLString("platformUrl"),
-        GraphQLString("avatarUrl"),
-        GraphQLString("websiteUrl"),
-        GraphQLString("company"),
-        GraphQLString("email"),
-        GraphQLString("username"),
-        GraphQLString("fullname"),
-        GraphQLString("createdAt"),
-        GraphQLString("location"),
-        GraphQLString("statusMessage"),
-        GraphQLString("statusEmojiHTML"),
+        GraphQLString("platform_name"),
         GraphQLStreamfield("link_collection"),
     ]
 
     content_panels = [
-        FieldPanel("person"),
+        FieldPanel("person_page"),
         MultiFieldPanel(
-            [
-                FieldPanel("platformName"),
-                FieldPanel("platformUrl"),
-                FieldPanel("avatarUrl"),
-                FieldPanel("websiteUrl"),
-                FieldPanel("company"),
-                FieldPanel("email"),
-                FieldPanel("username"),
-                FieldPanel("fullname"),
-                FieldPanel("createdAt"),
-                FieldPanel("location"),
-                FieldPanel("statusMessage"),
-                FieldPanel("statusEmojiHTML"),
-                StreamFieldPanel("link_collection"),
-            ],
+            [FieldPanel("platform_name"), StreamFieldPanel("link_collection"),],
         ),
     ]
 
