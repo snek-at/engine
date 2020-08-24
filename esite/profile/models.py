@@ -84,7 +84,9 @@ class Meta_Link(blocks.StructBlock):
 
 # > Profilepage
 class Profile(models.Model):
-    person = ParentalKey("people.PersonFormPage", null=True, related_name="profiles")
+    person_page = ParentalKey(
+        "people.PersonFormPage", null=True, related_name="profiles"
+    )
     platformName = models.CharField(null=True, blank=True, max_length=250)
     platformUrl = models.CharField(null=True, blank=True, max_length=250)
     avatarUrl = models.CharField(null=True, blank=True, max_length=250)
@@ -101,6 +103,7 @@ class Profile(models.Model):
     link_collection = StreamField([("link", Meta_Link())], null=True, blank=True)
 
     graphql_fields = [
+        GraphQLString("id"),
         GraphQLString("platformName"),
         GraphQLString("platformUrl"),
         GraphQLString("avatarUrl"),

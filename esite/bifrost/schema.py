@@ -36,6 +36,7 @@ def create_schema():
 
     import esite.user.schema
     import esite.achievement.schema
+    import esite.profile.schema
     from .jwtauth.schema import ObtainJSONWebToken
     from esite.caching.schema import CacheUser, CacheUserByName
     from esite.people.schema import Follow, Unfollow, Like, Unlike
@@ -44,6 +45,7 @@ def create_schema():
         # Custom queries start
         esite.user.schema.Query,
         esite.achievement.schema.Query,
+        esite.profile.schema.Query,
         # Custom queries end
         graphene.ObjectType,
         PagesQuery(),
@@ -72,6 +74,7 @@ def create_schema():
             "unfollow_person": Unfollow.Field(),
             "like_person": Like.Field(),
             "unlike_person": Unlike.Field(),
+            "update_profile": esite.profile.schema.UpdateProfile.Field(),
         }
         dict_params.update(
             (camel_case_to_spaces(n).replace(" ", "_"), mut.Field())

@@ -12,90 +12,68 @@ from graphql_jwt.decorators import (
     superuser_required,
 )
 
-# from esite.profile.models import ProfilePage
-from esite.enterprises.models import Enterprise
-from esite.registration.schema import UserType
-from esite.user.models import User
+from esite.people.models import PersonFormPage
+from esite.profile.models import Profile
+
 
 # Create your registration related graphql schemes here.
 
-# class UserType(DjangoObjectType):
-#    class Meta:
-#        model = User
-#        exclude_fields = ['password']
+
+class ProfileType(DjangoObjectType):
+    class Meta:
+        model = Profile
 
 
-# class UpdateProfile(graphene.Mutation):
-#     user = graphene.Field(UserType)
+class UpdateProfile(graphene.Mutation):
+    profile = graphene.Field(ProfileType)
 
-#     class Arguments:
-#         token = graphene.String(required=False)
-#         telephone = graphene.String(required=False)
-#         address = graphene.String(required=False)
-#         city = graphene.String(required=False)
-#         postal_code = graphene.String(required=False)
-#         email = graphene.String(required=False)
-#         country = graphene.String(required=False)
-#         newsletter = graphene.String(required=False)
-#         platform_data = graphene.String(required=False)
-#         education_data = graphene.String(required=False)
-#         sources = graphene.String(required=False)
-#         verified = graphene.String(required=False)
-#         available_for_hire = graphene.String(required=False)
-#         first_name = graphene.String(required=False)
-#         last_name = graphene.String(required=False)
-#         website = graphene.String(required=False)
-#         company = graphene.String(required=False)
+    class Arguments:
+        token = graphene.String(required=True)
+        profile_id = graphene.ID(required=True)
 
-#     @login_required
-#     def mutate(
-#         self,
-#         info,
-#         token,
-#         telephone,
-#         address,
-#         city,
-#         postal_code,
-#         email,
-#         country,
-#         newsletter,
-#         platform_data,
-#         education_data,
-#         sources,
-#         verified,
-#         available_for_hire,
-#         first_name,
-#         last_name,
-#         website,
-#         company,
-#     ):
-#         user = info.context.user
+    @login_required
+    def mutate(self, info, token, profile_id, **kwargs):
+        user = info.context.user
 
-#         profile_page = Page.objects.get(slug=f"{user.username}").specific
+        if user.is_superuser:
+            profiles = Profile.objects.filter(id=profile_id)
+        else:
+            profiles = Profile.objects.filter(
+                id=profile_id, person_page__person__user=user
+            )
 
-#         # profile_page.birthdate = birthdate
-#         profile_page.telephone = telephone
-#         profile_page.address = address
-#         profile_page.city = city
-#         profile_page.postal_code = postal_code
-#         profile_page.email = email
-#         profile_page.country = country
-#         profile_page.newsletter = newsletter
-#         profile_page.education_data = education_data
-#         profile_page.sources = sources
-#         profile_page.verified = verified
-#         profile_page.available_for_hire = available_for_hire
-#         profile_page.first_name = first_name
-#         profile_page.last_name = last_name
-#         profile_page.website = website
-#         profile_page.company = company
+        print(profiles)
 
-#         profile_page.platform_data = platform_data
+        if not profiles.first():
+            raise GraphQLError("profile_id not valid")
 
-#         profile_page.save_revision().publish()
+        profiles.update(**kwargs)
 
-#         return UpdateProfile(user=user)
+        print(profiles.first().id)
+
+        return UpdateProfile(profile=profiles.first())
 
 
-# class Mutation(graphene.ObjectType):
-#     update_profile = UpdateProfile.Field()
+class Mutation(graphene.ObjectType):
+    update_profile = UpdateProfile.Field()
+
+
+class Query(graphene.ObjectType):
+    person_profiles = graphene.List(
+        ProfileType,
+        token=graphene.String(required=False),
+        person_name=graphene.String(required=False),
+    )
+
+    @login_required
+    def resolve_person_profiles(self, info, token, person_name, **_kwargs):
+        user = info.context.user
+
+        person_page = PersonFormPage.objects.filter(slug=f"p-{person_name}").first()
+
+        if not person_page:
+            raise GraphQLError("Person not valid")
+        if person_page.person.user == user or user.is_superuser:
+            return person_page.profiles.all()
+
+        raise GraphQLError("Something went wrong")
