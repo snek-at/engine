@@ -30,7 +30,18 @@ class AddProfile(graphene.Mutation):
     class Arguments:
         token = graphene.String(required=True)
         person_name = graphene.String(required=True)
-        platform_name = graphene.String(required=True)
+        name = graphene.String(required=False)
+        src_url = graphene.String(required=False)
+        avatar_url = graphene.String(required=False)
+        website_url = graphene.String(required=False)
+        company = graphene.String(required=False)
+        email = graphene.String(required=False)
+        username = graphene.String(required=False)
+        fullname = graphene.String(required=False)
+        created_at = graphene.String(required=False)
+        location = graphene.String(required=False)
+        status_message = graphene.String(required=False)
+        status_emoji_html = graphene.String(required=False)
 
     @login_required
     def mutate(self, info, token, person_name, **kwargs):
@@ -91,6 +102,18 @@ class UpdateProfile(graphene.Mutation):
     class Arguments:
         token = graphene.String(required=True)
         profile_id = graphene.ID(required=True)
+        name = graphene.String(required=False)
+        src_url = graphene.String(required=False)
+        avatar_url = graphene.String(required=False)
+        website_url = graphene.String(required=False)
+        company = graphene.String(required=False)
+        email = graphene.String(required=False)
+        username = graphene.String(required=False)
+        fullname = graphene.String(required=False)
+        created_at = graphene.String(required=False)
+        location = graphene.String(required=False)
+        status_message = graphene.String(required=False)
+        status_emoji_html = graphene.String(required=False)
 
     @login_required
     def mutate(self, info, token, profile_id, **kwargs):
