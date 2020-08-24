@@ -89,31 +89,29 @@ from esite.utils.models import BaseEmailFormPage, BasePage
 #         proxy = True
 #         ordering = ("date_joined",)
 
+
 class Enterprise(ClusterableModel):
     user = ParentalKey(
         "user.SNEKUser", on_delete=models.CASCADE, related_name="enterprise"
     )
-    sources = models.TextField(null=True, blank=False)
-    cache = models.TextField(null=True, blank=False)
 
     # Panels/fields to fill in the Add enterprise form
     panels = [
         FieldPanel("user"),
-        FieldPanel("sources"),
-        FieldPanel("cache"),
-        InlinePanel("enterprise_page", label="Enterprise Page"),
-        #InlinePanel("comment_owner", label="Talk Owner"),
+        # InlinePanel("enterprise_page", label="Enterprise Page"),
+        # InlinePanel("comment_owner", label="Talk Owner"),
     ]
 
     graphql_fields = [
         GraphQLString("user"),
-        GraphQLString("sources"),
-        GraphQLString("cache"),
-        GraphQLCollection(GraphQLForeignKey, "enterprise_page", "enterprises.EnterpriseFormPage"),
+        # GraphQLCollection(
+        #     GraphQLForeignKey, "enterprise_page", "enterprises.EnterpriseFormPage"
+        # ),
     ]
 
     def __str__(self):
-        return user.username
+        return self.user.username
+
 
 # > Models
 class ContributionFeed(ClusterableModel):
@@ -438,10 +436,6 @@ class EnterpriseFormPage(BaseEmailFormPage):
             "enterprises.CodeTransitionStatistic",
         ),
     ]
-    # Users
-    enterprise = ParentalKey(
-        "Enterprise", on_delete=models.CASCADE, related_name="enterprise_page"
-    )
 
     # Imprint
     city = models.CharField(null=True, blank=True, max_length=255)
@@ -464,7 +458,6 @@ class EnterpriseFormPage(BaseEmailFormPage):
     description = models.TextField(null=True, blank=True)
 
     imprint_panels = [
-        FieldPanel("enterprise"),
         MultiFieldPanel(
             [
                 FieldPanel("city"),
@@ -547,10 +540,22 @@ class EnterpriseFormPage(BaseEmailFormPage):
         GraphQLString("cache"),
     ]
 
+    # Overview
+    enterprise = models.OneToOneField(
+        "Enterprise", on_delete=models.CASCADE, related_name="enterprise_page"
+    )
+
+    overview_panels = Page.content_panels + [
+        FieldPanel("enterprise"),
+    ]
+    graphql_fields += [
+        GraphQLForeignKey("enterprise", "enterprises.Enterprise"),
+    ]
+
     edit_handler = TabbedInterface(
         [
             # ObjectList(Page.content_panels + overview_panels, heading="Overview"),
-            ObjectList(Page.content_panels, heading="Overview"),
+            ObjectList(overview_panels, heading="Overview"),
             # ObjectList(codelangaugestatistic_panel, heading="Language Statistic"),
             # ObjectList(codetransitionstatistic_panel, heading="Transition Statistic"),
             # ObjectList(contributor_panel, heading="Contributors"),

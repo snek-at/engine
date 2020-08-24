@@ -44,7 +44,7 @@ from esite.bifrost.models import (
     GraphQLStreamfield,
     GraphQLString,
 )
-from esite.enterprises.models import EnterpriseFormPage
+from esite.enterprises.models import EnterpriseFormPage, Enterprise
 from esite.people.models import PersonFormPage, Person
 from esite.profile.models import Profile
 from esite.redemption.models import RedemptionCode
@@ -481,9 +481,7 @@ class EnterpriseRegistrationFormPage(BaseEmailFormPage):
     ):
 
         # enter the data here
-        user = get_user_model()(
-            username=enterprise_username, is_enterprise=True, is_active=False,
-        )
+        user = get_user_model()(username=enterprise_username, is_active=False,)
 
         user.set_password("ciscocisco")
 
@@ -533,6 +531,7 @@ class EnterpriseRegistrationFormPage(BaseEmailFormPage):
         user.save()
 
         enterprise_page.user = user
+        enterprise_page.enterprise = Enterprise.objects.create(user=user)
 
         parent_page.add_child(instance=enterprise_page)
 

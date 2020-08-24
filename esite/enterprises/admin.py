@@ -12,8 +12,8 @@ class EnterpriseAdmin(ModelAdmin):
     exclude_from_explorer = False
 
     # Listed in the enterprise overview
-    list_display = ("username",)
-    search_fields = ("username",)
+    # list_display = ("username",)
+    # search_fields = ("username",)
 
 
 # modeladmin_register(EnterpriseAdmin)
