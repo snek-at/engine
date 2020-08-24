@@ -32,7 +32,7 @@ class Follow(graphene.Mutation):
 
         origin_person_page = PersonFormPage.objects.get(slug=f"p-{person}")
 
-        if origin_person_page.user == user or user.is_superuser:
+        if origin_person_page.person.user == user or user.is_superuser:
             """
             Allowed to set new follower for the page
             """
@@ -63,7 +63,7 @@ class Unfollow(graphene.Mutation):
 
         origin_person_page = PersonFormPage.objects.get(slug=f"p-{person}")
 
-        if origin_person_page.user == user or user.is_superuser:
+        if origin_person_page.person.user == user or user.is_superuser:
             """
             Allowed to unfollow
             """
@@ -94,7 +94,7 @@ class Like(graphene.Mutation):
 
         origin_person_page = PersonFormPage.objects.get(slug=f"p-{person}")
 
-        if origin_person_page.user == user or user.is_superuser:
+        if origin_person_page.person.user == user or user.is_superuser:
             """
             Allowed to like
             """
@@ -125,7 +125,7 @@ class Unlike(graphene.Mutation):
 
         origin_person_page = PersonFormPage.objects.get(slug=f"p-{person}")
 
-        if origin_person_page.user == user or user.is_superuser:
+        if origin_person_page.person.user == user or user.is_superuser:
             """
             Allowed to unlike
             """

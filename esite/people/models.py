@@ -63,9 +63,7 @@ class SocialMediaProfile(models.Model):
 
 
 class Person(ClusterableModel):
-    user = ParentalKey(
-        "user.SNEKUser", on_delete=models.CASCADE, related_name="person"
-    )
+    user = ParentalKey("user.SNEKUser", on_delete=models.CASCADE, related_name="person")
     sources = models.TextField(null=True, blank=False)
     cache = models.TextField(null=True, blank=False)
     # Panels/fields to fill in the Add enterprise form
@@ -73,18 +71,16 @@ class Person(ClusterableModel):
         FieldPanel("user"),
         FieldPanel("sources"),
         FieldPanel("cache"),
-        InlinePanel("person_page", label="Person Page"),
     ]
 
     graphql_fields = [
         GraphQLString("user"),
         GraphQLString("sources"),
         GraphQLString("cache"),
-        GraphQLCollection(GraphQLForeignKey, "person_page", "people.PersonFormPage"),
     ]
 
     def __str__(self):
-        return user.username
+        return self.user.username
 
 
 class PersonFormField(AbstractFormField):
@@ -104,7 +100,7 @@ class PersonFormPage(BaseFormPage):
     class Meta:
         verbose_name = "Person Form Page"
 
-    person = ParentalKey(
+    person = models.OneToOneField(
         "Person", on_delete=models.CASCADE, related_name="person_page"
     )
 
@@ -132,8 +128,12 @@ class PersonFormPage(BaseFormPage):
     bids = models.TextField(null=True, blank=True)
     tids = models.TextField(null=True, blank=True)
 
-    follows = models.ManyToManyField("PersonFormPage", null=True, related_name="followed_by")
-    likes = models.ManyToManyField("PersonFormPage", null=True, related_name="liked_by")
+    follows = models.ManyToManyField(
+        "PersonFormPage", null=True, blank=True, related_name="followed_by"
+    )
+    likes = models.ManyToManyField(
+        "PersonFormPage", null=True, blank=True, related_name="liked_by"
+    )
 
     content_panels = BasePage.content_panels + [
         FieldPanel("person"),
@@ -193,6 +193,7 @@ class PersonFormPage(BaseFormPage):
         GraphQLStreamfield("bio"),
         GraphQLString("bids"),
         GraphQLString("tids"),
+        GraphQLForeignKey("person", "people.Person"),
         GraphQLCollection(GraphQLForeignKey, "follows", "people.PersonFormPage"),
         GraphQLCollection(GraphQLForeignKey, "followed_by", "people.PersonFormPage"),
         GraphQLCollection(GraphQLForeignKey, "likes", "people.PersonFormPage"),
