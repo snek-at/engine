@@ -233,9 +233,7 @@ class PersonRegistrationFormPage(BaseEmailFormPage):
     ):
 
         # enter the data here
-        user = get_user_model()(
-            username=username, is_active=False, sources=sources, cache=cache
-        )
+        user = get_user_model()(username=username, is_active=False)
 
         user.set_password(password)
 
