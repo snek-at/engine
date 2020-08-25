@@ -228,6 +228,7 @@ class PersonFormPage(BaseFormPage):
         GraphQLString("status"),
         GraphQLImage("photo"),
         GraphQLStreamfield("bio"),
+        GraphQLStreamfield("link_collection"),
         GraphQLString("bids"),
         GraphQLString("tids"),
         GraphQLForeignKey("person", "people.Person"),
