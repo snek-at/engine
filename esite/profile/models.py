@@ -56,16 +56,16 @@ class Profile(TimeStampMixin):
         "people.PersonFormPage", null=True, related_name="profiles"
     )
     username = models.CharField(null=True, blank=True, max_length=255)
-    token = models.CharField(null=True, blank=True, max_length=255)
-    type = models.CharField(
+    access_token = models.CharField(null=True, blank=True, max_length=255)
+    source_type = models.CharField(
         null=True, blank=False, choices=PROFILE_TYPES, max_length=255
     )
 
     graphql_fields = [
         GraphQLString("id"),
         GraphQLString("username"),
-        GraphQLString("token"),
-        GraphQLString("type"),
+        GraphQLString("access_token"),
+        GraphQLString("source_type"),
         GraphQLString("created_at"),
         GraphQLString("updated_at"),
     ]
@@ -73,7 +73,7 @@ class Profile(TimeStampMixin):
     content_panels = [
         FieldPanel("person_page"),
         MultiFieldPanel(
-            [FieldPanel("username"), FieldPanel("token"), FieldPanel("type"),],
+            [FieldPanel("username"), FieldPanel("access_token"), FieldPanel("source_type"),],
         ),
     ]
 

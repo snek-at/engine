@@ -31,8 +31,8 @@ class AddProfile(graphene.Mutation):
         token = graphene.String(required=True)
         person_name = graphene.String(required=True)
         username = graphene.String(required=False)
-        token = graphene.String(required=False)
-        type = graphene.String(required=False)
+        access_token = graphene.String(required=False)
+        source_type = graphene.String(required=False)
 
     @login_required
     def mutate(self, info, token, person_name, **kwargs):
@@ -94,8 +94,8 @@ class UpdateProfile(graphene.Mutation):
         token = graphene.String(required=True)
         profile_id = graphene.ID(required=True)
         username = graphene.String(required=False)
-        token = graphene.String(required=False)
-        type = graphene.String(required=False)
+        access_token = graphene.String(required=False)
+        source_type = graphene.String(required=False)
 
     @login_required
     def mutate(self, info, token, profile_id, **kwargs):
