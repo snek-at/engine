@@ -44,7 +44,7 @@ from esite.utils.models import BasePage
 class Talk(ClusterableModel):
     # talk_id = models.CharField(primary_key=True, max_length=36)
     owner = ParentalKey(
-        "user.SNEKUser", on_delete=models.CASCADE, related_name="talk_owner"
+        "people.PersonFormPage", on_delete=models.CASCADE, related_name="talk_owner"
     )
     title = models.CharField(null=True, blank=True, max_length=32)
     description = models.TextField(null=True, blank=True, help_text="Other information")
@@ -60,7 +60,7 @@ class Talk(ClusterableModel):
     )
 
     graphql_fields = [
-        # GraphQLString("talk_id"),
+        GraphQLString("talk_id"),
         GraphQLString("title"),
         GraphQLString("description"),
         GraphQLString("path"),
