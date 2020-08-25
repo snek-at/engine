@@ -1,6 +1,7 @@
 from django.core.exceptions import ValidationError
 from django.db import models
 from django.utils.decorators import method_decorator
+from django.utils import timezone
 
 from wagtail.admin.edit_handlers import FieldPanel, MultiFieldPanel, PageChooserPanel
 from wagtail.contrib.forms.models import (
@@ -17,6 +18,14 @@ from wagtail.snippets.models import register_snippet
 
 from esite.bifrost.models import GraphQLPage, GraphQLString
 from esite.utils.cache import get_default_cache_control_decorator
+
+
+class TimeStampMixin(models.Model):
+    created_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=True)
+
+    class Meta:
+        abstract = True
 
 
 class LinkFields(models.Model):
