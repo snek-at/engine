@@ -41,88 +41,41 @@ from esite.bifrost.models import (
 )
 from esite.colorfield.blocks import ColorAlphaBlock, ColorBlock, GradientColorBlock
 from esite.colorfield.fields import ColorAlphaField, ColorField
-from esite.utils.models import BasePage
+from esite.utils.models import BasePage, TimeStampMixin
+
 
 # Create your homepage related models here.
-
-
-@register_streamfield_block
-class _S_TopLanguages(blocks.StructBlock):
-    theme = blocks.CharBlock(
-        null=True, blank=True, help_text="Bold header text", max_length=64
-    )
-
-    graphql_fields = [
-        GraphQLString("theme"),
-    ]
-
-
-@register_streamfield_block
-class _S_Calendar(blocks.StructBlock):
-    theme = blocks.CharBlock(
-        null=True, blank=True, help_text="Bold header text", max_length=64
-    )
-
-    graphql_fields = [
-        GraphQLString("theme"),
-    ]
-
-
 # > Profilepage
-class Profile(models.Model):
+class Profile(TimeStampMixin):
+    PROFILE_TYPES = (
+        ("github", "GitHub"),
+        ("gitlab", "GitLab"),
+        ("instagram", "Instagram"),
+    )
     person_page = ParentalKey(
         "people.PersonFormPage", null=True, related_name="profiles"
     )
-    name = models.CharField(null=True, blank=True, max_length=255)
-    src_url = models.URLField(null=True, blank=True)
-    avatar_url = models.URLField(null=True, blank=True)
-    website_url = models.URLField(null=True, blank=True)
-    company = models.CharField(null=True, blank=True, max_length=255)
-    email = models.EmailField(null=True, blank=True)
     username = models.CharField(null=True, blank=True, max_length=255)
-    fullname = models.CharField(null=True, blank=True, max_length=255)
-    created_at = models.DateTimeField(null=True, blank=True)
-    location = models.CharField(null=True, blank=True, max_length=255)
-    status_message = models.CharField(null=True, blank=True, max_length=255)
-    status_emoji_html = models.CharField(null=True, blank=True, max_length=255)
+    token = models.CharField(null=True, blank=True, max_length=255)
+    type = models.CharField(
+        null=True, blank=False, choices=PROFILE_TYPES, max_length=255
+    )
 
     graphql_fields = [
         GraphQLString("id"),
-        GraphQLString("name"),
-        GraphQLString("src_url"),
-        GraphQLString("avatar_url"),
-        GraphQLString("website_url"),
-        GraphQLString("company"),
-        GraphQLString("email"),
         GraphQLString("username"),
-        GraphQLString("fullname"),
+        GraphQLString("token"),
+        GraphQLString("type"),
         GraphQLString("created_at"),
-        GraphQLString("location"),
-        GraphQLString("status_message"),
-        GraphQLString("status_emoji_html"),
+        GraphQLString("updated_at"),
     ]
 
     content_panels = [
         FieldPanel("person_page"),
         MultiFieldPanel(
-            [
-                FieldPanel("name"),
-                FieldPanel("src_url"),
-                FieldPanel("avatar_url"),
-                FieldPanel("website_url"),
-                FieldPanel("company"),
-                FieldPanel("email"),
-                FieldPanel("username"),
-                FieldPanel("fullname"),
-                FieldPanel("created_at"),
-                FieldPanel("location"),
-                FieldPanel("status_message"),
-                RichTextFieldPanel("status_emoji_html"),
-            ],
+            [FieldPanel("username"), FieldPanel("token"), FieldPanel("type"),],
         ),
     ]
-
-    # data_panels = [MultiFieldPanel([StreamFieldPanel("link_collection"),])]
 
     edit_handler = TabbedInterface(
         [
