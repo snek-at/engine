@@ -62,6 +62,11 @@ class Meta_Link(blocks.StructBlock):
     description = blocks.TextBlock(null=True, blank=True)
 
 
+@register_streamfield_block
+class Movable(blocks.StructBlock):
+    order = blocks.ListBlock(blocks.IntegerBlock())
+
+
 class SocialMediaProfile(models.Model):
     person_page = ParentalKey("PersonFormPage", related_name="social_media_profile")
     site_titles = (("twitter", "Twitter"), ("linkedin", "LinkedIn"))
@@ -159,6 +164,10 @@ class PersonFormPage(BaseFormPage):
         "PersonFormPage", null=True, blank=True, related_name="liked_by"
     )
 
+    movable_pool = StreamField(
+        [("overview", Movable()), ("contribtype", Movable())], null=True, blank=True,
+    )
+
     link_collection = StreamField([("link", Meta_Link())], null=True, blank=True)
 
     content_panels = BasePage.content_panels + [
@@ -185,6 +194,7 @@ class PersonFormPage(BaseFormPage):
         FieldPanel("location"),
         FieldPanel("bids"),
         FieldPanel("tids"),
+        StreamFieldPanel("movable_pool"),
         StreamFieldPanel("link_collection"),
     ]
 
@@ -231,6 +241,7 @@ class PersonFormPage(BaseFormPage):
         GraphQLBoolean("display_3d_calendar"),
         GraphQLString("bids"),
         GraphQLString("tids"),
+        GraphQLStreamfield("movable_pool"),
         GraphQLStreamfield("link_collection"),
         GraphQLForeignKey("person", "people.Person"),
         GraphQLCollection(GraphQLForeignKey, "follows", "people.PersonFormPage"),
