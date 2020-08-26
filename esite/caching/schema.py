@@ -13,37 +13,43 @@ from graphql_jwt.decorators import (
 )
 
 from esite.enterprises.models import Enterprise
+from esite.people.models import PersonFormPage
 from esite.registration.schema import UserType
 
 # Create your registration related graphql schemes here.
 
-# class UserType(DjangoObjectType):
-#    class Meta:
-#        model = User
-#        exclude_fields = ['password']
+
+class PersonType(DjangoObjectType):
+    class Meta:
+        model = PersonFormPage
 
 
 class CacheUser(graphene.Mutation):
-    user = graphene.Field(UserType)
+    user = graphene.Field(PersonType)
 
     class Arguments:
-        token = graphene.String(required=False)
+        token = graphene.String(required=True)
+        person_name = graphene.String(required=True)
         cache = graphene.String(required=True)
 
     @login_required
-    def mutate(self, info, token, cache):
+    def mutate(self, info, token, person_name, cache, **kwargs):
         user = info.context.user
 
-        user.cache = cache
-        user.save()
+        if user.is_superuser:
+            person_page = PersonFormPage.objects.get(slug=f"p-{person_name}")
+        else:
+            person_page = PersonFormPage.objects.filter(
+                slug=f"p-{person_name}", person__user=user
+            ).first()
 
-        # profile_page = Page.objects.get(slug=f"user_{user.username}").specific
+        if not person_page:
+            raise GraphQLError("Something went wrong!")
 
-        # profile_page.platform_data = platform_data
+        person_page.person.cache = cache
+        person_page.save()
 
-        # profile_page.save_revision().publish()
-
-        return CacheUser(user=user)
+        return CacheUser(person_page=person_page)
 
 
 class CacheUserByName(graphene.Mutation):
