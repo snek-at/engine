@@ -25,7 +25,7 @@ class PersonType(DjangoObjectType):
 
 
 class CacheUser(graphene.Mutation):
-    user = graphene.Field(PersonType)
+    person_page = graphene.Field(PersonType)
 
     class Arguments:
         token = graphene.String(required=True)
