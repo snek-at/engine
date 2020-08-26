@@ -263,12 +263,12 @@ class PersonRegistrationFormPage(BaseEmailFormPage):
             redemption = RedemptionCode.objects.get(pk=f"{redemption_code}")
             if redemption.is_active:
 
-                people_page["bids"] = redemption.bids
-                people_page["tids"] = redemption.tids
+                people_page.bids = redemption.bid
+                people_page.tids = redemption.tid
 
                 redemption.is_active = False
 
-            redemption.save()
+                redemption.save()
 
         people_page.profiles.add(
             Profile(
