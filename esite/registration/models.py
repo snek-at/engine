@@ -289,7 +289,6 @@ class PersonRegistrationFormPage(BaseEmailFormPage):
 
         user.save()
 
-        people_page.user = user
         people_page.person = Person.objects.create(
             user=user, sources=sources, cache=cache
         )
@@ -533,7 +532,6 @@ class EnterpriseRegistrationFormPage(BaseEmailFormPage):
 
         user.save()
 
-        enterprise_page.user = user
         enterprise_page.enterprise = Enterprise.objects.create(user=user)
 
         parent_page.add_child(instance=enterprise_page)
