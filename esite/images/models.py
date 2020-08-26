@@ -34,6 +34,10 @@ class SNEKImage(AbstractImage):
     ]
 
 
+class SNEKPersonAvatarImage(AbstractImage):
+    pass
+
+
 class SNEKAchievementImage(AbstractImage):
     pass
 

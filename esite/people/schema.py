@@ -11,11 +11,17 @@ from graphql_jwt.decorators import (
 )
 
 from esite.people.models import PersonFormPage
+from esite.images.models import SNEKPersonAvatarImage
 
 
 class PersonPageType(DjangoObjectType):
     class Meta:
         model = PersonFormPage
+
+
+class Upload(graphene.Scalar):
+    def serialize(self):
+        pass
 
 
 class Follow(graphene.Mutation):
@@ -140,6 +146,70 @@ class Unlike(graphene.Mutation):
             raise GraphQLError("Permission denied")
 
         return Unlike(total_likes=origin_person_page.likes.count())
+
+
+class UpdateSettings(graphene.Mutation):
+    person_page = graphene.Field(PersonPageType)
+
+    class Arguments:
+        token = graphene.String(required=True)
+        person_name = graphene.String(required=True)
+        first_name = graphene.String(required=False)
+        last_name = graphene.String(required=False)
+        status = graphene.String(required=False)
+        bio = graphene.String(required=False)
+        avatar_image = Upload(required=False)
+        email = graphene.String(required=False)
+        display_email = graphene.Boolean(required=False)
+        workplace = graphene.String(required=False)
+        display_workplace = graphene.Boolean(required=False)
+        website_url = graphene.String(required=False)
+        location = graphene.String(required=False)
+        display_ranking = graphene.Boolean(required=False)
+        display_programming_languages = graphene.Boolean(required=False)
+        display_2d_calendar = graphene.Boolean(required=False)
+        display_3d_calendar = graphene.Boolean(required=False)
+
+    @login_required
+    def mutate(self, info, token, person_name, **kwargs):
+        user = info.context.user
+
+        """
+        person_pages must contain one entry due to the uniqueness of the slug
+        """
+        person_pages = PersonFormPage.objects.filter(slug=f"p-{person_name}")
+
+        if not person_pages.first():
+            """
+            No page found
+            """
+            raise GraphQLError("No profile found")
+
+        if person_page.person.user == user or user.is_superuser:
+            """
+            Allowed to update settings
+            """
+            person_pages.update(**kwargs)
+
+            """
+            Set photo
+            """
+            if info.context.FILES and info.context.method == "POST":
+                avatar_image = info.context.FILES["avatar_image"]
+
+                person_page = person_pages.first()
+                person_page.avatar_image.delete()
+
+                person_page.avatar_image = SNEKPersonAvatarImage.objects.create(
+                    file=avatar_image, title=f"Avatar of {person_name}"
+                )
+
+                person_page.save()
+
+        else:
+            raise GraphQLError("Permission denied")
+
+        return UpdateSettings(person_page=person_pages.first())
 
 
 class Mutation(graphene.ObjectType):

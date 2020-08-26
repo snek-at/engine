@@ -127,14 +127,11 @@ class PersonFormPage(BaseFormPage):
         "Person", on_delete=models.CASCADE, related_name="person_page"
     )
 
-    """[Temporary]
-    """
-    sources = models.TextField(null=True, blank=False)
-    cache = models.TextField(null=True, blank=False)
-
     first_name = models.CharField(max_length=255)
     last_name = models.CharField(max_length=255)
-    photo = models.ForeignKey(
+    status = models.TextField(blank=True)
+    bio = models.TextField(blank=True)
+    avatar_image = models.ForeignKey(
         settings.WAGTAILIMAGES_IMAGE_MODEL,
         null=True,
         blank=True,
@@ -145,14 +142,13 @@ class PersonFormPage(BaseFormPage):
     display_email = models.BooleanField(blank=True, default=False)
     workplace = models.CharField(blank=True, max_length=255)
     display_workplace = models.BooleanField(blank=True, default=False)
-    job_title = models.CharField(blank=True, max_length=255)
-    website = models.CharField(blank=True, max_length=255)
+    website_url = models.URLField(blank=True, max_length=255)
     location = models.CharField(blank=True, max_length=255)
-    rank = models.CharField(blank=True, max_length=1)
-    display_rank = models.BooleanField(blank=True, default=False)
-    display_languages = models.BooleanField(blank=True, default=False)
-    status = models.TextField(blank=True)
-    bio = models.TextField(blank=True)
+    display_ranking = models.BooleanField(blank=True, default=False)
+    display_programming_languages = models.BooleanField(blank=True, default=False)
+    display_2d_calendar = models.BooleanField(blank=True, default=False)
+    display_3d_calendar = models.BooleanField(blank=True, default=False)
+
     bids = models.TextField(null=True, blank=True)
     tids = models.TextField(null=True, blank=True)
 
@@ -170,29 +166,26 @@ class PersonFormPage(BaseFormPage):
         MultiFieldPanel(
             [FieldPanel("first_name"), FieldPanel("last_name"),], heading="Name"
         ),
-        ImageChooserPanel("photo"),
+        ImageChooserPanel("avatar_image"),
         FieldPanel("workplace"),
         FieldPanel("display_workplace"),
-        FieldPanel("job_title"),
         InlinePanel("social_media_profile", label="Social accounts"),
         InlinePanel("profiles", label="Profiles"),
         MultiFieldPanel(
             [FieldPanel("email"), FieldPanel("display_email"),],
             heading="Contact information",
         ),
-        FieldPanel("website"),
-        FieldPanel("rank"),
-        FieldPanel("display_rank"),
-        FieldPanel("display_languages"),
+        FieldPanel("website_url"),
+        FieldPanel("display_ranking"),
+        FieldPanel("display_programming_languages"),
+        FieldPanel("display_2d_calendar"),
+        FieldPanel("display_3d_calendar"),
         FieldPanel("status"),
         FieldPanel("bio"),
         FieldPanel("location"),
         FieldPanel("bids"),
         FieldPanel("tids"),
         StreamFieldPanel("link_collection"),
-        # > Temporary
-        FieldPanel("cache"),
-        FieldPanel("sources"),
     ]
 
     form_panels = [
@@ -223,19 +216,23 @@ class PersonFormPage(BaseFormPage):
         GraphQLString("title", required=True),
         GraphQLString("first_name"),
         GraphQLString("last_name"),
-        GraphQLString("email"),
-        GraphQLString("job_title"),
         GraphQLString("status"),
-        GraphQLImage("photo"),
-        GraphQLStreamfield("bio"),
-        GraphQLStreamfield("link_collection"),
+        GraphQLString("bio"),
+        GraphQLImage("avatar_image"),
+        GraphQLString("email"),
+        GraphQLBoolean("display_email"),
+        GraphQLString("workplace"),
+        GraphQLBoolean("display_workplace"),
+        GraphQLString("website_url"),
+        GraphQLString("location"),
+        GraphQLBoolean("display_ranking"),
+        GraphQLBoolean("display_programming_languages"),
+        GraphQLBoolean("display_2d_calendar"),
+        GraphQLBoolean("display_3d_calendar"),
         GraphQLString("bids"),
         GraphQLString("tids"),
+        GraphQLStreamfield("link_collection"),
         GraphQLForeignKey("person", "people.Person"),
-        # > Temporary
-        GraphQLString("cache"),
-        GraphQLString("sources"),
-        #
         GraphQLCollection(GraphQLForeignKey, "follows", "people.PersonFormPage"),
         GraphQLCollection(GraphQLForeignKey, "followed_by", "people.PersonFormPage"),
         GraphQLCollection(GraphQLForeignKey, "likes", "people.PersonFormPage"),
