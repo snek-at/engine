@@ -1,24 +1,28 @@
 from django.db import models
-import graphene
+
 from modelcluster.fields import ParentalKey
 from modelcluster.models import ClusterableModel
 from wagtail.admin.edit_handlers import (
     FieldPanel,
+    InlinePanel,
     MultiFieldPanel,
     StreamFieldPanel,
-    InlinePanel,
 )
 from wagtail.core import blocks
 from wagtail.core.fields import StreamField
+from wagtail.images.blocks import ImageChooserBlock
 
-from esite.bifrost.helpers import register_streamfield_block, register_query_field
+import graphene
+
+from esite.bifrost.helpers import register_query_field, register_streamfield_block
 from esite.bifrost.models import (
-    GraphQLString,
-    GraphQLInt,
-    GraphQLFloat,
-    GraphQLStreamfield,
-    GraphQLForeignKey,
     GraphQLEmbed,
+    GraphQLFloat,
+    GraphQLForeignKey,
+    GraphQLInt,
+    GraphQLStreamfield,
+    GraphQLString,
+    GraphQLImage,
 )
 from esite.colorfield.blocks import ColorBlock
 
@@ -107,26 +111,97 @@ class _Person_Organisation(blocks.StructBlock):
     ]
 
 
+@register_streamfield_block
+class _Person_Statistic_Streak(blocks.StructBlock):
+    start_date = blocks.DateBlock()
+    end_date = blocks.DateBlock()
+    total_days = blocks.IntegerBlock()
+    total_contributions = blocks.IntegerBlock()
+
+    graphql_fields = [
+        GraphQLString("start_date"),
+        GraphQLString("end_date"),
+        GraphQLInt("total_days"),
+        GraphQLInt("total_contributions"),
+    ]
+
+
+@register_streamfield_block
+class Statistic(blocks.StructBlock):
+    calendar_3d = ImageChooserBlock()
+    calendar_2d = blocks.TextBlock()
+    contribution_type_2d = blocks.TextBlock()
+    total_issue_contributions = blocks.IntegerBlock()
+    total_commit_contributions = blocks.IntegerBlock()
+    total_repository_contributions = blocks.IntegerBlock()
+    total_pull_request_contributions = blocks.IntegerBlock()
+    total_pull_request_review_contributions = blocks.IntegerBlock()
+    total_repositories_with_contributed_issues = blocks.IntegerBlock()
+    total_repositories_with_contributed_commits = blocks.IntegerBlock()
+    total_repositories_with_contributed_pull_requests = blocks.IntegerBlock()
+    current_streak = _Person_Statistic_Streak()
+    longest_streak = _Person_Statistic_Streak()
+
+    graphql_fields = [
+        GraphQLImage("calendar_3d"),
+        GraphQLString("calendar_2d"),
+        GraphQLString("contribution_type_2d"),
+        GraphQLInt("total_issue_contributions"),
+        GraphQLInt("total_commit_contributions"),
+        GraphQLInt("total_repository_contributions"),
+        GraphQLInt("total_pull_request_contributions"),
+        GraphQLInt("total_pull_request_review_contributions"),
+        GraphQLInt("total_repositories_with_contributed_issues"),
+        GraphQLInt("total_repositories_with_contributed_commits"),
+        GraphQLInt("total_repositories_with_contributed_pull_requests"),
+        GraphQLStreamfield("current_streak", is_list=False),
+        GraphQLStreamfield("longest_streak", is_list=False),
+    ]
+
+
 class Person(ClusterableModel):
     user = ParentalKey("user.SNEKUser", on_delete=models.CASCADE, related_name="person")
+
+    current_statistic = StreamField(
+        blocks.StreamBlock(
+            [("statistic_year", _Person_Statistic_Streak()),], max_num=1
+        ),
+        null=True,
+        blank=True,
+    )
+    years_statistic = StreamField(
+        blocks.StreamBlock([("statistic_year", _Person_Statistic_Streak()),],),
+        null=True,
+        blank=True,
+    )
 
     projects = StreamField([("project", _Person_Project())], null=True, blank=True)
     organisations = StreamField(
         [("organisation", _Person_Organisation())], null=True, blank=True
     )
+    languages = StreamField([("language", _Person_Language())], null=True, blank=True)
 
     # Panels/fields to fill in the Add enterprise form
     panels = [
         FieldPanel("user"),
         MultiFieldPanel(
-            [StreamFieldPanel("projects"), StreamFieldPanel("organisations")]
+            [
+                StreamFieldPanel("projects"),
+                StreamFieldPanel("organisations"),
+                StreamFieldPanel("languages"),
+            ]
         ),
+        StreamFieldPanel("current_statistic"),
+        StreamFieldPanel("years_statistic"),
     ]
 
     graphql_fields = [
         # GraphQLString("user"),
         GraphQLStreamfield("projects"),
         GraphQLStreamfield("organisations"),
+        GraphQLStreamfield("languages"),
+        GraphQLStreamfield("current_statistic"),
+        GraphQLStreamfield("years_statistic"),
     ]
 
     def __str__(self):
