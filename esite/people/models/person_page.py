@@ -6,7 +6,6 @@ from django.db import models
 
 from modelcluster.fields import ParentalKey
 from modelcluster.models import ClusterableModel
-from wagtail.core import blocks
 from wagtail.admin.edit_handlers import (
     FieldPanel,
     FieldRowPanel,
@@ -22,6 +21,7 @@ from wagtail.contrib.forms.models import (
     AbstractFormField,
     AbstractFormSubmission,
 )
+from wagtail.core import blocks
 from wagtail.core.fields import StreamField
 from wagtail.images import get_image_model
 from wagtail.images.edit_handlers import ImageChooserPanel
@@ -84,27 +84,6 @@ class SocialMediaProfile(models.Model):
     def clean(self):
         if self.service == "twitter" and self.username.startswith("@"):
             self.username = self.username[1:]
-
-
-class Person(ClusterableModel):
-    user = ParentalKey("user.SNEKUser", on_delete=models.CASCADE, related_name="person")
-    # sources = models.TextField(null=True, blank=False)
-    # cache = models.TextField(null=True, blank=False)
-    # Panels/fields to fill in the Add enterprise form
-    panels = [
-        FieldPanel("user"),
-        # FieldPanel("sources"),
-        # FieldPanel("cache"),
-    ]
-
-    graphql_fields = [
-        GraphQLString("user"),
-        # GraphQLString("sources"),
-        # GraphQLString("cache"),
-    ]
-
-    def __str__(self):
-        return self.user.username
 
 
 class PersonFormField(AbstractFormField):
