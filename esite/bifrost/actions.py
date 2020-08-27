@@ -9,6 +9,7 @@ from django.utils.text import camel_case_to_spaces
 
 from wagtail.contrib.forms.models import AbstractForm
 from wagtail.contrib.settings.models import BaseSetting
+from wagtail.core.blocks import BaseBlock, RichTextBlock, StructValue, stream_block
 from wagtail.core.models import Page as WagtailPage
 from wagtail.documents.models import AbstractDocument
 from wagtail.images.blocks import ImageChooserBlock
@@ -285,6 +286,20 @@ def load_type_fields():
                 type_list[key] = node
 
 
+def get_field_value(instance, field_name: str):
+    """
+    Returns the value of a given field on an object of a streamfield.
+    Different types of objects require different ways to access the values.
+    """
+    if isinstance(instance, stream_block.StreamValue):
+        stream_data = dict(instance.stream_data)
+        return stream_data[field_name]
+    elif isinstance(instance, StructValue):
+        return instance[field_name]
+    else:
+        return instance.value[field_name]
+
+
 def convert_to_underscore(name):
     import re
 
@@ -297,7 +312,7 @@ def streamfield_resolver(self, instance, info, **kwargs):
     if hasattr(instance, "block"):
         field_name = convert_to_underscore(info.field_name)
         block = instance.block.child_blocks[field_name]
-        value = instance.value[field_name]
+        value = get_field_value(instance, field_name)
 
         if not block or not value:
             return None

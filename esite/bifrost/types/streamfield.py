@@ -63,6 +63,9 @@ class StreamFieldInterface(graphene.Interface):
         return self.block.name
 
     def resolve_raw_value(self, info, **kwargs):
+        if isinstance(self, dict):
+            return serialize_struct_obj(self)
+
         if isinstance(self.value, dict):
             return serialize_struct_obj(self.value)
 
@@ -128,6 +131,10 @@ def serialize_struct_obj(obj):
                 rtn_obj[field] = value.src
             elif hasattr(value, "file"):
                 rtn_obj[field] = value.file.url
+            elif isinstance(value, blocks.StructValue):
+                rtn_obj[field] = dict(value)
+            elif isinstance(value, list):
+                rtn_obj[field] = [serialize_struct_obj(e) for e in value]
             else:
                 rtn_obj[field] = value
 
