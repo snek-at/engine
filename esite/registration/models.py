@@ -243,15 +243,6 @@ class PersonRegistrationFormPage(BaseEmailFormPage):
             first_name=first_name,
             last_name=last_name,
             email=email,
-            display_email=display_email,
-            workplace=workplace,
-            display_workplace=display_workplace,
-            job_title=job_title,
-            website=website,
-            location=location,
-            rank="A",
-            status=status,
-            bio=bio,
         )
 
         # if redemption_code:
@@ -304,17 +295,6 @@ class PersonRegistrationFormPage(BaseEmailFormPage):
             first_name=form.cleaned_data["first_name"],
             last_name=form.cleaned_data["last_name"],
             email=form.cleaned_data["email"],
-            display_email=form.cleaned_data["display_email"],
-            workplace=form.cleaned_data["workplace"],
-            display_workplace=form.cleaned_data["display_workplace"],
-            job_title=form.cleaned_data["job_title"],
-            website=form.cleaned_data["website"],
-            location=form.cleaned_data["location"],
-            rank=form.cleaned_data["rank"],
-            display_rank=form.cleaned_data["display_rank"],
-            display_languages=form.cleaned_data["display_languages"],
-            status=form.cleaned_data["status"],
-            bio=form.cleaned_data["bio"],
             password=form.cleaned_data["password"],
             redemption_code=form.cleaned_data["gift_code"],
         )
