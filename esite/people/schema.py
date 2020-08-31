@@ -1,3 +1,5 @@
+import json
+
 from django.contrib.auth import get_user_model
 
 import graphene
@@ -10,13 +12,19 @@ from graphql_jwt.decorators import (
     superuser_required,
 )
 
-from esite.people.models import PersonFormPage
 from esite.images.models import SNEKPersonAvatarImage
+from esite.people.models import Person, PersonFormPage
 
 
 class PersonPageType(DjangoObjectType):
     class Meta:
         model = PersonFormPage
+
+
+class PersonType(DjangoObjectType):
+    class Meta:
+        model = Person
+        exclude_fields = ["user"]
 
 
 class Upload(graphene.Scalar):
@@ -212,11 +220,93 @@ class UpdateSettings(graphene.Mutation):
         return UpdateSettings(person_page=person_pages.first())
 
 
+class VariableStore(graphene.Mutation):
+    person = graphene.Field(PersonType)
+
+    class Arguments:
+        token = graphene.String(required=True)
+        person_name = graphene.String(required=True)
+        raw_current_statistic = graphene.JSONString(required=False)
+        raw_years_statistic = graphene.JSONString(required=False)
+        raw_organisations = graphene.JSONString(required=False)
+        raw_projects = graphene.JSONString(required=False)
+        raw_languages = graphene.JSONString(required=False)
+
+    @login_required
+    def mutate(
+        self,
+        info,
+        token,
+        person_name,
+        raw_current_statistic=None,
+        raw_years_statistic=[],
+        raw_organisations=[],
+        raw_projects=[],
+        raw_languages=[],
+        **kwargs,
+    ):
+        import esite.people.models
+
+        user = info.context.user
+
+        """
+        person must contain one entry due to the uniqueness of the slug
+        """
+        person = Person.objects.filter(person_page__slug=f"p-{person_name}").first()
+
+        if not person:
+            """
+            No person found
+            """
+            raise GraphQLError("No profile found")
+
+        if person.user == user or user.is_superuser:
+            """
+            Allowed to update person data
+            """
+
+            def process_raw_data(obj_type: str, obj={}, for_streamfield=False):
+                if isinstance(obj, dict):
+                    obj = {k: process_raw_data(k, v) for (k, v) in obj.items()}
+
+                if isinstance(obj, list):
+                    """
+                    Get the singular of obj_type by removing s
+                    which is the last character
+                    """
+                    obj = [process_raw_data(obj_type[:-1], e) for e in obj]
+
+                if for_streamfield:
+                    return [{"type": obj_type[:-1], "value": e} for e in obj]
+
+                return obj
+
+            projects = process_raw_data("projects", raw_projects, for_streamfield=True)
+            organisations = process_raw_data(
+                "organisations", raw_organisations, for_streamfield=True
+            )
+            languages = process_raw_data(
+                "languages", raw_languages, for_streamfield=True
+            )
+
+            person.projects = json.dumps(projects)
+            person.organisations = json.dumps(organisations)
+            person.languages = json.dumps(languages)
+
+            person.save()
+        else:
+            raise GraphQLError("Permission denied")
+
+        return VariableStore(person=person)
+
+
 class Mutation(graphene.ObjectType):
     follow = Follow.Field()
     unfollow = Unfollow.Field()
     like = Like.Field()
     unlike = Unlike.Field()
+    update_person_setting = UpdateSettings.Field()
+    variable_store = VariableStore.Field()
 
 
 class Query(graphene.ObjectType):

@@ -39,7 +39,14 @@ def create_schema():
     import esite.profile.schema
     from .jwtauth.schema import ObtainJSONWebToken
     from esite.caching.schema import CacheUser, CacheUserByName
-    from esite.people.schema import Follow, Unfollow, Like, Unlike
+    from esite.people.schema import (
+        Follow,
+        Unfollow,
+        Like,
+        Unlike,
+        UpdateSettings,
+        VariableStore,
+    )
 
     class Query(
         # Custom queries start
@@ -74,6 +81,8 @@ def create_schema():
             "unfollow_person": Unfollow.Field(),
             "like_person": Like.Field(),
             "unlike_person": Unlike.Field(),
+            "update_person_setting": UpdateSettings.Field(),
+            "variable_store": VariableStore.Field(),
             "add_profile": esite.profile.schema.AddProfile.Field(),
             "delete_profile": esite.profile.schema.DeleteProfile.Field(),
             "update_profile": esite.profile.schema.UpdateProfile.Field(),
