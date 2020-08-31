@@ -96,6 +96,7 @@ class UpdateProfile(graphene.Mutation):
         username = graphene.String(required=False)
         access_token = graphene.String(required=False)
         source_type = graphene.String(required=False)
+        is_active = graphene.Boolean(required=False)
 
     @login_required
     def mutate(self, info, token, profile_id, **kwargs):
