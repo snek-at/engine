@@ -2,6 +2,7 @@ from django.conf import settings
 from django.contrib.auth import get_user_model
 from django.contrib.auth.models import AbstractUser, BaseUserManager
 from django.core.paginator import EmptyPage, PageNotAnInteger, Paginator
+from django.core.serializers.json import DjangoJSONEncoder
 from django.db import models
 
 from modelcluster.fields import ParentalKey
@@ -68,7 +69,7 @@ class Movable(blocks.StructBlock):
 
 
 class SocialMediaProfile(models.Model):
-    person_page = ParentalKey("PersonFormPage", related_name="social_media_profile")
+    person_page = ParentalKey("PersonPage", related_name="social_media_profile")
     site_titles = (("twitter", "Twitter"), ("linkedin", "LinkedIn"))
     site_urls = (
         ("twitter", "https://twitter.com/"),
@@ -86,17 +87,7 @@ class SocialMediaProfile(models.Model):
             self.username = self.username[1:]
 
 
-class PersonFormField(AbstractFormField):
-    page = ParentalKey(
-        "PersonFormPage", on_delete=models.CASCADE, related_name="form_fields"
-    )
-
-
-class PersonFormSubmission(AbstractFormSubmission):
-    user = models.ForeignKey(get_user_model(), on_delete=models.CASCADE)
-
-
-class PersonFormPage(BaseFormPage):
+class PersonPage(BasePage):
     template = "patterns/pages/people/person_page.html"
 
     parent_page_types = ["people.PersonIndex"]
@@ -105,7 +96,7 @@ class PersonFormPage(BaseFormPage):
     show_in_menus_default = False
 
     class Meta:
-        verbose_name = "Person Form Page"
+        verbose_name = "Person Page"
 
     person = models.OneToOneField(
         "Person", on_delete=models.CASCADE, related_name="person_page"
@@ -137,10 +128,10 @@ class PersonFormPage(BaseFormPage):
     tids = models.TextField(null=True, blank=True)
 
     follows = models.ManyToManyField(
-        "PersonFormPage", null=True, blank=True, related_name="followed_by"
+        "PersonPage", null=True, blank=True, related_name="followed_by"
     )
     likes = models.ManyToManyField(
-        "PersonFormPage", null=True, blank=True, related_name="liked_by"
+        "PersonPage", null=True, blank=True, related_name="liked_by"
     )
 
     movable_pool = StreamField(
@@ -177,12 +168,6 @@ class PersonFormPage(BaseFormPage):
         StreamFieldPanel("link_collection"),
     ]
 
-    form_panels = [
-        MultiFieldPanel(
-            [InlinePanel("form_fields", label="Form fields")], heading="data",
-        ),
-    ]
-
     social_panel = [
         MultiFieldPanel([FieldPanel("follows")], heading="Followings",),
         # MultiFieldPanel([FieldPanel("achievements")], heading="Achievements",),
@@ -192,7 +177,6 @@ class PersonFormPage(BaseFormPage):
         [
             ObjectList(content_panels, heading="Content"),
             ObjectList(social_panel, heading="Social"),
-            ObjectList(form_panels, heading="Form"),
             ObjectList(
                 BasePage.promote_panels + BasePage.settings_panels,
                 heading="Settings",
@@ -223,30 +207,12 @@ class PersonFormPage(BaseFormPage):
         GraphQLStreamfield("movable_pool"),
         GraphQLStreamfield("link_collection"),
         GraphQLForeignKey("person", "people.Person"),
-        GraphQLCollection(GraphQLForeignKey, "follows", "people.PersonFormPage"),
-        GraphQLCollection(GraphQLForeignKey, "followed_by", "people.PersonFormPage"),
-        GraphQLCollection(GraphQLForeignKey, "likes", "people.PersonFormPage"),
-        GraphQLCollection(GraphQLForeignKey, "liked_by", "people.PersonFormPage"),
+        GraphQLCollection(GraphQLForeignKey, "follows", "people.PersonPage"),
+        GraphQLCollection(GraphQLForeignKey, "followed_by", "people.PersonPage"),
+        GraphQLCollection(GraphQLForeignKey, "likes", "people.PersonPage"),
+        GraphQLCollection(GraphQLForeignKey, "liked_by", "people.PersonPage"),
         GraphQLCollection(GraphQLForeignKey, "achievements", "achievement.Achievement"),
     ]
-
-    def get_submission_class(self):
-        return PersonFormSubmission
-
-    def store_merged_profiles(self, **kwargs):
-        print("Merged profile data", **kwargs)
-        self.person.save()
-
-    def process_form_submission(self, form):
-        self.store_merged_profiles(
-            # platformName=form.cleaned_data["platform_name"]
-        )
-
-        self.get_submission_class().objects.create(
-            form_data=json.dumps(form.cleaned_data, cls=DjangoJSONEncoder),
-            page=self,
-            user=user,
-        )
 
 
 class PersonIndex(BasePage):
@@ -254,15 +220,13 @@ class PersonIndex(BasePage):
 
     # Only allow creating HomePages at the root level
     parent_page_types = ["home.HomePage"]
-    subpage_types = ["PersonFormPage"]
+    subpage_types = ["PersonPage"]
 
     class Meta:
         verbose_name = "Person Index"
 
     def get_context(self, request, *args, **kwargs):
-        people = (
-            PersonFormPage.objects.live().public().descendant_of(self).order_by("slug")
-        )
+        people = PersonPage.objects.live().public().descendant_of(self).order_by("slug")
 
         page_number = request.GET.get("page", 1)
         paginator = Paginator(people, settings.DEFAULT_PER_PAGE)

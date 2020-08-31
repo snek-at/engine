@@ -52,9 +52,7 @@ class Profile(TimeStampMixin):
         ("gitlab", "GitLab"),
         ("instagram", "Instagram"),
     )
-    person_page = ParentalKey(
-        "people.PersonFormPage", null=True, related_name="profiles"
-    )
+    person_page = ParentalKey("people.PersonPage", null=True, related_name="profiles")
     username = models.CharField(null=True, blank=True, max_length=255)
     access_token = models.CharField(null=True, blank=True, max_length=255)
     source_type = models.CharField(
@@ -73,7 +71,11 @@ class Profile(TimeStampMixin):
     content_panels = [
         FieldPanel("person_page"),
         MultiFieldPanel(
-            [FieldPanel("username"), FieldPanel("access_token"), FieldPanel("source_type"),],
+            [
+                FieldPanel("username"),
+                FieldPanel("access_token"),
+                FieldPanel("source_type"),
+            ],
         ),
     ]
 

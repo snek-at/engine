@@ -12,7 +12,7 @@ from graphql_jwt.decorators import (
     superuser_required,
 )
 
-from esite.people.models import PersonFormPage
+from esite.people.models import PersonPage
 from esite.profile.models import Profile
 
 
@@ -39,7 +39,7 @@ class AddProfile(graphene.Mutation):
         user = info.context.user
 
         if user.is_superuser:
-            person_pages = PersonFormPage.objects.filter(slug=f"p-{person_name}")
+            person_pages = PersonPage.objects.filter(slug=f"p-{person_name}")
         else:
             person_pages = Profile.objects.filter(
                 slug=f"p-{person_name}", person__user=user
@@ -137,7 +137,7 @@ class Query(graphene.ObjectType):
     def resolve_person_profiles(self, info, token, person_name, **_kwargs):
         user = info.context.user
 
-        person_page = PersonFormPage.objects.filter(slug=f"p-{person_name}").first()
+        person_page = PersonPage.objects.filter(slug=f"p-{person_name}").first()
 
         if not person_page:
             raise GraphQLError("Person not valid")

@@ -23,14 +23,14 @@ from wagtail.images import get_image_model
 from wagtail.images.edit_handlers import ImageChooserPanel
 
 from esite.bifrost.models import GraphQLImage, GraphQLStreamfield, GraphQLString
-from esite.people.models import PersonFormPage
+from esite.people.models import PersonPage
 
 # from esite.utils.blocks import StoryBlock
 from esite.utils.models import BaseFormPage, BasePage
 
 
 class SocialMediaProfile(models.Model):
-    person_page = ParentalKey("PersonFormPage", related_name="social_media_profile")
+    person_page = ParentalKey("PersonPage", related_name="social_media_profile")
     site_titles = (("twitter", "Twitter"), ("linkedin", "LinkedIn"))
     site_urls = (
         ("twitter", "https://twitter.com/"),
@@ -50,7 +50,7 @@ class SocialMediaProfile(models.Model):
 
 class StaffFormField(AbstractFormField):
     page = ParentalKey(
-        "PersonFormPage", on_delete=models.CASCADE, related_name="form_fields"
+        "PersonPage", on_delete=models.CASCADE, related_name="form_fields"
     )
 
 
@@ -146,9 +146,7 @@ class PersonIndex(BasePage):
         verbose_name = "Person Index"
 
     def get_context(self, request, *args, **kwargs):
-        person = (
-            PersonFormPage.objects.live().public().descendant_of(self).order_by("slug")
-        )
+        person = PersonPage.objects.live().public().descendant_of(self).order_by("slug")
 
         page_number = request.GET.get("page", 1)
         paginator = Paginator(person, settings.DEFAULT_PER_PAGE)

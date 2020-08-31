@@ -46,7 +46,7 @@ class Comment(models.Model):
         "talk.Talk", on_delete=models.CASCADE, related_name="comment_talk"
     )
     owner = ParentalKey(
-        "people.PersonFormPage", on_delete=models.CASCADE, related_name="comment_owner"
+        "people.PersonPage", on_delete=models.CASCADE, related_name="comment_owner"
     )
     datetime = models.DateTimeField(null=True, blank=True)
     message = models.TextField(null=True, blank=True, help_text="Other information")

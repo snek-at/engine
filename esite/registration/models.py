@@ -45,7 +45,7 @@ from esite.bifrost.models import (
     GraphQLString,
 )
 from esite.enterprises.models import EnterpriseFormPage, Enterprise
-from esite.people.models import PersonFormPage, Person
+from esite.people.models import PersonPage, Person
 from esite.profile.models import Profile
 from esite.redemption.models import RedemptionCode
 from esite.utils.models import BaseEmailFormPage, BasePage
@@ -237,7 +237,7 @@ class PersonRegistrationFormPage(BaseEmailFormPage):
 
         parent_page = Page.objects.get(url_path="/home/people/").specific
 
-        people_page = PersonFormPage(
+        people_page = PersonPage(
             title=f"{user.username}",
             slug=f"p-{user.username}",
             first_name=first_name,

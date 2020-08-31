@@ -46,7 +46,7 @@ from esite.utils.models import BasePage
 
 class Achievement(ClusterableModel):
     collectors = ParentalManyToManyField(
-        "people.PersonFormPage", related_name="achievements", blank=True
+        "people.PersonPage", related_name="achievements", blank=True
     )
     title = models.CharField(null=True, blank=True, max_length=32)
     description = models.TextField(null=True, blank=True, help_text="Other information")

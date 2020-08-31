@@ -13,12 +13,12 @@ from graphql_jwt.decorators import (
 )
 
 from esite.images.models import SNEKPersonAvatarImage
-from esite.people.models import Person, PersonFormPage
+from esite.people.models import Person, PersonPage
 
 
 class PersonPageType(DjangoObjectType):
     class Meta:
-        model = PersonFormPage
+        model = PersonPage
 
 
 class PersonType(DjangoObjectType):
@@ -44,13 +44,13 @@ class Follow(graphene.Mutation):
     def mutate(self, info, token, person, person_to_follow):
         user = info.context.user
 
-        origin_person_page = PersonFormPage.objects.get(slug=f"p-{person}")
+        origin_person_page = PersonPage.objects.get(slug=f"p-{person}")
 
         if origin_person_page.person.user == user or user.is_superuser:
             """
             Allowed to set new follower for the page
             """
-            destination_person_page = PersonFormPage.objects.get(
+            destination_person_page = PersonPage.objects.get(
                 slug=f"p-{person_to_follow}"
             )
 
@@ -75,13 +75,13 @@ class Unfollow(graphene.Mutation):
     def mutate(self, info, token, person, person_to_unfollow):
         user = info.context.user
 
-        origin_person_page = PersonFormPage.objects.get(slug=f"p-{person}")
+        origin_person_page = PersonPage.objects.get(slug=f"p-{person}")
 
         if origin_person_page.person.user == user or user.is_superuser:
             """
             Allowed to unfollow
             """
-            destination_person_page = PersonFormPage.objects.get(
+            destination_person_page = PersonPage.objects.get(
                 slug=f"p-{person_to_unfollow}"
             )
 
@@ -106,15 +106,13 @@ class Like(graphene.Mutation):
     def mutate(self, info, token, person, person_to_like):
         user = info.context.user
 
-        origin_person_page = PersonFormPage.objects.get(slug=f"p-{person}")
+        origin_person_page = PersonPage.objects.get(slug=f"p-{person}")
 
         if origin_person_page.person.user == user or user.is_superuser:
             """
             Allowed to like
             """
-            destination_person_page = PersonFormPage.objects.get(
-                slug=f"p-{person_to_like}"
-            )
+            destination_person_page = PersonPage.objects.get(slug=f"p-{person_to_like}")
 
             origin_person_page.likes.add(destination_person_page)
             origin_person_page.save()
@@ -137,13 +135,13 @@ class Unlike(graphene.Mutation):
     def mutate(self, info, token, person, person_to_unlike):
         user = info.context.user
 
-        origin_person_page = PersonFormPage.objects.get(slug=f"p-{person}")
+        origin_person_page = PersonPage.objects.get(slug=f"p-{person}")
 
         if origin_person_page.person.user == user or user.is_superuser:
             """
             Allowed to unlike
             """
-            destination_person_page = PersonFormPage.objects.get(
+            destination_person_page = PersonPage.objects.get(
                 slug=f"p-{person_to_unlike}"
             )
 
@@ -185,9 +183,10 @@ class UpdateSettings(graphene.Mutation):
         """
         person_pages must contain one entry due to the uniqueness of the slug
         """
-        person_pages = PersonFormPage.objects.filter(slug=f"p-{person_name}")
+        person_pages = PersonPage.objects.filter(slug=f"p-{person_name}")
 
-        if not person_pages.first():
+        person_page = person_pages.first()
+        if not person_page:
             """
             No page found
             """
@@ -205,7 +204,6 @@ class UpdateSettings(graphene.Mutation):
             if info.context.FILES and info.context.method == "POST":
                 avatar_image = info.context.FILES["avatar_image"]
 
-                person_page = person_pages.first()
                 person_page.avatar_image.delete()
 
                 person_page.avatar_image = SNEKPersonAvatarImage.objects.create(
