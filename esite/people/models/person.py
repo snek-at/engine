@@ -19,10 +19,10 @@ from esite.bifrost.models import (
     GraphQLEmbed,
     GraphQLFloat,
     GraphQLForeignKey,
+    GraphQLImage,
     GraphQLInt,
     GraphQLStreamfield,
     GraphQLString,
-    GraphQLImage,
 )
 from esite.colorfield.blocks import ColorBlock
 
