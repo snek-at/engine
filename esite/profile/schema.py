@@ -42,7 +42,7 @@ class AddProfile(graphene.Mutation):
         if user.is_superuser:
             person_pages = PersonPage.objects.filter(slug=f"p-{person_name}")
         else:
-            person_pages = Profile.objects.filter(
+            person_pages = PersonPage.objects.filter(
                 slug=f"p-{person_name}", person__user=user
             )
 
