@@ -16,15 +16,17 @@ class ProfileAdmin(ModelAdmin):
     # Listed in the registration overview
     list_display = (
         "username",
-        "name",
-        "src_url",
+        "source_url",
+        "source_type",
         "created_at",
+        "updated_at",
     )
     search_fields = (
         "username",
-        "name",
-        "src_url",
+        "source_url",
+        "source_type",
         "created_at",
+        "updated_at",
     )
 
 
