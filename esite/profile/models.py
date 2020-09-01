@@ -48,13 +48,14 @@ from esite.utils.models import BasePage, TimeStampMixin
 # > Profilepage
 class Profile(TimeStampMixin):
     PROFILE_TYPES = (
-        ("github", "GitHub"),
-        ("gitlab", "GitLab"),
-        ("instagram", "Instagram"),
+        ("GITHUB", "GitHub"),
+        ("GITLAB", "GitLab"),
+        ("INSTAGRAM", "Instagram"),
     )
     person_page = ParentalKey("people.PersonPage", null=True, related_name="profiles")
     username = models.CharField(null=True, blank=True, max_length=255)
     access_token = models.CharField(null=True, blank=True, max_length=255)
+    source_url = models.URLField(null=True, blank=False)
     source_type = models.CharField(
         null=True, blank=False, choices=PROFILE_TYPES, max_length=255
     )
@@ -64,6 +65,7 @@ class Profile(TimeStampMixin):
         GraphQLString("id"),
         GraphQLString("username"),
         GraphQLString("access_token"),
+        GraphQLString("source_url"),
         GraphQLString("source_type"),
         GraphQLString("is_active"),
         GraphQLString("created_at"),
@@ -77,6 +79,7 @@ class Profile(TimeStampMixin):
                 FieldPanel("username"),
                 FieldPanel("access_token"),
                 FieldPanel("source_type"),
+                FieldPanel("source_url"),
             ],
         ),
         FieldPanel("is_active"),

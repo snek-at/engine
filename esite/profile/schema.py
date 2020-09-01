@@ -32,6 +32,7 @@ class AddProfile(graphene.Mutation):
         person_name = graphene.String(required=True)
         username = graphene.String(required=False)
         access_token = graphene.String(required=False)
+        source_url = graphene.String(required=False)
         source_type = graphene.String(required=False)
 
     @login_required
@@ -95,6 +96,7 @@ class UpdateProfile(graphene.Mutation):
         profile_id = graphene.ID(required=True)
         username = graphene.String(required=False)
         access_token = graphene.String(required=False)
+        source_url = graphene.String(required=False)
         source_type = graphene.String(required=False)
         is_active = graphene.Boolean(required=False)
 
