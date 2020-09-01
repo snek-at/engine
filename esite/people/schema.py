@@ -14,6 +14,7 @@ from graphql_jwt.decorators import (
 
 from esite.images.models import SNEKPersonAvatarImage
 from esite.people.models import Person, PersonPage
+from esite.utils.tools import camelcase_to_snake
 
 
 class PersonPageType(DjangoObjectType):
@@ -263,9 +264,21 @@ class VariableStore(graphene.Mutation):
             Allowed to update person data
             """
 
-            def process_raw_data(obj_type: str, obj={}, for_streamfield=False):
+            def process_raw_data(obj_type: str, obj=None, for_streamfield=False):
                 if isinstance(obj, dict):
-                    obj = {k: process_raw_data(k, v) for (k, v) in obj.items()}
+
+                    if "repositories" in obj:
+                        obj["projects"] = obj.pop("repositories")
+
+                    obj = {
+                        camelcase_to_snake(k): process_raw_data(
+                            camelcase_to_snake(k), v
+                        )
+                        for (k, v) in obj.items()
+                    }
+
+                    if for_streamfield:
+                        return [{"type": obj_type, "value": obj}]
 
                 if isinstance(obj, list):
                     """
@@ -274,8 +287,8 @@ class VariableStore(graphene.Mutation):
                     """
                     obj = [process_raw_data(obj_type[:-1], e) for e in obj]
 
-                if for_streamfield:
-                    return [{"type": obj_type[:-1], "value": e} for e in obj]
+                    if for_streamfield:
+                        return [{"type": obj_type[:-1], "value": e} for e in obj]
 
                 return obj
 
@@ -286,10 +299,18 @@ class VariableStore(graphene.Mutation):
             languages = process_raw_data(
                 "languages", raw_languages, for_streamfield=True
             )
+            current_statistic = process_raw_data(
+                "statistic_year", raw_current_statistic, for_streamfield=True
+            )
+            years_statistic = process_raw_data(
+                "statistic_years", raw_years_statistic, for_streamfield=True
+            )
 
             person.projects = json.dumps(projects)
             person.organisations = json.dumps(organisations)
             person.languages = json.dumps(languages)
+            person.current_statistic = json.dumps(current_statistic)
+            person.years_statistic = json.dumps(years_statistic)
 
             person.save()
         else:

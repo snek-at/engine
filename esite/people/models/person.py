@@ -45,11 +45,13 @@ class _Person_Language(blocks.StructBlock):
 @register_streamfield_block
 class _Person_Member(blocks.StructBlock):
     avatar_url = blocks.URLBlock(
-        help_text="Important! Format https://www.domain.tld/xyz"
+        required=False, help_text="Important! Format https://www.domain.tld/xyz"
     )
-    url = blocks.URLBlock(help_text="Important! Format https://www.domain.tld/xyz")
-    fullname = blocks.CharBlock(max_length=255)
-    name = blocks.CharBlock(max_length=255)
+    url = blocks.URLBlock(
+        required=False, help_text="Important! Format https://www.domain.tld/xyz"
+    )
+    fullname = blocks.CharBlock(required=False, max_length=255)
+    name = blocks.CharBlock(required=False, max_length=255)
 
     graphql_fields = [
         GraphQLString("avatar_url"),
@@ -62,11 +64,13 @@ class _Person_Member(blocks.StructBlock):
 @register_streamfield_block
 class _Person_Project(blocks.StructBlock):
     avatar_url = blocks.URLBlock(
-        help_text="Important! Format https://www.domain.tld/xyz"
+        required=False, help_text="Important! Format https://www.domain.tld/xyz"
     )
-    url = blocks.URLBlock(help_text="Important! Format https://www.domain.tld/xyz")
-    name = blocks.CharBlock(max_length=255)
-    fullname = blocks.CharBlock(max_length=255)
+    url = blocks.URLBlock(
+        required=False, help_text="Important! Format https://www.domain.tld/xyz"
+    )
+    name = blocks.CharBlock(required=False, max_length=255)
+    fullname = blocks.CharBlock(required=False, max_length=255)
     owner = _Person_Member()
     members = blocks.ListBlock(_Person_Member())
     languages = blocks.ListBlock(_Person_Language())
@@ -76,10 +80,6 @@ class _Person_Project(blocks.StructBlock):
         GraphQLString("url"),
         GraphQLString("name"),
         GraphQLString("fullname"),
-        GraphQLString("owner_avatar_url"),
-        GraphQLString("owner_url"),
-        GraphQLString("owner_fullname"),
-        GraphQLString("owner_name"),
         GraphQLStreamfield("owner", is_list=False),
         GraphQLStreamfield("members"),
         GraphQLStreamfield("languages"),
@@ -88,14 +88,15 @@ class _Person_Project(blocks.StructBlock):
 
 @register_streamfield_block
 class _Person_Organisation(blocks.StructBlock):
-    profile_name = blocks.CharBlock(max_length=255)
     avatar_url = blocks.URLBlock(
-        help_text="Important! Format https://www.domain.tld/xyz"
+        required=False, help_text="Important! Format https://www.domain.tld/xyz"
     )
-    url = blocks.URLBlock(help_text="Important! Format https://www.domain.tld/xyz")
-    name = blocks.CharBlock(max_length=255)
-    fullname = blocks.CharBlock(max_length=255)
-    description = blocks.TextBlock(null=True, blank=True)
+    url = blocks.URLBlock(
+        required=False, help_text="Important! Format https://www.domain.tld/xyz"
+    )
+    name = blocks.CharBlock(required=False, max_length=255)
+    fullname = blocks.CharBlock(required=False, max_length=255)
+    description = blocks.TextBlock(required=False)
     members = blocks.ListBlock(_Person_Member())
     projects = blocks.ListBlock(_Person_Project())
 
@@ -113,10 +114,10 @@ class _Person_Organisation(blocks.StructBlock):
 
 @register_streamfield_block
 class _Person_Statistic_Streak(blocks.StructBlock):
-    start_date = blocks.DateBlock()
-    end_date = blocks.DateBlock()
-    total_days = blocks.IntegerBlock()
-    total_contributions = blocks.IntegerBlock()
+    start_date = blocks.DateBlock(required=False)
+    end_date = blocks.DateBlock(required=False)
+    total_days = blocks.IntegerBlock(required=False)
+    total_contributions = blocks.IntegerBlock(required=False)
 
     graphql_fields = [
         GraphQLString("start_date"),
@@ -127,25 +128,25 @@ class _Person_Statistic_Streak(blocks.StructBlock):
 
 
 @register_streamfield_block
-class Statistic(blocks.StructBlock):
-    calendar_3d = ImageChooserBlock()
-    calendar_2d = blocks.TextBlock()
-    contribution_type_2d = blocks.TextBlock()
-    total_issue_contributions = blocks.IntegerBlock()
-    total_commit_contributions = blocks.IntegerBlock()
-    total_repository_contributions = blocks.IntegerBlock()
-    total_pull_request_contributions = blocks.IntegerBlock()
-    total_pull_request_review_contributions = blocks.IntegerBlock()
-    total_repositories_with_contributed_issues = blocks.IntegerBlock()
-    total_repositories_with_contributed_commits = blocks.IntegerBlock()
-    total_repositories_with_contributed_pull_requests = blocks.IntegerBlock()
+class _Person_Statistic(blocks.StructBlock):
+    calendar3d = ImageChooserBlock(required=False)
+    calendar2d = blocks.TextBlock(required=False)
+    contribution_type2d = blocks.TextBlock()
+    total_issue_contributions = blocks.IntegerBlock(required=False)
+    total_commit_contributions = blocks.IntegerBlock(required=False)
+    total_repository_contributions = blocks.IntegerBlock(required=False)
+    total_pull_request_contributions = blocks.IntegerBlock(required=False)
+    total_pull_request_review_contributions = blocks.IntegerBlock(required=False)
+    total_repositories_with_contributed_issues = blocks.IntegerBlock(required=False)
+    total_repositories_with_contributed_commits = blocks.IntegerBlock(required=False)
+    total_repositories_with_contributed_pull_requests = blocks.IntegerBlock(required=False)
     current_streak = _Person_Statistic_Streak()
     longest_streak = _Person_Statistic_Streak()
 
     graphql_fields = [
-        GraphQLImage("calendar_3d"),
-        GraphQLString("calendar_2d"),
-        GraphQLString("contribution_type_2d"),
+        GraphQLImage("calendar3d"),
+        GraphQLString("calendar2d"),
+        GraphQLString("contribution_type2d"),
         GraphQLInt("total_issue_contributions"),
         GraphQLInt("total_commit_contributions"),
         GraphQLInt("total_repository_contributions"),
@@ -164,18 +165,16 @@ class Person(ClusterableModel):
 
     current_statistic = StreamField(
         blocks.StreamBlock(
-            [("statistic_year", _Person_Statistic_Streak()),], max_num=1
+            [("statistic_year", _Person_Statistic()),], required=False, max_num=1,
         ),
         null=True,
         blank=True,
     )
     years_statistic = StreamField(
-        blocks.StreamBlock([("statistic_year", _Person_Statistic_Streak()),],),
-        null=True,
-        blank=True,
+        [("statistic_year", _Person_Statistic()),], null=True, blank=True,
     )
 
-    projects = StreamField([("project", _Person_Project())], null=True, blank=True)
+    projects = StreamField([("project", _Person_Project())], null=True, blank=True,)
     organisations = StreamField(
         [("organisation", _Person_Organisation())], null=True, blank=True
     )
