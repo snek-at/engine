@@ -116,7 +116,7 @@ def serialize_struct_obj(obj):
         rtn_obj = []
         for field in obj.stream_data:
             rtn_obj.append(serialize_struct_obj(field["value"]))
-    else:
+    elif isinstance(obj, dict):
         for field in obj:
             value = obj[field]
             if hasattr(value, "stream_data"):
@@ -138,6 +138,8 @@ def serialize_struct_obj(obj):
                 rtn_obj[field] = [serialize_struct_obj(e) for e in value]
             else:
                 rtn_obj[field] = value
+    else:
+        rtn_obj = obj
 
     return rtn_obj
 
