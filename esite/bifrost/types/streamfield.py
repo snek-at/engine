@@ -63,13 +63,14 @@ class StreamFieldInterface(graphene.Interface):
         return self.block.name
 
     def resolve_raw_value(self, info, **kwargs):
+        import json
         if isinstance(self, dict):
-            return serialize_struct_obj(self)
+            return json.dumps(serialize_struct_obj(self), sort_keys=True)
 
         if isinstance(self.value, dict):
-            return serialize_struct_obj(self.value)
+            return json.dumps(serialize_struct_obj(self.value), sort_keys=True)
 
-        return self.value
+        return json.dumps(self.value, sort_keys=True)
 
 
 def generate_streamfield_union(graphql_types):
