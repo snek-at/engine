@@ -36,6 +36,7 @@ def create_schema():
 
     import esite.user.schema
     import esite.achievement.schema
+    import esite.talk.schema
     import esite.profile.schema
     from .jwtauth.schema import ObtainJSONWebToken
     from esite.caching.schema import CacheUser, CacheUserByName
@@ -52,6 +53,7 @@ def create_schema():
         # Custom queries start
         esite.user.schema.Query,
         esite.achievement.schema.Query,
+        esite.talk.schema.Query,
         esite.profile.schema.Query,
         # Custom queries end
         graphene.ObjectType,
@@ -86,7 +88,15 @@ def create_schema():
             "add_profile": esite.profile.schema.AddProfile.Field(),
             "delete_profile": esite.profile.schema.DeleteProfile.Field(),
             "update_profile": esite.profile.schema.UpdateProfile.Field(),
+            "update_profile": esite.profile.schema.UpdateProfile.Field(),
+            "add_talk": esite.talk.schema.AddTalk.Field(),
+            "delete_talk": esite.talk.schema.DeleteTalk.Field(),
+            "update_talk": esite.talk.schema.UpdateTalk.Field(),
+            "add_talk_comment": esite.talk.schema.AddTalkComment.Field(),
+            "delete_talk_comment": esite.talk.schema.DeleteTalkComment.Field(),
+            "update_talk_comment": esite.talk.schema.UpdateTalkComment.Field(),
         }
+
         dict_params.update(
             (camel_case_to_spaces(n).replace(" ", "_"), mut.Field())
             for n, mut in registry.forms.items()
