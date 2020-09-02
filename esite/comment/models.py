@@ -42,6 +42,7 @@ from esite.utils.models import TimeStampMixin
 
 
 class Comment(TimeStampMixin, ClusterableModel):
+    id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
     talk = ParentalKey(
         "talk.Talk", on_delete=models.CASCADE, related_name="talk_comments"
     )
@@ -54,6 +55,7 @@ class Comment(TimeStampMixin, ClusterableModel):
     )
 
     main_content_panels = [
+        ReadOnlyPanel("id", heading="ID"),
         FieldPanel("author"),
         FieldPanel("text"),
         MultiFieldPanel([FieldPanel("talk")], heading="Associated instances"),
@@ -64,6 +66,7 @@ class Comment(TimeStampMixin, ClusterableModel):
     ]
 
     graphql_fields = [
+        GraphQLString("id"),
         GraphQLString("author"),
         GraphQLString("text"),
         GraphQLString("created_at"),
