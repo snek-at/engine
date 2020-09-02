@@ -53,10 +53,10 @@ class Talk(ClusterableModel):
     url = models.URLField(
         null=True, blank=True, help_text="Important! Format https://www.domain.tld/xyz"
     )
-    displayUrl = models.URLField(
+    display_url = models.URLField(
         null=True, blank=True, help_text="Important! Format https://www.domain.tld/xyz"
     )
-    downloadUrl = models.URLField(
+    download_url = models.URLField(
         null=True, blank=True, help_text="Important! Format https://www.domain.tld/xyz"
     )
 
