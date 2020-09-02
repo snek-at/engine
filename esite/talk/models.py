@@ -37,12 +37,13 @@ from esite.bifrost.models import (
 from esite.colorfield.blocks import ColorAlphaBlock, ColorBlock, GradientColorBlock
 from esite.colorfield.fields import ColorAlphaField, ColorField
 from esite.utils.models import BasePage
+from esite.utils.edit_handlers import ReadOnlyPanel
 
 # Create your homepage related models here.
 
 
 class Talk(ClusterableModel):
-    # talk_id = models.CharField(primary_key=True, max_length=36)
+    id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
     owner = ParentalKey(
         "people.PersonPage", on_delete=models.CASCADE, related_name="talk_owner"
     )
@@ -60,26 +61,26 @@ class Talk(ClusterableModel):
     )
 
     graphql_fields = [
-        GraphQLString("talk_id"),
+        GraphQLString("id"),
         GraphQLString("title"),
         GraphQLString("description"),
         GraphQLString("path"),
         GraphQLString("url"),
         GraphQLString("displayUrl"),
         GraphQLString("downloadUrl"),
-        GraphQLCollection(GraphQLForeignKey, "comment_talk", "comment.Comment"),
+        GraphQLCollection(GraphQLForeignKey, "talk_comments", "comment.Comment"),
     ]
 
     main_content_panels = [
+        ReadOnlyPanel("id", heading="ID"),
         FieldPanel("owner"),
-        FieldPanel("title"),
         FieldPanel("title"),
         FieldPanel("description"),
         FieldPanel("path"),
         FieldPanel("url"),
         FieldPanel("displayUrl"),
         FieldPanel("downloadUrl"),
-        InlinePanel("comment_talk", label="Comments"),
+        InlinePanel("talk_comments", label="Comments"),
     ]
 
     edit_handler = TabbedInterface(

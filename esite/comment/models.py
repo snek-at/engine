@@ -36,31 +36,37 @@ from esite.bifrost.models import (
 )
 from esite.colorfield.blocks import ColorAlphaBlock, ColorBlock, GradientColorBlock
 from esite.colorfield.fields import ColorAlphaField, ColorField
-from esite.utils.models import BasePage
+from esite.utils.models import TimeStampMixin
 
 # Create your homepage related models here.
 
 
-class Comment(models.Model):
+class Comment(TimeStampMixin, ClusterableModel):
     talk = ParentalKey(
-        "talk.Talk", on_delete=models.CASCADE, related_name="comment_talk"
+        "talk.Talk", on_delete=models.CASCADE, related_name="talk_comments"
     )
-    owner = ParentalKey(
-        "people.PersonPage", on_delete=models.CASCADE, related_name="comment_owner"
+    author = ParentalKey(
+        "people.PersonPage", on_delete=models.CASCADE, related_name="author_comments",
     )
-    datetime = models.DateTimeField(null=True, blank=True)
-    message = models.TextField(null=True, blank=True, help_text="Other information")
+    text = models.TextField(null=True, blank=True, help_text="Comment text")
+    reply_to = models.ForeignKey(
+        "self", null=True, blank=True, on_delete=models.CASCADE, related_name="replies"
+    )
 
     main_content_panels = [
-        FieldPanel("talk"),
-        FieldPanel("owner"),
-        FieldPanel("datetime"),
-        FieldPanel("message"),
+        FieldPanel("author"),
+        FieldPanel("text"),
+        MultiFieldPanel([FieldPanel("talk")], heading="Associated instances"),
+        MultiFieldPanel(
+            [FieldPanel("created_at"), FieldPanel("updated_at")], heading="Meta",
+        ),
+        InlinePanel("reply_to"),
     ]
 
     graphql_fields = [
-        GraphQLString("talk"),
-        GraphQLString("owner"),
-        GraphQLString("datetime"),
-        GraphQLString("message"),
+        GraphQLString("author"),
+        GraphQLString("text"),
+        GraphQLString("created_at"),
+        GraphQLString("updated_at"),
+        GraphQLForeignKey("replies", "comment.Comment", is_list=True),
     ]
