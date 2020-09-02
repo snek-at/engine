@@ -50,8 +50,10 @@ from esite.utils.models import BaseFormPage, BasePage
 @register_streamfield_block
 class Meta_Link(blocks.StructBlock):
     LINK_TYPES = (
-        ("instagram_video", "Instagram Post Video"),
-        ("instagram_photo", "Instagram Post Photo"),
+        ("INSTAGRAM_VIDEO", "Instagram Post Video"),
+        ("INSTAGRAM_PHOTO", "Instagram Post Photo"),
+        ("PHOTO", "Photo URL"),
+        ("YOUTUBE", "Youtube URL"),
         ("other", "Other"),
     )
 
@@ -61,6 +63,13 @@ class Meta_Link(blocks.StructBlock):
     # > Meta
     location = blocks.CharBlock(null=True, blank=True, max_length=255)
     description = blocks.TextBlock(null=True, blank=True)
+
+    graphql_fields = [
+        GraphQLString("url"),
+        GraphQLString("link_type"),
+        GraphQLString("location"),
+        GraphQLString("description"),
+    ]
 
 
 @register_streamfield_block
