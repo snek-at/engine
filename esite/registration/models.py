@@ -209,24 +209,7 @@ class PersonRegistrationFormPage(BaseEmailFormPage):
 
     # Create a new user
     def create_user(
-        self,
-        username,
-        first_name,
-        last_name,
-        email,
-        display_email,
-        workplace,
-        display_workplace,
-        job_title,
-        website,
-        location,
-        rank,
-        display_rank,
-        display_languages,
-        status,
-        bio,
-        password,
-        redemption_code,
+        self, username, first_name, last_name, email, password, redemption_code,
     ):
 
         # enter the data here
@@ -296,7 +279,7 @@ class PersonRegistrationFormPage(BaseEmailFormPage):
             last_name=form.cleaned_data["last_name"],
             email=form.cleaned_data["email"],
             password=form.cleaned_data["password"],
-            redemption_code=form.cleaned_data["gift_code"],
+            redemption_code=form.cleaned_data["redemption_code"],
         )
 
         self.get_submission_class().objects.create(
