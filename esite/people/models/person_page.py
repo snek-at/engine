@@ -76,6 +76,8 @@ class Meta_Link(blocks.StructBlock):
 class Movable(blocks.StructBlock):
     order = blocks.ListBlock(blocks.IntegerBlock())
 
+    graphql_fields = [GraphQLStreamfield("order")]
+
 
 class SocialMediaProfile(models.Model):
     person_page = ParentalKey("PersonPage", related_name="social_media_profile")
