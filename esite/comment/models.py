@@ -37,6 +37,7 @@ from esite.bifrost.models import (
 from esite.colorfield.blocks import ColorAlphaBlock, ColorBlock, GradientColorBlock
 from esite.colorfield.fields import ColorAlphaField, ColorField
 from esite.utils.models import TimeStampMixin
+from esite.utils.edit_handlers import ReadOnlyPanel
 
 # Create your homepage related models here.
 
