@@ -62,6 +62,7 @@ class Achievement(ClusterableModel):
     graphql_fields = [
         GraphQLCollection(GraphQLForeignKey, "collectors", "achievement.Achievement"),
         GraphQLString("title"),
+        GraphQLString("description"),
         GraphQLImage("image"),
         GraphQLInt("points"),
     ]
