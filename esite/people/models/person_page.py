@@ -48,31 +48,6 @@ from esite.utils.models import BaseFormPage, BasePage
 
 
 @register_streamfield_block
-class Meta_Link(blocks.StructBlock):
-    LINK_TYPES = (
-        ("INSTAGRAM_VIDEO", "Instagram Post Video"),
-        ("INSTAGRAM_PHOTO", "Instagram Post Photo"),
-        ("PHOTO", "Photo URL"),
-        ("YOUTUBE", "Youtube URL"),
-        ("other", "Other"),
-    )
-
-    url = blocks.URLBlock(null=True, blank=True, max_length=255)
-    link_type = blocks.ChoiceBlock(choices=LINK_TYPES, default="other")
-
-    # > Meta
-    location = blocks.CharBlock(null=True, blank=True, max_length=255)
-    description = blocks.TextBlock(null=True, blank=True)
-
-    graphql_fields = [
-        GraphQLString("url"),
-        GraphQLString("link_type"),
-        GraphQLString("location"),
-        GraphQLString("description"),
-    ]
-
-
-@register_streamfield_block
 class Movable(blocks.StructBlock):
     order = blocks.ListBlock(blocks.IntegerBlock())
 
@@ -96,6 +71,32 @@ class SocialMediaProfile(models.Model):
     def clean(self):
         if self.service == "twitter" and self.username.startswith("@"):
             self.username = self.username[1:]
+
+
+class Meta_Link(models.Model):
+    LINK_TYPES = (
+        ("INSTAGRAM_VIDEO", "Instagram Post Video"),
+        ("INSTAGRAM_PHOTO", "Instagram Post Photo"),
+        ("PHOTO", "Photo URL"),
+        ("YOUTUBE", "Youtube URL"),
+        ("other", "Other"),
+    )
+    person_page = ParentalKey("PersonPage", related_name="meta_links")
+    url = models.URLField(unique=True, max_length=255)
+    link_type = models.CharField(choices=LINK_TYPES, default="other", max_length=255)
+
+    # > Meta
+    location = models.CharField(null=True, blank=True, max_length=255)
+    description = models.TextField(null=True, blank=True)
+    imgur_delete_hash = models.CharField(null=True, blank=True, max_length=255)
+
+    graphql_fields = [
+        GraphQLString("url"),
+        GraphQLString("link_type"),
+        GraphQLString("location"),
+        GraphQLString("description"),
+        GraphQLString("imgur_delete_hash"),
+    ]
 
 
 class PersonPage(BasePage):
@@ -149,8 +150,6 @@ class PersonPage(BasePage):
         [("overview", Movable()), ("contribtype", Movable())], null=True, blank=True,
     )
 
-    link_collection = StreamField([("link", Meta_Link())], null=True, blank=True)
-
     content_panels = BasePage.content_panels + [
         FieldPanel("person"),
         MultiFieldPanel(
@@ -161,6 +160,7 @@ class PersonPage(BasePage):
         FieldPanel("display_workplace"),
         InlinePanel("social_media_profile", label="Social accounts"),
         InlinePanel("profiles", label="Profiles"),
+        InlinePanel("meta_links", label="Meta Links"),
         MultiFieldPanel(
             [FieldPanel("email"), FieldPanel("display_email"),],
             heading="Contact information",
@@ -176,7 +176,6 @@ class PersonPage(BasePage):
         FieldPanel("bids"),
         FieldPanel("tids"),
         StreamFieldPanel("movable_pool"),
-        StreamFieldPanel("link_collection"),
     ]
 
     social_panel = [
@@ -216,8 +215,8 @@ class PersonPage(BasePage):
         GraphQLString("bids"),
         GraphQLString("tids"),
         GraphQLStreamfield("movable_pool"),
-        GraphQLStreamfield("link_collection"),
         GraphQLForeignKey("person", "people.Person"),
+        GraphQLCollection(GraphQLForeignKey, "meta_links", "people.Meta_Link"),
         GraphQLCollection(GraphQLForeignKey, "follows", "people.PersonPage"),
         GraphQLCollection(GraphQLForeignKey, "followed_by", "people.PersonPage"),
         GraphQLCollection(GraphQLForeignKey, "likes", "people.PersonPage"),

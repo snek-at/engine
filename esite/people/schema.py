@@ -13,7 +13,7 @@ from graphql_jwt.decorators import (
 )
 
 from esite.images.models import SNEKPersonAvatarImage
-from esite.people.models import Person, PersonPage
+from esite.people.models import Person, PersonPage, Meta_Link
 from esite.utils.tools import camelcase_to_snake
 
 
@@ -319,13 +319,80 @@ class VariableStore(graphene.Mutation):
         return VariableStore(person=person)
 
 
+class MetaLinkType(DjangoObjectType):
+    class Meta:
+        model = Meta_Link
+
+
+class AddPersonPageMetaLink(graphene.Mutation):
+    meta_link = graphene.Field(MetaLinkType)
+
+    class Arguments:
+        token = graphene.String(required=True)
+        person_name = graphene.String(required=True)
+        link_type = graphene.String(required=True)
+        location = graphene.String(required=False)
+        description = graphene.String(required=False)
+        imgur_delete_hash = graphene.String(required=False)
+
+    def mutate(self, info, token, person_name, **kwargs):
+        user = info.context.user
+
+        if user.is_superuser:
+            person_pages = PersonPage.objects.filter(slug=f"p-{person_name}")
+        else:
+            person_pages = PersonPage.objects.filter(
+                slug=f"p-{person_name}", person__user=user
+            )
+
+        person_page = person_pages.first()
+
+        if not person_page:
+            raise GraphQLError("person_name not valid on user")
+
+        meta_link = Meta_Link.objects.create(person_page=person_page, **kwargs)
+
+        return AddPersonPageMetaLink(meta_link=meta_link)
+
+
+class DeletePersonPageMetaLink(graphene.Mutation):
+    meta_links = graphene.List(MetaLinkType)
+
+    class Arguments:
+        token = graphene.String(required=True)
+        meta_link_id = graphene.String(required=True)
+
+    def mutate(self, info, token, meta_link_id, **kwargs):
+        user = info.context.user
+
+        if user.is_superuser:
+            meta_links = Meta_Link.objects.filter(id=meta_link_id)
+        else:
+            meta_links = Meta_Link.objects.filter(
+                id=meta_link_id, person_page__person__user=user
+            )
+
+        meta_link = meta_links.first()
+
+        if not meta_link:
+            raise GraphQLError("meta_link_id not valid for user")
+
+        meta_link.delete()
+
+        return DeletePersonPageMetaLink(
+            meta_link=Meta_Link.objects.filter(person_page__person__user=user)
+        )
+
+
 class Mutation(graphene.ObjectType):
     follow = Follow.Field()
     unfollow = Unfollow.Field()
     like = Like.Field()
     unlike = Unlike.Field()
-    update_person_setting = UpdateSettings.Field()
+    update_person_page = UpdatePersonPage.Field()
     variable_store = VariableStore.Field()
+    add_person_page_meta_link = AddPersonPageMetaLink.Field()
+    delete_person_page_meta_link = DeletePersonPageMetaLink.Field()
 
 
 class Query(graphene.ObjectType):

@@ -47,6 +47,8 @@ def create_schema():
         Unlike,
         UpdateSettings,
         VariableStore,
+        AddPersonPageMetaLink,
+        DeletePersonPageMetaLink,
     )
 
     class Query(
@@ -85,6 +87,8 @@ def create_schema():
             "unlike_person": Unlike.Field(),
             "update_person_setting": UpdateSettings.Field(),
             "variable_store": VariableStore.Field(),
+            "add_person_page_meta_link": AddPersonPageMetaLink.Field(),
+            "delete_person_page_meta_link": DeletePersonPageMetaLink.Field(),
             "add_profile": esite.profile.schema.AddProfile.Field(),
             "delete_profile": esite.profile.schema.DeleteProfile.Field(),
             "update_profile": esite.profile.schema.UpdateProfile.Field(),
