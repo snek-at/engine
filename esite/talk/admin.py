@@ -19,16 +19,16 @@ class TalkAdmin(ModelAdmin):
         "description",
         "path",
         "url",
-        "displayUrl",
-        "downloadUrl",
+        "display_url",
+        "download_url",
     )
     search_fields = (
         "title",
         "description",
         "path",
         "url",
-        "displayUrl",
-        "downloadUrl",
+        "display_url",
+        "download_url",
     )
 
 

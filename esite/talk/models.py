@@ -66,8 +66,8 @@ class Talk(ClusterableModel):
         GraphQLString("description"),
         GraphQLString("path"),
         GraphQLString("url"),
-        GraphQLString("displayUrl"),
-        GraphQLString("downloadUrl"),
+        GraphQLString("display_url"),
+        GraphQLString("download_url"),
         GraphQLCollection(GraphQLForeignKey, "talk_comments", "comment.Comment"),
     ]
 
@@ -78,8 +78,8 @@ class Talk(ClusterableModel):
         FieldPanel("description"),
         FieldPanel("path"),
         FieldPanel("url"),
-        FieldPanel("displayUrl"),
-        FieldPanel("downloadUrl"),
+        FieldPanel("display_url"),
+        FieldPanel("download_url"),
         InlinePanel("talk_comments", label="Comments"),
     ]
 
