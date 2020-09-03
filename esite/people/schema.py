@@ -179,7 +179,7 @@ class UpdatePersonPage(graphene.Mutation):
         display_3d_calendar = graphene.Boolean(required=False)
 
     @login_required
-    def mutate(self, info, token, person_name, movable_pool, **kwargs):
+    def mutate(self, info, token, person_name, movable_pool=None, **kwargs):
         user = info.context.user
 
         """
@@ -200,12 +200,14 @@ class UpdatePersonPage(graphene.Mutation):
             """
             person_pages.update(**kwargs)
 
-            try:
-                person_page.movable_pool = [
-                    (e.field, e.rawValue) for e in json.loads(movable_pool)
-                ]
-            except:
-                raise GraphQLError("Something went wrong with movable_pool")
+    
+            if movable_pool:
+                try:
+                    person_page.movable_pool = [
+                        (e.field, e.rawValue) for e in json.loads(movable_pool)
+                    ]
+                except:
+                    raise GraphQLError("Something went wrong with movable_pool")
 
             """
             Set photo
