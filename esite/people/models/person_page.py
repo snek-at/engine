@@ -82,7 +82,7 @@ class Meta_Link(models.Model):
         ("other", "Other"),
     )
     person_page = ParentalKey("PersonPage", related_name="meta_links")
-    url = models.URLField(unique=True, max_length=255)
+    url = models.URLField(max_length=255)
     link_type = models.CharField(choices=LINK_TYPES, default="other", max_length=255)
 
     # > Meta
