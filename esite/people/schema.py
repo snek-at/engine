@@ -155,7 +155,7 @@ class Unlike(graphene.Mutation):
         return Unlike(total_likes=origin_person_page.likes.count())
 
 
-class UpdateSettings(graphene.Mutation):
+class UpdatePersonPage(graphene.Mutation):
     person_page = graphene.Field(PersonPageType)
 
     class Arguments:
@@ -216,7 +216,7 @@ class UpdateSettings(graphene.Mutation):
         else:
             raise GraphQLError("Permission denied")
 
-        return UpdateSettings(person_page=person_pages.first())
+        return UpdatePersonPage(person_page=person_pages.first())
 
 
 class VariableStore(graphene.Mutation):
