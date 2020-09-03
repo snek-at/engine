@@ -12,9 +12,9 @@ from graphql_jwt.decorators import (
     superuser_required,
 )
 
-from esite.images.models import SNEKPersonAvatarImage
+from esite.images.models import SNEKImage
 from esite.people.models import Person, PersonPage, Meta_Link
-from esite.utils.tools import camelcase_to_snake
+from esite.utils.tools import camelcase_to_snake, get_image_from_data_url
 
 
 class PersonPageType(DjangoObjectType):
@@ -26,11 +26,6 @@ class PersonType(DjangoObjectType):
     class Meta:
         model = Person
         exclude_fields = ["user"]
-
-
-class Upload(graphene.Scalar):
-    def serialize(self):
-        pass
 
 
 class Follow(graphene.Mutation):
@@ -166,7 +161,7 @@ class UpdatePersonPage(graphene.Mutation):
         last_name = graphene.String(required=False)
         status = graphene.String(required=False)
         bio = graphene.String(required=False)
-        avatar_image = Upload(required=False)
+        avatar_image = graphene.String(required=False)
         email = graphene.String(required=False)
         display_email = graphene.Boolean(required=False)
         workplace = graphene.String(required=False)
@@ -179,7 +174,9 @@ class UpdatePersonPage(graphene.Mutation):
         display_3d_calendar = graphene.Boolean(required=False)
 
     @login_required
-    def mutate(self, info, token, person_name, movable_pool=None, **kwargs):
+    def mutate(
+        self, info, token, person_name, movable_pool=None, avatar_image=None, **kwargs
+    ):
         user = info.context.user
 
         """
@@ -200,7 +197,6 @@ class UpdatePersonPage(graphene.Mutation):
             """
             person_pages.update(**kwargs)
 
-    
             if movable_pool:
                 try:
                     person_page.movable_pool = [
@@ -209,19 +205,20 @@ class UpdatePersonPage(graphene.Mutation):
                 except:
                     raise GraphQLError("Something went wrong with movable_pool")
 
-            """
-            Set photo
-            """
-            if info.context.FILES and info.context.method == "POST":
-                avatar_image = info.context.FILES["avatar_image"]
+            if avatar_image:
+                """
+                Set photo
+                """
+                file = get_image_from_data_url(data_url=avatar_image)
 
-                person_page.avatar_image.delete()
+                if person_page.avatar_image:
+                    person_page.avatar_image.delete()
 
-                person_page.avatar_image = SNEKPersonAvatarImage.objects.create(
-                    file=avatar_image, title=f"Avatar of {person_name}"
-                )
+                image = SNEKImage.objects.create(file=file[0], title="Test")
 
-                person_page.save()
+                person_page.avatar_image = image
+
+            person_page.save()
 
         else:
             raise GraphQLError("Permission denied")
