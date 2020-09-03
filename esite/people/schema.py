@@ -337,6 +337,7 @@ class AddPersonPageMetaLink(graphene.Mutation):
     class Arguments:
         token = graphene.String(required=True)
         person_name = graphene.String(required=True)
+        url = graphene.String(required=True)
         link_type = graphene.String(required=True)
         location = graphene.String(required=False)
         description = graphene.String(required=False)
