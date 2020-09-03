@@ -59,14 +59,15 @@ class Profile(TimeStampMixin):
     source_type = models.CharField(
         null=True, blank=False, choices=PROFILE_TYPES, max_length=255
     )
+    is_access_token_expired = models.BooleanField(blank=True, default=False)
     is_active = models.BooleanField(blank=True, default=True)
 
     graphql_fields = [
         GraphQLString("id"),
         GraphQLString("username"),
-        GraphQLString("access_token"),
         GraphQLString("source_url"),
         GraphQLString("source_type"),
+        GraphQLString("is_access_token_expired"),
         GraphQLString("is_active"),
         GraphQLString("created_at"),
         GraphQLString("updated_at"),
@@ -78,6 +79,7 @@ class Profile(TimeStampMixin):
             [
                 FieldPanel("username"),
                 FieldPanel("access_token"),
+                FieldPanel("is_access_token_expired"),
                 FieldPanel("source_type"),
                 FieldPanel("source_url"),
             ],
