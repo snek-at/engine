@@ -75,15 +75,15 @@ class SocialMediaProfile(models.Model):
 
 class Meta_Link(models.Model):
     LINK_TYPES = (
-        ("INSTAGRAM_VIDEO", "Instagram Post Video"),
-        ("INSTAGRAM_PHOTO", "Instagram Post Photo"),
+        ("INSTAGRAM", "Instagram Post"),
         ("PHOTO", "Photo URL"),
         ("YOUTUBE", "Youtube URL"),
-        ("other", "Other"),
+        ("VIMEO", "VIMEO URL"),
+        ("OTHER", "Other"),
     )
     person_page = ParentalKey("PersonPage", related_name="meta_links")
     url = models.URLField(max_length=255)
-    link_type = models.CharField(choices=LINK_TYPES, default="other", max_length=255)
+    link_type = models.CharField(choices=LINK_TYPES, default="OTHER", max_length=255)
 
     # > Meta
     location = models.CharField(null=True, blank=True, max_length=255)
