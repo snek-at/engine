@@ -245,10 +245,12 @@ class VariableStore(graphene.Mutation):
         token,
         person_name,
         raw_current_statistic=None,
-        raw_years_statistic=[],
-        raw_organisations=[],
-        raw_projects=[],
-        raw_languages=[],
+        raw_current_statistic_calendar_image=None,
+        raw_years_statistic=None,
+        raw_years_statistic_calendar_image=None,
+        raw_organisations=None,
+        raw_projects=None,
+        raw_languages=None,
         **kwargs,
     ):
         import esite.people.models
@@ -299,25 +301,76 @@ class VariableStore(graphene.Mutation):
 
                 return obj
 
-            projects = process_raw_data("projects", raw_projects, for_streamfield=True)
-            organisations = process_raw_data(
-                "organisations", raw_organisations, for_streamfield=True
-            )
-            languages = process_raw_data(
-                "languages", raw_languages, for_streamfield=True
-            )
-            current_statistic = process_raw_data(
-                "statistic_year", raw_current_statistic, for_streamfield=True
-            )
-            years_statistic = process_raw_data(
-                "statistic_years", raw_years_statistic, for_streamfield=True
-            )
+            if raw_projects:
+                projects = process_raw_data(
+                    "projects", raw_projects, for_streamfield=True
+                )
+                person.projects = json.dumps(projects)
 
-            person.projects = json.dumps(projects)
-            person.organisations = json.dumps(organisations)
-            person.languages = json.dumps(languages)
-            person.current_statistic = json.dumps(current_statistic)
-            person.years_statistic = json.dumps(years_statistic)
+            if raw_organisations:
+                organisations = process_raw_data(
+                    "organisations", raw_organisations, for_streamfield=True
+                )
+                person.organisations = json.dumps(organisations)
+
+            if raw_languages:
+                languages = process_raw_data(
+                    "languages", raw_languages, for_streamfield=True
+                )
+                person.languages = json.dumps(languages)
+
+            if raw_current_statistic:
+                current_statistic = process_raw_data(
+                    "statistic_year", raw_current_statistic, for_streamfield=True
+                )
+                person.current_statistic = json.dumps(current_statistic)
+
+            if raw_years_statistic:
+                years_statistic = process_raw_data(
+                    "statistic_years", raw_years_statistic, for_streamfield=True
+                )
+                person.years_statistic = json.dumps(years_statistic)
+
+            if raw_current_statistic_calendar_image:
+                """
+                Set photo
+                """
+                file = get_image_from_data_url(
+                    data_url=raw_current_statistic_calendar_image
+                )
+
+                if current_statistic.calendar3d:
+                    current_statistic.calendar3d.delete()
+                else:
+                    image = SNEKImage.objects.create(
+                        file=file[0], title=f"Calendar of {person_name}"
+                    )
+                    image.file = file[0]
+
+                    current_statistic.calendar3d = image
+
+            if raw_years_statistic_calendar_image:
+                for idx, val in enumerate(years_statistic):
+                    try:
+                        calendar_data_url = raw_years_statistic_calendar_image[idx]
+
+                        file = get_image_from_data_url(
+                            data_url=raw_current_statistic_calendar_image
+                        )
+
+                        if val.calendar3d:
+                            val.calendar3d.delete()
+
+                        image = SNEKImage.objects.create(
+                            file=file[0], title=f"Calendar of {person_name}"
+                        )
+                        image.file = file[0]
+                        val.calendar3d = image
+
+                    except IndexError:
+                        pass
+
+            # person.current_statistic = {}
 
             person.save()
         else:
