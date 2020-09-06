@@ -392,6 +392,39 @@ class DeletePersonPageMetaLink(graphene.Mutation):
         )
 
 
+class CheckPersonPageMetaLink(graphene.Mutation):
+    exists = graphene.Boolean()
+
+    class Arguments:
+        token = graphene.String(required=True)
+        person_name = graphene.String(required=True)
+        url = graphene.String(required=True)
+        link_type = graphene.String(required=True)
+
+    @login_required
+    def mutate(self, info, token, person_name, **kwargs):
+        user = info.context.user
+
+        if user.is_superuser:
+            person_pages = PersonPage.objects.filter(slug=f"p-{person_name}")
+        else:
+            person_pages = PersonPage.objects.filter(
+                slug=f"p-{person_name}", person__user=user
+            )
+
+        person_page = person_pages.first()
+
+        if not person_page:
+            raise GraphQLError("person_name not valid on user")
+
+        try:
+            link = Meta_Link.objects.get(person_page=person_page, **kwargs)
+
+            return CheckPersonPageMetaLink(exists=True)
+        except Meta_Link.DoesNotExist:
+            return CheckPersonPageMetaLink(exists=False)
+
+
 class Mutation(graphene.ObjectType):
     follow = Follow.Field()
     unfollow = Unfollow.Field()
@@ -401,6 +434,7 @@ class Mutation(graphene.ObjectType):
     variable_store = VariableStore.Field()
     add_person_page_meta_link = AddPersonPageMetaLink.Field()
     delete_person_page_meta_link = DeletePersonPageMetaLink.Field()
+    check_person_page_meta_link = CheckPersonPageMetaLink.Field()
 
 
 class Query(graphene.ObjectType):
