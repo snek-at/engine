@@ -169,7 +169,7 @@ class DeleteTalkComment(graphene.Mutation):
         comment_id = graphene.ID(required=True)
 
     @login_required
-    def mutate(self, info, token, talk_id, **kwargs):
+    def mutate(self, info, token, talk_id, comment_id, **kwargs):
         user = info.context.user
 
         if user.is_superuser:
@@ -200,7 +200,7 @@ class UpdateTalkComment(graphene.Mutation):
         text = graphene.String(required=False)
 
     @login_required
-    def mutate(self, info, token, talk_id, **kwargs):
+    def mutate(self, info, token, talk_id, comment_id, **kwargs):
         user = info.context.user
 
         if user.is_superuser:
