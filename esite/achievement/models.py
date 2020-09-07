@@ -39,12 +39,14 @@ from esite.bifrost.models import (
 )
 from esite.colorfield.blocks import ColorAlphaBlock, ColorBlock, GradientColorBlock
 from esite.colorfield.fields import ColorAlphaField, ColorField
-from esite.utils.models import BasePage
+from esite.utils.edit_handlers import ReadOnlyPanel
+from esite.utils.models import BasePage, TimeStampMixin
 
 # Create your homepage related models here.
 
 
-class Achievement(ClusterableModel):
+class Achievement(TimeStampMixin, ClusterableModel):
+    id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
     collectors = ParentalManyToManyField(
         "people.PersonPage", related_name="achievements", blank=True
     )
@@ -65,14 +67,20 @@ class Achievement(ClusterableModel):
         GraphQLString("description"),
         GraphQLImage("image"),
         GraphQLInt("points"),
+        GraphQLString("created_at"),
+        GraphQLString("updated_at"),
     ]
 
     main_content_panels = [
+        ReadOnlyPanel("id", heading="ID/Activation ID"),
         FieldPanel("collectors"),
         FieldPanel("title"),
         FieldPanel("description"),
         ImageChooserPanel("image"),
         FieldPanel("points"),
+        MultiFieldPanel(
+            [FieldPanel("created_at"), FieldPanel("updated_at")], heading="Meta",
+        ),
     ]
 
     edit_handler = TabbedInterface(

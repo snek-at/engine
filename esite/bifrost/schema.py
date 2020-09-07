@@ -101,6 +101,7 @@ def create_schema():
             "add_talk_comment": esite.talk.schema.AddTalkComment.Field(),
             "delete_talk_comment": esite.talk.schema.DeleteTalkComment.Field(),
             "update_talk_comment": esite.talk.schema.UpdateTalkComment.Field(),
+            "redeem_achievement": esite.achievement.schema.RedeemAchievement.Field(),
         }
 
         dict_params.update(
