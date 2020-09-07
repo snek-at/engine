@@ -204,6 +204,32 @@ class PersonRegistrationFormPage(BaseEmailFormPage):
         ]
     )
 
+    def save(self, *args, **kwargs):
+        if self.pk is None:
+            self.form_fields.add(
+                PersonRegistrationFormField(
+                    label="username", field_type="singleline", required=True
+                ),
+                PersonRegistrationFormField(
+                    label="first_name", field_type="singleline", required=True,
+                ),
+                PersonRegistrationFormField(
+                    label="last_name", field_type="singleline", required=True,
+                ),
+                PersonRegistrationFormField(
+                    label="email", field_type="email", required=True,
+                ),
+                PersonRegistrationFormField(
+                    label="password", field_type="singleline", required=True,
+                ),
+                PersonRegistrationFormField(
+                    label="redemption_code", field_type="singleline", required=True,
+                ),
+            )
+
+        # after call the built-in cleanups (including default form fields)
+        super(PersonRegistrationFormPage, self).save(*args, **kwargs)
+
     def get_submission_class(self):
         return PersonRegistrationFormSubmission
 
@@ -211,7 +237,6 @@ class PersonRegistrationFormPage(BaseEmailFormPage):
     def create_user(
         self, username, first_name, last_name, email, password, redemption_code,
     ):
-
         # enter the data here
         user = get_user_model()(username=username, is_active=False)
 
