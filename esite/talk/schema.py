@@ -10,8 +10,9 @@ from graphql_jwt.decorators import (
     superuser_required,
 )
 
-from esite.talk.models import Talk
 from esite.comment.models import Comment
+from esite.people.models import PersonPage
+from esite.talk.models import Talk
 
 # Create your registration related graphql schemes here.
 
