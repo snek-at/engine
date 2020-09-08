@@ -79,7 +79,11 @@ class Achievement(TimeStampMixin, ClusterableModel):
         ImageChooserPanel("image"),
         FieldPanel("points"),
         MultiFieldPanel(
-            [FieldPanel("created_at"), FieldPanel("updated_at")], heading="Meta",
+            [
+                ReadOnlyPanel("created_at", heading="Created"),
+                ReadOnlyPanel("updated_at", heading="Updated"),
+            ],
+            heading="Meta",
         ),
     ]
 
