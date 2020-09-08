@@ -61,16 +61,21 @@ class Comment(TimeStampMixin, ClusterableModel):
         FieldPanel("text"),
         MultiFieldPanel([FieldPanel("talk")], heading="Associated instances"),
         MultiFieldPanel(
-            [FieldPanel("created_at"), FieldPanel("updated_at")], heading="Meta",
+            [
+                ReadOnlyPanel("created_at", heading="Created"),
+                ReadOnlyPanel("updated_at", heading="Updated"),
+            ],
+            heading="Meta",
         ),
         InlinePanel("reply_to"),
     ]
 
     graphql_fields = [
         GraphQLString("id"),
-        GraphQLString("author"),
         GraphQLString("text"),
         GraphQLString("created_at"),
         GraphQLString("updated_at"),
-        GraphQLForeignKey("replies", "comment.Comment", is_list=True),
+        GraphQLForeignKey("author", content_type="people.PersonPage"),
+        GraphQLForeignKey("talk", content_type="talk.Talk"),
+        GraphQLCollection(GraphQLForeignKey, "replies", "comment.Comment"),
     ]
