@@ -222,6 +222,7 @@ class PersonPage(BasePage):
         GraphQLCollection(GraphQLForeignKey, "likes", "people.PersonPage"),
         GraphQLCollection(GraphQLForeignKey, "liked_by", "people.PersonPage"),
         GraphQLCollection(GraphQLForeignKey, "achievements", "achievement.Achievement"),
+        GraphQLCollection(GraphQLForeignKey, "talks", "talk.Talk"),
     ]
 
 
