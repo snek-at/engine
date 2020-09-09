@@ -38,30 +38,42 @@ class Mutation(graphene.ObjectType):
 
 
 class Query(graphene.ObjectType):
+    user_exists = graphene.Boolean(
+        token=graphene.String(required=True), username=graphene.String(required=True),
+    )
+
     me = graphene.Field(
         registry.models[get_user_model()], token=graphene.String(required=False)
     )
-    user = graphene.Field(
-        registry.models[get_user_model()],
-        username=graphene.String(required=False),
-        token=graphene.String(required=False),
-    )
-    users = graphene.List(
-        registry.models[get_user_model()], token=graphene.String(required=False)
-    )
-
-    @superuser_required
-    def resolve_users(self, info, **_kwargs):
-
-        return get_user_model().objects.all()
+    # user = graphene.Field(
+    #     registry.models[get_user_model()],
+    #     username=graphene.String(required=False),
+    #     token=graphene.String(required=False),
+    # )
+    # users = graphene.List(
+    #     registry.models[get_user_model()], token=graphene.String(required=False)
+    # )
 
     @login_required
-    def resolve_user(self, info, username, **_kwargs):
-        print(username)
-        user = get_user_model().objects.get(username=username)
-        print(user.__dict__)
+    def resolve_user_exists(self, info, token, username, **kwargs):
+        try:
+            user = get_user_model().objects.get(username=username)
+            return True
+        except get_user_model().DoesNotExist:
+            return False
 
-        return user
+    # @superuser_required
+    # def resolve_users(self, info, **_kwargs):
+
+    #     return get_user_model().objects.all()
+
+    # @login_required
+    # def resolve_user(self, info, username, **_kwargs):
+    #     print(username)
+    #     user = get_user_model().objects.get(username=username)
+    #     print(user.__dict__)
+
+    #     return user
 
     @login_required
     def resolve_me(self, info, **_kwargs):
