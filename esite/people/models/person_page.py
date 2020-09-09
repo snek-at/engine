@@ -216,6 +216,7 @@ class PersonPage(BasePage):
         GraphQLString("tids"),
         GraphQLStreamfield("movable_pool"),
         GraphQLForeignKey("person", "people.Person"),
+        GraphQLCollection(GraphQLForeignKey, "profiles", "profile.Profile"),
         GraphQLCollection(GraphQLForeignKey, "meta_links", "people.Meta_Link"),
         GraphQLCollection(GraphQLForeignKey, "follows", "people.PersonPage"),
         GraphQLCollection(GraphQLForeignKey, "followed_by", "people.PersonPage"),
