@@ -67,8 +67,8 @@ class Profile(TimeStampMixin):
         GraphQLString("username"),
         GraphQLString("source_url"),
         GraphQLString("source_type"),
-        GraphQLString("is_access_token_expired"),
-        GraphQLString("is_active"),
+        GraphQLBoolean("is_access_token_expired"),
+        GraphQLBoolean("is_active"),
         GraphQLString("created_at"),
         GraphQLString("updated_at"),
     ]
