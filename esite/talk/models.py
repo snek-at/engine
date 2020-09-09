@@ -36,13 +36,13 @@ from esite.bifrost.models import (
 )
 from esite.colorfield.blocks import ColorAlphaBlock, ColorBlock, GradientColorBlock
 from esite.colorfield.fields import ColorAlphaField, ColorField
-from esite.utils.models import BasePage
 from esite.utils.edit_handlers import ReadOnlyPanel
+from esite.utils.models import BasePage, TimeStampMixin
 
 # Create your homepage related models here.
 
 
-class Talk(ClusterableModel):
+class Talk(TimeStampMixin, ClusterableModel):
     id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
     owner = ParentalKey(
         "people.PersonPage", on_delete=models.CASCADE, related_name="talks"
@@ -68,6 +68,8 @@ class Talk(ClusterableModel):
         GraphQLString("url"),
         GraphQLString("display_url"),
         GraphQLString("download_url"),
+        GraphQLString("created_at"),
+        GraphQLString("updated_at"),
         GraphQLForeignKey("owner", content_type="people.PersonPage"),
         GraphQLCollection(GraphQLForeignKey, "talk_comments", "comment.Comment"),
     ]
@@ -81,6 +83,13 @@ class Talk(ClusterableModel):
         FieldPanel("url"),
         FieldPanel("display_url"),
         FieldPanel("download_url"),
+        MultiFieldPanel(
+            [
+                ReadOnlyPanel("created_at", heading="Created"),
+                ReadOnlyPanel("updated_at", heading="Updated"),
+            ],
+            heading="Meta",
+        ),
         InlinePanel("talk_comments", label="Comments"),
     ]
 
