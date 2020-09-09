@@ -228,31 +228,28 @@ class Mutation(graphene.ObjectType):
 
 
 class Query(graphene.ObjectType):
-    talks = graphene.List(TalkType, token=graphene.String(required=False),)
-    person_talks = graphene.List(
+    talk = graphene.Field(
+        TalkType, token=graphene.String(required=True), id=graphene.Int(required=True)
+    )
+    talks = graphene.List(
         TalkType,
-        token=graphene.String(required=False),
+        token=graphene.String(required=True),
         person_name=graphene.String(required=False),
     )
 
     @login_required
-    def resolve_talks(self, info, token, **kwargs):
-        return Talk.objects.all()
+    def resolve_talk(self, info, token, id, **kwargs):
+        try:
+            return Talk.objects.get(id=id)
+        except Talk.DoesNotExist:
+            raise GraphQLError("Id not valid")
 
     @login_required
-    def resolve_person_talks(self, info, token, person_name, **kwargs):
-        user = info.context.user
+    def resolve_talks(self, info, token, person_name=None, **kwargs):
+        try:
+            person_page = PersonPage.objects.get(slug=f"p-{person_name}")
 
-        if user.is_superuser:
-            person_pages = PersonPage.objects.filter(slug=f"p-{person_name}")
-        else:
-            person_pages = PersonPage.objects.filter(
-                slug=f"p-{person_name}", person__user=user
-            )
+            return Talk.objects.filter(owner=person_page)
+        except PersonPage.DoesNotExist:
+            return Talk.objects.all()
 
-        person_page = person_pages.first()
-
-        if not person_page:
-            raise GraphQLError("person_name not valid on user")
-
-        return Talk.objects.filter(owner=person_page)

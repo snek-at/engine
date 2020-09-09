@@ -45,7 +45,7 @@ from esite.utils.edit_handlers import ReadOnlyPanel
 class Talk(ClusterableModel):
     id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
     owner = ParentalKey(
-        "people.PersonPage", on_delete=models.CASCADE, related_name="talk_owner"
+        "people.PersonPage", on_delete=models.CASCADE, related_name="talks"
     )
     title = models.CharField(null=True, blank=True, max_length=32)
     description = models.TextField(null=True, blank=True, help_text="Other information")
@@ -68,6 +68,7 @@ class Talk(ClusterableModel):
         GraphQLString("url"),
         GraphQLString("display_url"),
         GraphQLString("download_url"),
+        GraphQLForeignKey("owner", content_type="people.PersonPage"),
         GraphQLCollection(GraphQLForeignKey, "talk_comments", "comment.Comment"),
     ]
 
