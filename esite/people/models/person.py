@@ -128,6 +128,17 @@ class _Person_Statistic_Streak(blocks.StructBlock):
 
 
 @register_streamfield_block
+class _Person_Statistic_Contribution(blocks.StructBlock):
+    date = blocks.DateBlock(required=False)
+    total = blocks.IntegerBlock(required=False)
+
+    graphql_fields = [
+        GraphQLString("date"),
+        GraphQLInt("total"),
+    ]
+
+
+@register_streamfield_block
 class _Person_Statistic(blocks.StructBlock):
     calendar3d = ImageChooserBlock(required=False)
     calendar2d = blocks.TextBlock(required=False)
@@ -139,9 +150,12 @@ class _Person_Statistic(blocks.StructBlock):
     total_pull_request_review_contributions = blocks.IntegerBlock(required=False)
     total_repositories_with_contributed_issues = blocks.IntegerBlock(required=False)
     total_repositories_with_contributed_commits = blocks.IntegerBlock(required=False)
-    total_repositories_with_contributed_pull_requests = blocks.IntegerBlock(required=False)
+    total_repositories_with_contributed_pull_requests = blocks.IntegerBlock(
+        required=False
+    )
     current_streak = _Person_Statistic_Streak()
     longest_streak = _Person_Statistic_Streak()
+    busiest_day = _Person_Statistic_Contribution()
 
     graphql_fields = [
         GraphQLImage("calendar3d"),
@@ -157,6 +171,7 @@ class _Person_Statistic(blocks.StructBlock):
         GraphQLInt("total_repositories_with_contributed_pull_requests"),
         GraphQLStreamfield("current_streak", is_list=False),
         GraphQLStreamfield("longest_streak", is_list=False),
+        GraphQLStreamfield("busiest_day", is_list=False),
     ]
 
 
