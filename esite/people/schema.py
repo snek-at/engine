@@ -4,6 +4,7 @@ from django.contrib.auth import get_user_model
 
 import graphene
 from graphene_django import DjangoObjectType
+from graphene_file_upload.scalars import Upload
 from graphql import GraphQLError
 from graphql_jwt.decorators import (
     login_required,
@@ -13,7 +14,7 @@ from graphql_jwt.decorators import (
 )
 
 from esite.images.models import SNEKImage
-from esite.people.models import Person, PersonPage, Meta_Link
+from esite.people.models import Meta_Link, Person, PersonPage
 from esite.utils.tools import camelcase_to_snake, get_image_from_data_url
 
 
@@ -161,7 +162,7 @@ class UpdatePersonPage(graphene.Mutation):
         last_name = graphene.String(required=False)
         status = graphene.String(required=False)
         bio = graphene.String(required=False)
-        avatar_image = graphene.String(required=False)
+        avatar_image = Upload(required=False)
         email = graphene.String(required=False)
         display_email = graphene.Boolean(required=False)
         workplace = graphene.String(required=False)
@@ -177,8 +178,9 @@ class UpdatePersonPage(graphene.Mutation):
     def mutate(
         self, info, token, person_name, movable_pool=None, avatar_image=None, **kwargs
     ):
-        user = info.context.user
+        print("KWARGS", kwargs)
 
+        user = info.context.user
         """
         person_pages must contain one entry due to the uniqueness of the slug
         """
@@ -195,8 +197,10 @@ class UpdatePersonPage(graphene.Mutation):
             """
             Allowed to update settings
             """
-            person_pages.update(**kwargs)
+            print(person_pages[0].first_name)
 
+            print(person_pages[0].first_name)
+            print("UPDATED")
             if movable_pool:
                 try:
                     person_page.movable_pool = [
@@ -209,16 +213,18 @@ class UpdatePersonPage(graphene.Mutation):
                 """
                 Set photo
                 """
-                file = get_image_from_data_url(data_url=avatar_image)
-
+                print(avatar_image)
                 if person_page.avatar_image:
                     person_page.avatar_image.delete()
 
-                image = SNEKImage.objects.create(file=file[0], title="Test")
+                image = SNEKImage.objects.create(
+                    file=avatar_image, title=f"Avatar of {person_name}", author=user
+                )
 
                 person_page.avatar_image = image
 
             person_page.save()
+            person_pages.update(**kwargs)
 
         else:
             raise GraphQLError("Permission denied")
@@ -237,6 +243,8 @@ class VariableStore(graphene.Mutation):
         raw_organisations = graphene.JSONString(required=False)
         raw_projects = graphene.JSONString(required=False)
         raw_languages = graphene.JSONString(required=False)
+        raw_current_statistic_calendar_image = Upload(required=False)
+        raw_years_statistic_calendar_images = Upload(required=False)
 
     @login_required
     def mutate(
@@ -245,12 +253,12 @@ class VariableStore(graphene.Mutation):
         token,
         person_name,
         raw_current_statistic=None,
-        raw_current_statistic_calendar_image=None,
         raw_years_statistic=None,
-        raw_years_statistic_calendar_image=None,
         raw_organisations=None,
         raw_projects=None,
         raw_languages=None,
+        raw_current_statistic_calendar_image=None,
+        raw_years_statistic_calendar_images=None,
         **kwargs,
     ):
         import esite.people.models
@@ -335,42 +343,36 @@ class VariableStore(graphene.Mutation):
                 """
                 Set photo
                 """
-                file = get_image_from_data_url(
-                    data_url=raw_current_statistic_calendar_image
+                if val.calendar3d:
+                    val.calendar3d.delete()
+
+                image = SNEKImage.objects.create(
+                    file=raw_current_statistic_calendar_image,
+                    title=f"Current calendar of {person_name}",
+                    author=user,
                 )
 
-                if current_statistic.calendar3d:
-                    current_statistic.calendar3d.delete()
-                else:
-                    image = SNEKImage.objects.create(
-                        file=file[0], title=f"Calendar of {person_name}"
-                    )
-                    image.file = file[0]
+                current_statistic.calendar3d = image
 
-                    current_statistic.calendar3d = image
-
-            if raw_years_statistic_calendar_image:
+            if raw_years_statistic_calendar_images:
                 for idx, val in enumerate(years_statistic):
                     try:
-                        calendar_data_url = raw_years_statistic_calendar_image[idx]
-
-                        file = get_image_from_data_url(
-                            data_url=raw_current_statistic_calendar_image
-                        )
-
+                        """
+                        Set photo
+                        """
                         if val.calendar3d:
                             val.calendar3d.delete()
 
-                        image = SNEKImage.objects.create(
-                            file=file[0], title=f"Calendar of {person_name}"
-                        )
-                        image.file = file[0]
-                        val.calendar3d = image
+                            image = SNEKImage.objects.create(
+                                file=raw_years_statistic_calendar_images[idx],
+                                title=f"Year calendar {idx} of {person_name}",
+                                author=user,
+                            )
+
+                            val.calendar3d = image
 
                     except IndexError:
                         pass
-
-            # person.current_statistic = {}
 
             person.save()
         else:
