@@ -343,8 +343,8 @@ class VariableStore(graphene.Mutation):
                 """
                 Set photo
                 """
-                if val.calendar3d:
-                    val.calendar3d.delete()
+                if current_statistic.calendar3d:
+                    current_statistic.calendar3d.delete()
 
                 image = SNEKImage.objects.create(
                     file=raw_current_statistic_calendar_image,
