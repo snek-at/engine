@@ -76,6 +76,7 @@ class SocialMediaProfile(models.Model):
 class Meta_Link(models.Model):
     LINK_TYPES = (
         ("INSTAGRAM", "Instagram Post"),
+        ("SOUNDCLOUD", "Soundcloud Song"),
         ("PHOTO", "Photo URL"),
         ("YOUTUBE", "Youtube URL"),
         ("VIMEO", "VIMEO URL"),
@@ -135,6 +136,11 @@ class PersonPage(BasePage):
     display_programming_languages = models.BooleanField(blank=True, default=False)
     display_2d_calendar = models.BooleanField(blank=True, default=False)
     display_3d_calendar = models.BooleanField(blank=True, default=False)
+    display_contribution_types = models.BooleanField(blank=True, default=False)
+    display_week_activity = models.BooleanField(blank=True, default=False)
+    display_image_gallery = models.BooleanField(blank=True, default=False)
+    display_video_gallery = models.BooleanField(blank=True, default=False)
+    display_music_gallery = models.BooleanField(blank=True, default=False)
 
     bids = models.TextField(null=True, blank=True)
     tids = models.TextField(null=True, blank=True)
@@ -170,6 +176,11 @@ class PersonPage(BasePage):
         FieldPanel("display_programming_languages"),
         FieldPanel("display_2d_calendar"),
         FieldPanel("display_3d_calendar"),
+        FieldPanel("display_contribution_types"),
+        FieldPanel("display_week_activity"),
+        FieldPanel("display_image_gallery"),
+        FieldPanel("display_video_gallery"),
+        FieldPanel("display_music_gallery"),
         FieldPanel("status"),
         FieldPanel("bio"),
         FieldPanel("location"),
@@ -212,6 +223,11 @@ class PersonPage(BasePage):
         GraphQLBoolean("display_programming_languages"),
         GraphQLBoolean("display_2d_calendar"),
         GraphQLBoolean("display_3d_calendar"),
+        GraphQLBoolean("display_contribution_types"),
+        GraphQLBoolean("display_week_activity"),
+        GraphQLBoolean("display_image_gallery"),
+        GraphQLBoolean("display_video_gallery"),
+        GraphQLBoolean("display_music_gallery"),
         GraphQLString("bids"),
         GraphQLString("tids"),
         GraphQLStreamfield("movable_pool"),

@@ -1,3 +1,5 @@
+import datetime
+
 from django.db import models
 
 from modelcluster.fields import ParentalKey
@@ -51,13 +53,13 @@ class _Person_Member(blocks.StructBlock):
         required=False, help_text="Important! Format https://www.domain.tld/xyz"
     )
     fullname = blocks.CharBlock(required=False, max_length=255)
-    name = blocks.CharBlock(required=False, max_length=255)
+    username = blocks.CharBlock(required=False, max_length=255)
 
     graphql_fields = [
         GraphQLString("avatar_url"),
         GraphQLString("url"),
         GraphQLString("fullname"),
-        GraphQLString("name"),
+        GraphQLString("username"),
     ]
 
 
@@ -138,11 +140,20 @@ class _Person_Statistic_Contribution(blocks.StructBlock):
     ]
 
 
+def year_choices():
+    return [(r, r) for r in range(1984, datetime.date.today().year + 1)]
+
+
+def current_year():
+    return datetime.date.today().year
+
+
 @register_streamfield_block
 class _Person_Statistic(blocks.StructBlock):
+    year = blocks.ChoiceBlock(choices=year_choices, required=False)
     calendar3d = ImageChooserBlock(required=False)
-    calendar2d = blocks.TextBlock(required=False)
-    contribution_type2d = blocks.TextBlock()
+    calendar_data = blocks.TextBlock(required=False)
+    contribution_type_data = blocks.TextBlock(required=False)
     total_issue_contributions = blocks.IntegerBlock(required=False)
     total_commit_contributions = blocks.IntegerBlock(required=False)
     total_repository_contributions = blocks.IntegerBlock(required=False)
@@ -158,9 +169,10 @@ class _Person_Statistic(blocks.StructBlock):
     busiest_day = _Person_Statistic_Contribution()
 
     graphql_fields = [
+        GraphQLInt("year"),
         GraphQLImage("calendar3d"),
-        GraphQLString("calendar2d"),
-        GraphQLString("contribution_type2d"),
+        GraphQLString("calendar_data"),
+        GraphQLString("contribution_type_data"),
         GraphQLInt("total_issue_contributions"),
         GraphQLInt("total_commit_contributions"),
         GraphQLInt("total_repository_contributions"),

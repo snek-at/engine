@@ -173,6 +173,11 @@ class UpdatePersonPage(graphene.Mutation):
         display_programming_languages = graphene.Boolean(required=False)
         display_2d_calendar = graphene.Boolean(required=False)
         display_3d_calendar = graphene.Boolean(required=False)
+        display_contribution_types = graphene.Boolean(required=False)
+        display_week_activity = graphene.Boolean(required=False)
+        display_image_gallery = graphene.Boolean(required=False)
+        display_video_gallery = graphene.Boolean(required=False)
+        display_music_gallery = graphene.Boolean(required=False)
 
     @login_required
     def mutate(
@@ -197,15 +202,16 @@ class UpdatePersonPage(graphene.Mutation):
             """
             Allowed to update settings
             """
-            print(person_pages[0].first_name)
 
-            print(person_pages[0].first_name)
-            print("UPDATED")
             if movable_pool:
                 try:
                     person_page.movable_pool = [
-                        (e.field, e.rawValue) for e in json.loads(movable_pool)
+                        (k, {"order": json.loads(v)}) for (k, v) in movable_pool.items()
                     ]
+                    # [ for e in movable_pool.items]
+                    # person_page.movable_pool = [
+                    #     (e.field, e.rawValue) for e in json.loads(movable_pool)
+                    # ]
                 except:
                     raise GraphQLError("Something went wrong with movable_pool")
 
@@ -213,7 +219,6 @@ class UpdatePersonPage(graphene.Mutation):
                 """
                 Set photo
                 """
-                print(avatar_image)
                 if person_page.avatar_image:
                     person_page.avatar_image.delete()
 
@@ -309,37 +314,39 @@ class VariableStore(graphene.Mutation):
 
                 return obj
 
-            if raw_projects:
+            print("raw projc", raw_projects)
+            if raw_projects is not None:
                 projects = process_raw_data(
                     "projects", raw_projects, for_streamfield=True
                 )
+                print("PROCESSED projects,", projects)
                 person.projects = json.dumps(projects)
 
-            if raw_organisations:
+            if raw_organisations is not None:
                 organisations = process_raw_data(
                     "organisations", raw_organisations, for_streamfield=True
                 )
                 person.organisations = json.dumps(organisations)
 
-            if raw_languages:
+            if raw_languages is not None:
                 languages = process_raw_data(
                     "languages", raw_languages, for_streamfield=True
                 )
                 person.languages = json.dumps(languages)
 
-            if raw_current_statistic:
+            if raw_current_statistic is not None:
                 current_statistic = process_raw_data(
                     "statistic_year", raw_current_statistic, for_streamfield=True
                 )
                 person.current_statistic = json.dumps(current_statistic)
 
-            if raw_years_statistic:
+            if raw_years_statistic is not None:
                 years_statistic = process_raw_data(
                     "statistic_years", raw_years_statistic, for_streamfield=True
                 )
                 person.years_statistic = json.dumps(years_statistic)
 
-            if raw_current_statistic_calendar_image:
+            if raw_current_statistic_calendar_image is not None:
                 """
                 Set photo
                 """
@@ -354,7 +361,7 @@ class VariableStore(graphene.Mutation):
 
                 current_statistic.calendar3d = image
 
-            if raw_years_statistic_calendar_images:
+            if raw_years_statistic_calendar_images is not None:
                 for idx, val in enumerate(years_statistic):
                     try:
                         """
