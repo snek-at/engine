@@ -32,6 +32,7 @@ from wagtail.core import blocks, fields
 from wagtail.core.fields import RichTextField, StreamField
 from wagtail.core.models import Page
 from wagtail.images.blocks import ImageChooserBlock
+from wagtail.images.edit_handlers import ImageChooserPanel
 from wagtail.snippets.edit_handlers import SnippetChooserPanel
 
 import yaml
@@ -52,7 +53,6 @@ from esite.bifrost.models import (
 )
 from esite.colorfield.blocks import ColorBlock
 from esite.utils.models import BaseEmailFormPage, BasePage
-
 
 # Model manager to use in Proxy model
 # class ProxyManager(BaseUserManager):
@@ -438,6 +438,13 @@ class EnterpriseFormPage(BaseEmailFormPage):
     ]
 
     # Imprint
+    avatar_image = models.ForeignKey(
+        settings.WAGTAILIMAGES_IMAGE_MODEL,
+        null=True,
+        blank=True,
+        related_name="+",
+        on_delete=models.SET_NULL,
+    )
     city = models.CharField(null=True, blank=True, max_length=255)
     zip_code = models.CharField(null=True, blank=True, max_length=255)
     address = models.CharField(null=True, blank=True, max_length=255)
@@ -458,6 +465,7 @@ class EnterpriseFormPage(BaseEmailFormPage):
     description = models.TextField(null=True, blank=True)
 
     imprint_panels = [
+        ImageChooserPanel("avatar_image"),
         MultiFieldPanel(
             [
                 FieldPanel("city"),
@@ -494,6 +502,7 @@ class EnterpriseFormPage(BaseEmailFormPage):
     ]
 
     graphql_fields += [
+        GraphQLImage("avatar_image"),
         GraphQLString("city"),
         GraphQLString("zip_code"),
         GraphQLString("address"),
@@ -556,9 +565,9 @@ class EnterpriseFormPage(BaseEmailFormPage):
         [
             # ObjectList(Page.content_panels + overview_panels, heading="Overview"),
             ObjectList(overview_panels, heading="Overview"),
-            # ObjectList(codelangaugestatistic_panel, heading="Language Statistic"),
-            # ObjectList(codetransitionstatistic_panel, heading="Transition Statistic"),
-            # ObjectList(contributor_panel, heading="Contributors"),
+            ObjectList(codelangaugestatistic_panel, heading="Language Statistic"),
+            ObjectList(codetransitionstatistic_panel, heading="Transition Statistic"),
+            ObjectList(contributor_panel, heading="Contributors"),
             ObjectList(project_panel, heading="Projects"),
             ObjectList(imprint_panels, heading="Imprint"),
             ObjectList(form_panels, heading="Form"),
@@ -571,46 +580,38 @@ class EnterpriseFormPage(BaseEmailFormPage):
     )
 
     def save(self, *args, **kwargs):
-        # first call the built-in cleanups (including default form fields)
-        super(EnterpriseFormPage, self).save(*args, **kwargs)
-
         if self.pk is None:
-            EnterpriseFormField.objects.get_or_create(
-                page=self,
-                label="enterprise_username",
-                field_type="singleline",
-                required=False,
+            self.form_fields.add(
+                EnterpriseFormField(
+                    label="enterprise_username",
+                    field_type="singleline",
+                    required=False,
+                ),
+                EnterpriseFormField(
+                    label="enterprise_imprint", field_type="multiline", required=False,
+                ),
+                EnterpriseFormField(
+                    label="enterprise_contributors",
+                    field_type="multiline",
+                    required=False,
+                ),
+                EnterpriseFormField(
+                    label="enterprise_projects", field_type="multiline", required=False,
+                ),
+                EnterpriseFormField(
+                    label="enterprise_codelanguage_statistic",
+                    field_type="multiline",
+                    required=False,
+                ),
+                EnterpriseFormField(
+                    label="enterprise_codetransition_statistic",
+                    field_type="multiline",
+                    required=False,
+                ),
             )
-            EnterpriseFormField.objects.get_or_create(
-                page=self,
-                label="enterprise_imprint",
-                field_type="multiline",
-                required=False,
-            )
-            EnterpriseFormField.objects.get_or_create(
-                page=self,
-                label="enterprise_contributors",
-                field_type="multiline",
-                required=False,
-            )
-            EnterpriseFormField.objects.get_or_create(
-                page=self,
-                label="enterprise_projects",
-                field_type="multiline",
-                required=False,
-            )
-            EnterpriseFormField.objects.get_or_create(
-                page=self,
-                label="enterprise_codelanguage_statistic",
-                field_type="multiline",
-                required=False,
-            )
-            EnterpriseFormField.objects.get_or_create(
-                page=self,
-                label="enterprise_codetransition_statistic",
-                field_type="multiline",
-                required=False,
-            )
+
+        # after call the built-in cleanups (including default form fields)
+        super(EnterpriseFormPage, self).save(*args, **kwargs)
 
     def get_submission_class(self):
         return EnterpriseFormSubmission
