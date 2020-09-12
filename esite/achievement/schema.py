@@ -21,6 +21,7 @@ class AchievementType(DjangoObjectType):
 
 class RedeemAchievement(graphene.Mutation):
     ok = graphene.Boolean()
+    achievement = graphene.Field(AchievementType)
 
     class Arguments:
         token = graphene.String(required=True)
@@ -47,14 +48,14 @@ class RedeemAchievement(graphene.Mutation):
             achievement = Achievement.objects.get(id=sequence)
             achievement.collectors.add(person_page)
             achievement.save()
+
+            return RedeemAchievement(achievement=achievement, ok=True)
         except:
             """
             - Minus karma for person
             - unlock achievement
             """
-            pass
-
-        return RedeemAchievement(ok=True)
+            return RedeemAchievement(ok=True)
 
 
 class Mutation(graphene.ObjectType):
