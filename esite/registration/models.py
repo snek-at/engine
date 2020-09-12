@@ -416,6 +416,75 @@ class EnterpriseRegistrationFormPage(BaseEmailFormPage):
     def get_submission_class(self):
         return EnterpriseRegistrationFormSubmission
 
+    def save(self, *args, **kwargs):
+        if self.pk is None:
+            self.form_fields.add(
+                EnterpriseRegistrationFormField(
+                    label="enterprise_username", field_type="singleline", required=True
+                ),
+                EnterpriseRegistrationFormField(
+                    label="city", field_type="singleline", required=False
+                ),
+                EnterpriseRegistrationFormField(
+                    label="zip_code", field_type="singleline", required=False
+                ),
+                EnterpriseRegistrationFormField(
+                    label="address", field_type="singleline", required=False
+                ),
+                EnterpriseRegistrationFormField(
+                    label="telephone", field_type="singleline", required=False
+                ),
+                EnterpriseRegistrationFormField(
+                    label="telefax", field_type="singleline", required=False
+                ),
+                EnterpriseRegistrationFormField(
+                    label="vat_number", field_type="singleline", required=False
+                ),
+                EnterpriseRegistrationFormField(
+                    label="whatsapp_telephone", field_type="singleline", required=False
+                ),
+                EnterpriseRegistrationFormField(
+                    label="whatsapp_contactline",
+                    field_type="singleline",
+                    required=False,
+                ),
+                EnterpriseRegistrationFormField(
+                    label="tax_id", field_type="singleline", required=False
+                ),
+                EnterpriseRegistrationFormField(
+                    label="trade_register_number",
+                    field_type="singleline",
+                    required=False,
+                ),
+                EnterpriseRegistrationFormField(
+                    label="court_of_registry", field_type="singleline", required=False
+                ),
+                EnterpriseRegistrationFormField(
+                    label="place_of_registry", field_type="singleline", required=False
+                ),
+                EnterpriseRegistrationFormField(
+                    label="ownership", field_type="singleline", required=False
+                ),
+                EnterpriseRegistrationFormField(
+                    label="email", field_type="email", required=False
+                ),
+                EnterpriseRegistrationFormField(
+                    label="employee_count", field_type="singleline", required=False
+                ),
+                EnterpriseRegistrationFormField(
+                    label="opensource_url", field_type="singleline", required=False
+                ),
+                EnterpriseRegistrationFormField(
+                    label="recruiting_url", field_type="singleline", required=False
+                ),
+                EnterpriseRegistrationFormField(
+                    label="description", field_type="singleline", required=False
+                ),
+            )
+
+        # after call the built-in cleanups (including default form fields)
+        super(EnterpriseRegistrationFormPage, self).save(*args, **kwargs)
+
     # Create a new user
     def create_user(
         self,
