@@ -141,6 +141,7 @@ class PersonPage(BasePage):
     display_image_gallery = models.BooleanField(blank=True, default=False)
     display_video_gallery = models.BooleanField(blank=True, default=False)
     display_music_gallery = models.BooleanField(blank=True, default=False)
+    display_map = models.BooleanField(blank=True, default=False)
 
     bids = models.TextField(null=True, blank=True)
     tids = models.TextField(null=True, blank=True)
@@ -181,6 +182,7 @@ class PersonPage(BasePage):
         FieldPanel("display_image_gallery"),
         FieldPanel("display_video_gallery"),
         FieldPanel("display_music_gallery"),
+        FieldPanel("display_map"),
         FieldPanel("status"),
         FieldPanel("bio"),
         FieldPanel("location"),
@@ -228,6 +230,7 @@ class PersonPage(BasePage):
         GraphQLBoolean("display_image_gallery"),
         GraphQLBoolean("display_video_gallery"),
         GraphQLBoolean("display_music_gallery"),
+        GraphQLBoolean("display_map"),
         GraphQLString("bids"),
         GraphQLString("tids"),
         GraphQLStreamfield("movable_pool"),
