@@ -229,6 +229,7 @@ class Contributor(ClusterableModel):
     name = models.CharField(null=True, max_length=255, default="Unkown")
     username = models.CharField(null=True, max_length=255, default="Unkown")
     active = models.BooleanField(default=True)
+    anonym = models.BooleanField(default=False)
     avatar = models.ImageField(null=True)
     contribution_feed = ParentalManyToManyField(
         "ContributionFeed", related_name="contributor_feed", blank=True
@@ -247,6 +248,7 @@ class Contributor(ClusterableModel):
         GraphQLString("name"),
         GraphQLString("username"),
         GraphQLBoolean("active"),
+        GraphQLBoolean("anonym"),
         GraphQLImage("avatar"),
         GraphQLCollection(
             GraphQLForeignKey, "contribution_feed", "enterprises.ContributionFeed"
@@ -273,6 +275,7 @@ class ProjectContributor(ClusterableModel):
     name = models.CharField(null=True, max_length=255, default="Unkown")
     username = models.CharField(null=True, max_length=255, default="Unkown")
     active = models.BooleanField(default=True)
+    anonym = models.BooleanField(default=False)
     avatar = models.ImageField(null=True)
     contribution_feed = ParentalManyToManyField(
         "ContributionFeed", related_name="projectcontributor_feed", blank=True
@@ -293,6 +296,7 @@ class ProjectContributor(ClusterableModel):
         GraphQLString("name"),
         GraphQLString("username"),
         GraphQLBoolean("active"),
+        GraphQLBoolean("anonym"),
         GraphQLImage("avatar"),
         GraphQLCollection(
             GraphQLForeignKey, "contribution_feed", "enterprises.ContributionFeed"
@@ -341,6 +345,7 @@ class Project(ClusterableModel):
     codetransition = ParentalManyToManyField(
         "CodeTransitionStatistic", related_name="project_codetransition", blank=True
     )
+    anonym = models.BooleanField(default=False)
 
     graphql_fields = [
         GraphQLForeignKey("page", content_type="enterprises.Project"),
@@ -350,6 +355,7 @@ class Project(ClusterableModel):
         GraphQLString("owner_name"),
         GraphQLString("owner_username"),
         GraphQLString("owner_email"),
+        GraphQLString("anonym"),
         GraphQLCollection(
             GraphQLForeignKey, "contribution_feed", "enterprises.ContributionFeed"
         ),
