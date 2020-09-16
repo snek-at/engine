@@ -178,13 +178,12 @@ class UpdatePersonPage(graphene.Mutation):
         display_image_gallery = graphene.Boolean(required=False)
         display_video_gallery = graphene.Boolean(required=False)
         display_music_gallery = graphene.Boolean(required=False)
+        display_map = graphene.Boolean(required=False)
 
     @login_required
     def mutate(
         self, info, token, person_name, movable_pool=None, avatar_image=None, **kwargs
     ):
-        print("KWARGS", kwargs)
-
         user = info.context.user
         """
         person_pages must contain one entry due to the uniqueness of the slug
@@ -206,7 +205,7 @@ class UpdatePersonPage(graphene.Mutation):
             if movable_pool:
                 try:
                     person_page.movable_pool = [
-                        (k, {"order": json.loads(v)}) for (k, v) in movable_pool.items()
+                        (k, {"order": v}) for (k, v) in movable_pool.items()
                     ]
                     # [ for e in movable_pool.items]
                     # person_page.movable_pool = [
@@ -450,7 +449,7 @@ class DeletePersonPageMetaLink(graphene.Mutation):
         meta_link.delete()
 
         return DeletePersonPageMetaLink(
-            meta_link=Meta_Link.objects.filter(person_page__person__user=user)
+            meta_links=Meta_Link.objects.filter(person_page__person__user=user)
         )
 
 
