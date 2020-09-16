@@ -129,7 +129,7 @@ class AddTalkComment(graphene.Mutation):
         reply_to_id = graphene.ID(required=False)
         text = graphene.String(required=False)
 
-    def mutate(self, info, token, person_name, talk_id, reply_to_id, **kwargs):
+    def mutate(self, info, token, person_name, talk_id, reply_to_id=None, **kwargs):
         user = info.context.user
 
         if user.is_superuser:
@@ -144,15 +144,15 @@ class AddTalkComment(graphene.Mutation):
         if not person_page:
             raise GraphQLError("person_name not valid on user")
 
-        talk = Talk.objects.get(id=talk_id)
-
-        if not talk:
-            raise GraphQLError("Talk not found")
-
-        reply_to_comment = Comment.objects.get(id=reply_to_id, talk=talk)
-
-        if not reply_to_comment:
+        try:
+            talk = Talk.objects.get(id=talk_id)
+        except Comment.DoesNotExist:
             raise GraphQLError("Comment to be replied not found")
+
+        try:
+            reply_to_comment = Comment.objects.get(id=reply_to_id, talk=talk)
+        except Comment.DoesNotExist:
+            reply_to_comment = None
 
         comment = Comment.objects.create(
             reply_to=reply_to_comment, talk=talk, author=person_page, **kwargs
@@ -229,7 +229,7 @@ class Mutation(graphene.ObjectType):
 
 class Query(graphene.ObjectType):
     talk = graphene.Field(
-        TalkType, token=graphene.String(required=True), id=graphene.Int(required=True)
+        TalkType, token=graphene.String(required=True), id=graphene.ID(required=True)
     )
     talks = graphene.List(
         TalkType,
