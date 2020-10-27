@@ -50,7 +50,6 @@ def remove_homepage(apps, schema_editor):
 class Migration(migrations.Migration):
 
     dependencies = [
-        ("wagtailimages", "0001_initial"),
         ("home", "0001_initial"),
     ]
 
